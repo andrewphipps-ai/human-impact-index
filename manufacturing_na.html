@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manufacturing (North America) | AI Human Impact Index</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0e1a;
+            color: #e0e6f0;
+            line-height: 1.7;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a2a4a 50%, #0d2035 100%);
+            border-bottom: 1px solid rgba(64, 180, 255, 0.2);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .back-nav { color: #64b5f6; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+        .back-nav:hover { color: #90caf9; }
+
+        .region-badge {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            border: 1px solid rgba(100,181,246,0.4);
+            color: #90caf9;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-main {
+            padding: 40px 40px 36px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 40px;
+            align-items: end;
+        }
+
+        .sector-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; color: #64b5f6; text-transform: uppercase; margin-bottom: 12px; }
+        .sector-title { font-size: 2.6rem; font-weight: 800; color: #ffffff; line-height: 1.15; margin-bottom: 14px; }
+        .sector-subtitle { font-size: 1.05rem; color: #9fb8d8; max-width: 680px; }
+
+        .header-stats { display: flex; flex-direction: column; gap: 14px; min-width: 280px; }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(100,181,246,0.15);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 1.9rem; font-weight: 800; color: #64b5f6; line-height: 1; }
+        .stat-value.warning  { color: #ff9800; }
+        .stat-value.danger   { color: #ef5350; }
+        .stat-value.positive { color: #66bb6a; }
+        .stat-label { font-size: 0.78rem; color: #7a9bbf; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .momentum-bar-section {
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 24px 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .momentum-label { font-size: 0.85rem; font-weight: 700; color: #7a9bbf; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .momentum-track { flex: 1; height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; }
+        .momentum-fill  { height: 100%; background: linear-gradient(90deg, #1565c0, #42a5f5, #ff9800); border-radius: 5px; }
+        .momentum-score { font-size: 1.5rem; font-weight: 800; color: #ff9800; white-space: nowrap; }
+        .momentum-descriptor { font-size: 0.82rem; color: #9fb8d8; white-space: nowrap; }
+
+        .content-wrapper { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .section { margin-bottom: 50px; }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(64,180,255,0.25);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 22px;
+            background: #42a5f5;
+            border-radius: 2px;
+        }
+
+        p { color: #c8d8ea; margin-bottom: 14px; font-size: 0.97rem; }
+
+        .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; }
+
+        .card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .card-title { font-size: 0.95rem; font-weight: 700; color: #90caf9; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .region-table { width: 100%; border-collapse: collapse; }
+
+        .region-table th {
+            background: rgba(21,101,192,0.3);
+            color: #90caf9;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid rgba(64,180,255,0.3);
+        }
+
+        .region-table td {
+            padding: 13px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+            color: #c8d8ea;
+            vertical-align: top;
+        }
+
+        .region-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+        .region-name { font-weight: 700; color: #ffffff; }
+        .region-hub  { font-size: 0.8rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-pill { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+        .impact-high   { background: rgba(239,83,80,0.2);  color: #ef9a9a; border: 1px solid rgba(239,83,80,0.3); }
+        .impact-medium { background: rgba(255,152,0,0.2);  color: #ffcc80; border: 1px solid rgba(255,152,0,0.3); }
+        .impact-low    { background: rgba(102,187,106,0.2);color: #a5d6a7; border: 1px solid rgba(102,187,106,0.3); }
+
+        .chart-container {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .chart-title { font-size: 0.9rem; font-weight: 700; color: #90caf9; margin-bottom: 18px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        canvas { max-height: 280px; }
+
+        .role-list { list-style: none; }
+
+        .role-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .role-item:last-child { border-bottom: none; }
+
+        .role-icon { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+        .role-icon.decline   { background: #ef5350; }
+        .role-icon.grow      { background: #66bb6a; }
+        .role-icon.transform { background: #ff9800; }
+
+        .role-name { font-weight: 700; color: #e0e6f0; font-size: 0.9rem; }
+        .role-desc { font-size: 0.82rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-box { background: rgba(255,152,0,0.06); border: 1px solid rgba(255,152,0,0.2); border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+        .impact-box h4 { color: #ffcc80; font-size: 0.95rem; margin-bottom: 8px; font-weight: 700; }
+        .impact-box p  { color: #c8d8ea; margin-bottom: 0; font-size: 0.9rem; }
+        .impact-box.blue  { background: rgba(66,165,245,0.06); border-color: rgba(66,165,245,0.2); }
+        .impact-box.blue h4 { color: #90caf9; }
+        .impact-box.red   { background: rgba(239,83,80,0.06); border-color: rgba(239,83,80,0.2); }
+        .impact-box.red h4  { color: #ef9a9a; }
+        .impact-box.green { background: rgba(102,187,106,0.06); border-color: rgba(102,187,106,0.2); }
+        .impact-box.green h4 { color: #a5d6a7; }
+
+        .policy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .policy-card { background: rgba(21,101,192,0.08); border: 1px solid rgba(100,181,246,0.15); border-radius: 12px; padding: 20px; }
+        .policy-card h4 { font-size: 0.9rem; font-weight: 700; color: #64b5f6; margin-bottom: 8px; }
+        .policy-card p  { font-size: 0.87rem; margin-bottom: 0; }
+
+        .metrics-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 40px; }
+
+        .metric-tile { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px 14px; text-align: center; }
+        .metric-tile .value { font-size: 1.6rem; font-weight: 800; line-height: 1; }
+        .metric-tile .label { font-size: 0.75rem; color: #7a9bbf; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+        .metric-tile .sub   { font-size: 0.72rem; color: #5a7a9b; margin-top: 3px; }
+
+        .callout { background: rgba(21,101,192,0.1); border-left: 4px solid #42a5f5; border-radius: 0 10px 10px 0; padding: 16px 20px; margin: 20px 0; }
+        .callout p { color: #b0ccec; font-size: 0.92rem; margin-bottom: 0; }
+        .callout.warning { background: rgba(255,152,0,0.08); border-left-color: #ff9800; }
+        .callout.warning p { color: #ffe0b2; }
+        .callout.danger { background: rgba(239,83,80,0.08); border-left-color: #ef5350; }
+        .callout.danger p { color: #ffcdd2; }
+
+        .subsector-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 32px; }
+
+        .subsector-tile {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 14px 12px;
+            text-align: center;
+        }
+
+        .subsector-tile h4 { font-size: 0.78rem; font-weight: 700; color: #90caf9; margin-bottom: 5px; }
+        .subsector-tile p  { font-size: 0.72rem; color: #7a9bbf; margin-bottom: 8px; line-height: 1.35; }
+        .subsector-score-badge { font-size: 1rem; font-weight: 800; padding: 3px 10px; border-radius: 8px; display: inline-block; }
+        .score-red    { background: rgba(239,83,80,0.2);  color: #ef9a9a; }
+        .score-orange { background: rgba(255,152,0,0.2);  color: #ffcc80; }
+        .score-green  { background: rgba(102,187,106,0.2);color: #a5d6a7; }
+
+        .page-footer {
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 28px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .footer-brand { font-size: 0.85rem; color: #5a7a9b; }
+        .footer-brand span { color: #64b5f6; font-weight: 700; }
+        .footer-note { font-size: 0.78rem; color: #3a5a7b; text-align: right; }
+
+        @media (max-width: 1024px) {
+            .two-col, .three-col, .policy-grid, .subsector-strip { grid-template-columns: 1fr; }
+            .metrics-strip { grid-template-columns: repeat(3, 1fr); }
+            .header-main  { grid-template-columns: 1fr; }
+            .header-stats { flex-direction: row; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE HEADER
+═══════════════════════════════════════════════════ -->
+<header class="page-header">
+    <div class="header-top">
+        <a href="index.html" class="back-nav">&#8592; AI Human Impact Index</a>
+        <div class="region-badge">&#127482;&#127480; North America</div>
+    </div>
+
+    <div class="header-main">
+        <div class="header-text">
+            <div class="sector-label">Sector Analysis</div>
+            <h1 class="sector-title">Manufacturing</h1>
+            <p class="sector-subtitle">How robotics, AI-driven process automation, reshoring incentives, and the twin pressures of Mexico competition and domestic labour scarcity are reshaping the 12.9 million jobs in US manufacturing, with particular attention to what reshoring with robots means for the Rust Belt communities that have been waiting two decades for manufacturing to come home.</p>
+        </div>
+
+        <div class="header-stats">
+            <div class="stat-card">
+                <div class="stat-value warning">~12.9M</div>
+                <div class="stat-label">US Manufacturing Employment</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value danger">45%</div>
+                <div class="stat-label">Roles at High Automation Risk</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value positive">$2.9T</div>
+                <div class="stat-label">US Manufacturing GDP Contribution</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="momentum-bar-section">
+        <span class="momentum-label">Disruption Momentum</span>
+        <div class="momentum-track">
+            <div class="momentum-fill" style="width: 76%"></div>
+        </div>
+        <span class="momentum-score">76 / 100</span>
+        <span class="momentum-descriptor">High Disruption</span>
+    </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════ -->
+<main class="content-wrapper">
+
+    <!-- Key Metrics Strip -->
+    <div class="metrics-strip">
+        <div class="metric-tile">
+            <div class="value" style="color:#ff9800">76</div>
+            <div class="label">Momentum Score</div>
+            <div class="sub">vs. 71 UK equivalent</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ef5350">~1.8M</div>
+            <div class="label">Jobs at Risk 2025-30</div>
+            <div class="sub">Automation and restructuring</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ff9800">$52B</div>
+            <div class="label">CHIPS and IRA Investment</div>
+            <div class="sub">Reshoring incentives committed</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#66bb6a">285</div>
+            <div class="label">Robots per 10,000 Workers</div>
+            <div class="sub">US robot density 2024</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ab47bc">~$20B</div>
+            <div class="label">Annual Industrial Robot Sales</div>
+            <div class="sub">North America 2024</div>
+        </div>
+    </div>
+
+    <!-- ── Section 1: Current Landscape ── -->
+    <section class="section">
+        <h2 class="section-title">Current Landscape</h2>
+
+        <p>US manufacturing employs approximately 12.9 million people, a figure that represents both a historic low as a share of total employment and, paradoxically, a period of genuine policy ambition around industrial revival. The sector contributes approximately $2.9 trillion to US GDP, punching above its employment weight because of its high capital intensity and productivity. It encompasses everything from semiconductor fabrication and aerospace engineering to food processing and garment manufacturing, and the automation exposure of these sub-sectors varies as dramatically as their wage profiles, geographic concentrations, and labour relations histories.</p>
+
+        <p>The defining tension in US manufacturing in 2025 is what might be called the reshoring paradox. The CHIPS and Science Act, the Inflation Reduction Act, and the broader policy push toward domestic production of semiconductors, electric vehicles, batteries, and critical materials represent the most significant federal commitment to US manufacturing in decades. Hundreds of billions of dollars of private and public investment are flowing into new and expanded domestic manufacturing capacity. Communities across the Rust Belt, the South, and the Southwest are competing aggressively for these investments, and some are winning.</p>
+
+        <p>The paradox is that the manufacturing returning to the United States is returning with robots. The competitive economics of modern advanced manufacturing do not replicate the high-employment, moderate-skill factory floor of the 1970s and 1980s whose disappearance created the political and social wounds that reshoring policy is designed to address. A new semiconductor fabrication plant creating 2,000 jobs in a county that lost 15,000 manufacturing jobs over three decades is a genuine positive development, but it is not a restoration of what was lost. The workers who were displaced were largely not semiconductor engineers, and the workers whose jobs return will largely not be their children or grandchildren.</p>
+
+        <div class="callout danger">
+            <p>The United States lost approximately 5 million manufacturing jobs between 2000 and 2010, a period economists have called the China shock, driven by trade liberalisation and offshoring. Those jobs have not returned at scale despite decades of political promise. The jobs now being created through reshoring incentives are estimated to total approximately 800,000 over the five years to 2028, a significant positive development that nonetheless replaces less than one in six of the positions lost in the prior decade. The gap between the political narrative of manufacturing revival and the mathematical reality of how many jobs that revival creates is a human impact concern that demands honesty.</p>
+        </div>
+
+        <!-- Sub-sector strip -->
+        <div class="subsector-strip">
+            <div class="subsector-tile">
+                <h4>Automotive</h4>
+                <p>EV transition and robotic assembly displacing traditional production roles in Detroit corridor</p>
+                <span class="subsector-score-badge score-red">Score: 84</span>
+            </div>
+            <div class="subsector-tile">
+                <h4>Semiconductors</h4>
+                <p>Highly automated from inception; new fabs creating skilled roles but not mass employment</p>
+                <span class="subsector-score-badge score-red">Score: 78</span>
+            </div>
+            <div class="subsector-tile">
+                <h4>Aerospace and Defence</h4>
+                <p>AI-driven design and inspection growing; human oversight regulatory requirements moderating pace</p>
+                <span class="subsector-score-badge score-orange">Score: 65</span>
+            </div>
+            <div class="subsector-tile">
+                <h4>Food Processing</h4>
+                <p>Significant automation of repetitive processing tasks; strong remaining demand for flexible human labour</p>
+                <span class="subsector-score-badge score-orange">Score: 70</span>
+            </div>
+            <div class="subsector-tile">
+                <h4>Steel and Heavy Industry</h4>
+                <p>Decades of automation already completed; remaining workforce highly skilled with some further AI exposure</p>
+                <span class="subsector-score-badge score-orange">Score: 62</span>
+            </div>
+            <div class="subsector-tile">
+                <h4>Pharmaceuticals</h4>
+                <p>Highly regulated production preserving human oversight requirements; AI accelerating R&D more than production</p>
+                <span class="subsector-score-badge score-green">Score: 55</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 2: Regional Employment Analysis ── -->
+    <section class="section">
+        <h2 class="section-title">Regional Employment Analysis</h2>
+
+        <p>Manufacturing employment is more geographically distributed than financial or professional services, but it is concentrated in specific corridors and clusters that create regional economic dependencies. The human consequences of automation and restructuring are therefore profoundly local, shaped by the specific industries present, the union density and labour relations history, the educational infrastructure available for retraining, and the alternative employment options accessible to displaced workers.</p>
+
+        <table class="region-table">
+            <thead>
+                <tr>
+                    <th>Region</th>
+                    <th>Est. Employment</th>
+                    <th>Key Industries</th>
+                    <th>Major Employers</th>
+                    <th>Disruption Exposure</th>
+                    <th>Structural Dynamics</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="region-name">Great Lakes / Traditional Rust Belt</div>
+                        <div class="region-hub">Michigan, Ohio, Indiana, Illinois, Wisconsin</div>
+                    </td>
+                    <td>~2,650,000</td>
+                    <td>Automotive, steel, heavy equipment, machine tools, plastics</td>
+                    <td>GM, Ford, Stellantis, Caterpillar, Whirlpool, Nucor Steel, US Steel</td>
+                    <td><span class="impact-pill impact-high">Very High</span></td>
+                    <td>The defining manufacturing region of the 20th century is experiencing its second structural transition in 25 years; the first was offshoring, the second is automation of whatever remained and of the new EV capacity being added; Detroit's automotive transition to EVs is simultaneously a technological opportunity and an employment disruption, as EV assembly requires approximately 30% fewer labour hours than internal combustion equivalents; Caterpillar deploying autonomous and AI-assisted heavy equipment reducing operator roles; Ohio and Indiana auto parts supplier chains at significant risk from EV simplification of powertrain components</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Automotive South</div>
+                        <div class="region-hub">Alabama, Tennessee, South Carolina, Georgia, Kentucky</div>
+                    </td>
+                    <td>~680,000</td>
+                    <td>Automotive assembly, EV battery manufacturing, aerospace components</td>
+                    <td>Toyota (Georgetown KY), BMW (Spartanburg SC), Mercedes-Benz (Alabama), Hyundai (Georgia), Volkswagen (Chattanooga TN)</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>The South attracted automotive investment through right-to-work laws, low unionisation, state incentives, and lower labour costs; those advantages are now being supplemented by robotics investment that reduces the labour cost advantage's relevance; Hyundai's new Georgia Metaplant and the associated battery plant represent the new model of Southern automotive investment, highly automated and requiring fewer workers than comparable legacy Rust Belt plants; UAW's 2023 contract victories at Detroit Three have accelerated automation investment as a response to higher negotiated wages</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Texas Manufacturing Corridor</div>
+                        <div class="region-hub">Houston, San Antonio, Dallas-Fort Worth, Austin</div>
+                    </td>
+                    <td>~940,000</td>
+                    <td>Petrochemicals, electronics, aerospace, food processing, semiconductors</td>
+                    <td>ExxonMobil, Samsung Austin Semiconductor, Tesla (Austin), Lockheed Martin, Valero</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Texas's manufacturing base is more diversified than traditional industrial states; Samsung's $17B Austin semiconductor investment represents the largest single foreign manufacturing investment in Texas history and employs around 3,000 people in a highly automated facility; Tesla's Gigafactory Austin is among the world's most automated vehicle assembly plants; petrochemical refining along the Gulf Coast is mature and capital-intensive with limited further headcount reduction expected; food processing sector in San Antonio and the Rio Grande Valley employs significant numbers of lower-wage workers with meaningful automation exposure</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Pacific Coast Manufacturing</div>
+                        <div class="region-hub">Los Angeles, Portland, Seattle, San Diego</div>
+                    </td>
+                    <td>~870,000</td>
+                    <td>Aerospace, defence electronics, biotech manufacturing, food and beverage</td>
+                    <td>Boeing (Everett and Renton WA), Northrop Grumman, Raytheon, Genentech, Intel (Oregon)</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Boeing's Washington State operations are the largest aerospace manufacturing concentration in the world; quality control failures in 2024 have led to scrutiny of its AI and automated inspection systems and a regulatory emphasis on human oversight that temporarily moderates automation pace; Northrop and Raytheon defence manufacturing is constrained by security clearance requirements that preserve human roles; biotech manufacturing in the Bay Area and San Diego corridor is growing with significant automation in fill-finish and quality control operations</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Midwest Manufacturing Heartland</div>
+                        <div class="region-hub">Minnesota, Iowa, Kansas, Nebraska, Missouri</div>
+                    </td>
+                    <td>~620,000</td>
+                    <td>Agricultural equipment, food processing, medical devices, aerospace components</td>
+                    <td>John Deere (Moline IL), 3M (Minnesota), Medtronic (Minnesota), Cargill, Hormel</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>John Deere's aggressive automation of its own manufacturing operations is emblematic of the broader heartland dynamic: a company that sells automation to farmers is itself automating its production of that equipment; Deere's 2024 workforce reductions included significant manufacturing and engineering roles as it streamlined operations with AI and robotics; food processing in the region employs large numbers of workers, disproportionately immigrant and Hispanic, in repetitive tasks that are progressively automating; medical device manufacturing in Minnesota is growing but requires skilled operators and quality certification that slows automation adoption</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Southeast Light Manufacturing</div>
+                        <div class="region-hub">North Carolina, Virginia, Mississippi, Arkansas, Louisiana</div>
+                    </td>
+                    <td>~540,000</td>
+                    <td>Furniture, textiles, tobacco, chemicals, paper products</td>
+                    <td>Nucor Steel, Eastman Chemical, Mohawk Industries, International Paper, Lorillard</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>The Southeast's light manufacturing base, already diminished by decades of offshoring to Asia, is now subject to further automation pressure on whatever survived; North Carolina furniture manufacturing has declined by 70% since 2000 and the remaining producers are among the most automation-aggressive in the industry; textile manufacturing that survived through specialisation faces robotised cutting, stitching, and inspection systems from Asian equipment manufacturers; chemical manufacturing along the Gulf Coast is capital-intensive and relatively stable in employment terms</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">New Semiconductor and EV Belt</div>
+                        <div class="region-hub">Arizona, Ohio, New York, Georgia, North Carolina</div>
+                    </td>
+                    <td>~180,000 (growing)</td>
+                    <td>Semiconductor fabrication, EV batteries, solar manufacturing, advanced materials</td>
+                    <td>TSMC (Phoenix), Intel (Ohio), Micron (New York), SK On (Georgia), Wolfspeed (North Carolina)</td>
+                    <td><span class="impact-pill impact-low">Emerging</span></td>
+                    <td>The most significant new manufacturing investment in a generation is creating a new geographic belt of advanced manufacturing employment; TSMC's Phoenix fabs, initially targeting 2,000 jobs at the first fab with plans for three fabs total, represent a genuine employment creation event; Intel's $20B Ohio fab complex is the largest semiconductor investment in US history and will employ approximately 3,000 at full operation; these facilities are highly automated but require significant numbers of skilled operators, process engineers, and technicians; the challenge is matching the workforce credentials of existing communities to the skills these facilities require</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Canada (Ontario, Quebec, Alberta, BC)</div>
+                        <div class="region-hub">Windsor-Toronto corridor, Montreal, Calgary, Vancouver</div>
+                    </td>
+                    <td>~1,700,000</td>
+                    <td>Automotive, aerospace, oil sands, forest products, food processing</td>
+                    <td>Stellantis Windsor, Ford Oakville, Bombardier, Magna International, Stelco</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Canada's manufacturing sector is deeply integrated with US supply chains, particularly in automotive; the Windsor-Detroit corridor is a single automotive ecosystem divided by the international border; Stellantis's Windsor assembly plant EV transition and the Nexstar battery plant investment represent Canada's largest automotive commitments; Bombardier's Montreal aerospace operations are deploying AI in design and production management; Alberta's oil sands represent a highly capital-intensive extractive industry with limited further labour displacement potential but significant longer-term transition risk from energy policy changes</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- ── Section 3: Charts ── -->
+    <section class="section">
+        <h2 class="section-title">Employment and Disruption Visualisations</h2>
+
+        <div class="two-col">
+            <div class="chart-container">
+                <div class="chart-title">US Manufacturing Employment by Sub-Sector (2024, thousands)</div>
+                <canvas id="subsectorChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Role Category Employment Forecast 2024-2030 (US, thousands)</div>
+                <canvas id="forecastChart"></canvas>
+            </div>
+        </div>
+
+        <div class="two-col" style="margin-top: 28px">
+            <div class="chart-container">
+                <div class="chart-title">Industrial Robot Density by Region (Robots per 10,000 Workers, 2024)</div>
+                <canvas id="robotDensityChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Automation Exposure by Role Type</div>
+                <canvas id="automationChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 4: Automotive Transition ── -->
+    <section class="section">
+        <h2 class="section-title">The Automotive Transition: Detroit's Second Disruption</h2>
+
+        <p>The American automotive industry is the most consequential single employer in US manufacturing, directly employing approximately 1 million people and sustaining an estimated 7.5 million jobs in its supplier ecosystem. It is also the sector most directly caught between two simultaneous forces: the transition to electric vehicles, which is structurally reducing the labour content of each vehicle assembled, and the acceleration of robotic and AI-driven automation, which is reducing labour intensity in both EV and internal combustion engine production.</p>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">The EV Labour Content Question</div>
+                <p>Electric vehicles are mechanically simpler than internal combustion engine vehicles in ways that have direct workforce consequences. An internal combustion powertrain contains approximately 2,000 moving parts; an EV powertrain contains approximately 20. The engine machining, transmission assembly, exhaust system fabrication, and fuel system integration that employs significant portions of automotive supplier workforces has no EV equivalent. Studies by the Economic Policy Institute and the UAW Research Department estimate that full EV production requires 30-40% fewer labour hours per vehicle than equivalent ICE production.</p>
+                <p style="margin-top:12px">This means that even if US EV production reaches ambitious targets, the employment it creates will be substantially less than the employment the ICE production it replaces sustained. A plant converting from ICE to EV production may retain the same physical footprint but employ materially fewer people. The battery manufacturing that is the net addition to the automotive employment base is highly automated, partly because the electrochemical processes involved are more consistently automated than mechanical assembly, and partly because battery safety requirements make human error minimisation a priority.</p>
+                <p style="margin-top:12px">General Motors, Ford, and Stellantis have all invested in EV-dedicated facilities and in EV conversion of existing plants, and all three have managed significant workforce reductions in the process. The UAW's landmark 2023 contract victories secured significant wage increases and some commitments on EV transition employment practices, but did not resolve the underlying arithmetic: fewer labour hours per EV produced means fewer jobs per vehicle, even if the wage rate per job is higher.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">The Supplier Chain Exposure</div>
+                <p>The most acute employment consequence of automotive EV transition falls not on the assembly plants themselves but on the tier one, tier two, and tier three suppliers whose products serve the ICE powertrain exclusively. Manufacturers of engine components, transmission parts, exhaust systems, and fuel delivery systems face structural demand reduction that is not reversed by EV growth. These companies tend to be smaller, concentrated in specific communities, less capitalised to fund transitions, and employing workforces with skills specifically matched to the products whose market is disappearing.</p>
+                <p style="margin-top:12px">The Midwest supplier chain, concentrated in Ohio, Michigan, Indiana, and Kentucky, represents the most geographically concentrated exposure. Communities that have single or dominant employers in ICE-specific supply chain manufacturing face precisely the economic shock that Rust Belt communities experienced from offshoring in the 2000s. The difference is that this time the displacement is driven by domestic technological change rather than foreign competition, which changes the political framing but does not change the human consequence for the workers involved.</p>
+                <p style="margin-top:12px">Federal and state Just Transition programmes for automotive suppliers are in development but remain inadequate to the scale of the challenge. The Inflation Reduction Act's domestic content requirements for EV tax credits create incentives for US battery and EV component manufacturing but do not specifically address the transition of existing ICE supply chain workers, many of whom have skills and locations that do not map directly onto EV component manufacturing opportunities.</p>
+            </div>
+        </div>
+
+        <div class="callout warning">
+            <p>The 2023 UAW strike at the Detroit Three was the first simultaneous strike at all three major domestic automakers in history, and its successful outcome, including 25% wage increases over four years and restored cost-of-living adjustments, has been broadly celebrated as a labour victory. The economic response of the automakers has been to accelerate automation investment, as higher wages improve the return on capital substitution. The UAW's own analysis acknowledges this dynamic: the contract was necessary to protect current members but may accelerate the long-run reduction in the number of members the union represents.</p>
+        </div>
+    </section>
+
+    <!-- ── Section 5: Reshoring with Robots ── -->
+    <section class="section">
+        <h2 class="section-title">Reshoring with Robots: The Promise and the Reality</h2>
+
+        <p>The bipartisan political consensus in favour of domestic manufacturing revival has produced the most significant industrial policy investment in the United States since the post-war period. The CHIPS and Science Act committed $52 billion to domestic semiconductor manufacturing. The Inflation Reduction Act created substantial incentives for EV, battery, solar, and clean energy manufacturing. State-level incentive competitions have produced hundreds of billions in additional committed investment. The political promise is that manufacturing jobs are coming back to America.</p>
+
+        <div class="two-col">
+            <div>
+                <p>The reality is more complex and, for communities waiting on that promise, more sobering. Modern advanced manufacturing is inherently capital-intensive and labour-light compared to the manufacturing it is nominally replacing. TSMC's Phoenix fabs will employ approximately 6,000 people across three facilities when fully operational, representing a $65 billion investment divided across those jobs. That is roughly $10 million of capital investment per job created, a ratio that reflects the extraordinary productivity of semiconductor manufacturing and the extraordinary capital intensity of the equipment required to perform it. The jobs created are real and well-compensated but they are not the mass-employment manufacturing revival of political rhetoric.</p>
+
+                <p>The Inflation Reduction Act's battery manufacturing incentives have triggered announcements of dozens of new battery gigafactories across the United States. These facilities, designed to supply the EV supply chain that domestic content requirements are incentivising, represent genuine manufacturing investment. But battery manufacturing is itself highly automated: the electrode coating, cell assembly, and formation processes are largely performed by automated systems with human monitoring and quality oversight. A 40 GWh battery factory employs perhaps 1,500-2,500 people, not the tens of thousands that a comparably-scaled ICE parts facility might have employed in a previous era.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">The Skills Gap: Reshoring's Largest Practical Obstacle</div>
+                <p>The manufacturing jobs being created by reshoring investments require skills that the existing workforce in many target communities does not possess. Semiconductor fabrication technicians need precision equipment operation skills, cleanroom protocols, and understanding of semiconductor physics. Battery manufacturing quality control requires statistical process control, electrochemistry fundamentals, and advanced instrumentation. Advanced robotics maintenance requires electromechanical skills and programming capability that traditional assembly line workers do not typically possess.</p>
+                <p style="margin-top:12px">TSMC has faced significant challenges recruiting qualified technicians for its Phoenix facilities, ultimately relocating experienced Taiwanese technicians to fill roles that local Arizona workers were not prepared for. This is not a failure of Arizona workers; it is a consequence of the US community college and vocational education system's inability to anticipate and prepare for advanced manufacturing credential requirements at the pace and scale that reshoring investment requires.</p>
+                <p style="margin-top:12px">The skills gap is not insurmountable but it requires sustained investment in vocational and technical education that is systematically underfunded at federal and state levels. The CHIPS Act's workforce development provisions include $200 million for workforce training, against a $52 billion total commitment, a ratio that illustrates the gap between the political emphasis on job creation and the practical investment in ensuring that local workers can actually access those jobs.</p>
+                <p style="margin-top:12px">The workers displaced by automotive supplier closures in Youngstown or Fort Wayne are not automatically redeployable into semiconductor fab technician roles in Phoenix or Columbus. Geographic mobility is limited for workers with mortgages, family obligations, and community ties. Skill transition timelines are measured in years, not months. The honest assessment is that reshoring investment will create meaningful employment for some workers, particularly younger workers willing to relocate and retrain, while leaving others behind.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 6: Mexico Competition ── -->
+    <section class="section">
+        <h2 class="section-title">Mexico, Right-to-Work States, and the Labour Cost Dynamics</h2>
+
+        <p>US manufacturing employment sits within a continental labour market in which Mexico provides a significant and growing competitive alternative. Mexico's manufacturing workforce of approximately 9 million people produces goods for US consumption at labour costs that are, depending on sector and location, 70-85% below comparable US wages. The USMCA trade agreement has sustained and in some respects deepened this integration, with nearshoring trends accelerating as US manufacturers seek to reduce supply chain risk from Asia while maintaining cost discipline.</p>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">The Nearshoring Dynamic</div>
+                <p>The post-pandemic supply chain crisis, the US-China trade tensions, and growing concerns about geopolitical risk in Asian supply chains have driven significant investment in Mexican manufacturing, branded as nearshoring. Monterrey, Guadalajara, and the border manufacturing zones have attracted substantial automotive, electronics, and appliance manufacturing investment that might otherwise have been candidates for US domestic production.</p>
+                <p style="margin-top:12px">For US manufacturing employment, nearshoring to Mexico represents a competitive alternative that limits the extent to which labour cost savings from automation can be reinvested in domestic capacity expansion. If a manufacturer can achieve comparable cost reduction through Mexican labour as through US automation investment, the Mexico option preserves flexibility and avoids capital commitments. The IRA's domestic content requirements for EV tax credits and the CHIPS Act's domestic production requirements are designed to create regulatory reasons to choose US production over Mexico, but their scope is limited to specific sectors and products.</p>
+                <p style="margin-top:12px">The political dynamics of Mexico competition are complex. USMCA was negotiated with the explicit intent of raising Mexican manufacturing wages and labour standards sufficiently to reduce the pure labour cost arbitrage. Progress has been made: Mexican manufacturing wages in the automotive sector have risen meaningfully. But the gap between Mexican and US manufacturing labour costs remains large enough to be a significant factor in investment location decisions, particularly for labour-intensive manufacturing that is not offset by the robotics economics that favour US production in capital-intensive processes.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Right-to-Work States and Labour Relations</div>
+                <p>Twenty-seven US states have right-to-work laws that prohibit requiring union membership as a condition of employment. The practical consequence is that union density in manufacturing is dramatically lower in right-to-work states than in states without such laws. The automotive South, which has attracted the majority of foreign automotive investment over the past three decades, is almost entirely right-to-work territory. The UAW's 2024 campaign to organise VW's Chattanooga Tennessee plant, which narrowly succeeded in a historic vote, represented the first significant Southern automotive union victory in decades.</p>
+                <p style="margin-top:12px">The relationship between union presence and automation pace is contested but directionally clear: unionised facilities tend to negotiate more deliberately over automation deployment, require impact assessments, bargain for retraining commitments, and maintain higher wage rates that reduce the relative cost advantage of automation. Non-union right-to-work facilities face fewer constraints on automation pace and have less institutional pressure to manage transitions in ways that protect incumbent workers.</p>
+                <p style="margin-top:12px">The geographic consequence is that the automation of manufacturing employment is likely to be fastest in precisely the communities that have attracted manufacturing through low-cost labour and weak union presence. The workers in Alabama BMW plants, South Carolina Boeing facilities, and Tennessee VW assembly have lower wage floors, fewer institutional protections, and less political leverage to manage the pace of automation than their Michigan and Ohio counterparts. The communities that competed hardest to attract manufacturing investment by minimising worker protections are the communities whose workers face automation with the fewest structural defences.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 7: Job Transformation Dynamics ── -->
+    <section class="section">
+        <h2 class="section-title">Job Transformation Dynamics</h2>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title" style="color:#ef9a9a">Roles Under Significant Pressure</div>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Assembly Line Operators</div>
+                            <div class="role-desc">Repetitive assembly tasks are the canonical automation target in manufacturing. Collaborative robots (cobots) from Universal Robots, Fanuc, and KUKA are deploying in smaller operations that previously could not justify traditional industrial robot capital costs. Estimated 25-35% reduction in pure assembly operator roles by 2030, partially offset by increased need for robot oversight and maintenance. EV production amplifies this: simpler powertrains require fewer assembly steps per vehicle.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Quality Inspectors and Control Technicians</div>
+                            <div class="role-desc">AI-powered visual inspection systems from companies including Cognex, Keyence, and Instrumental are replacing human visual inspection in high-speed production lines with higher accuracy and consistency than human inspectors can achieve. Semiconductor and electronics manufacturing, where defect rates must be controlled to parts per million, have been leaders in automated inspection. Estimated 40% reduction in pure inspection roles by 2030, though regulatory requirements in medical device and aerospace manufacturing preserve human sign-off requirements.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Machine Operators (Standard Processes)</div>
+                            <div class="role-desc">CNC machining, injection moulding, stamping, and other standard production processes are increasingly running lights-out, with AI-driven process control monitoring and adjusting parameters without human intervention. A machine operator who previously supervised four or five CNC machines now oversees fifteen or twenty, as automated monitoring reduces the interventions required. The net effect is significant headcount reduction per unit of output.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Material Handlers and Internal Logistics</div>
+                            <div class="role-desc">Autonomous mobile robots (AMRs) from companies including Mobile Industrial Robots and Fetch Robotics are replacing the forklift drivers, tugger operators, and material handlers who move components between production stations. Amazon's warehouse robotics have demonstrated the model; manufacturing facilities are following. Estimated 30-40% reduction in internal logistics roles at large facilities by 2030.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">ICE Automotive Powertrain Workers</div>
+                            <div class="role-desc">Engine machinists, transmission assemblers, exhaust system fabricators, and fuel system component manufacturers face structural demand reduction that cannot be addressed by automation investment: their products are becoming obsolete. The displacement is not from a robot performing their task but from their task ceasing to exist in an EV supply chain. This category of displacement is among the most difficult to address through retraining because it requires not just new skills but entirely new industrial pathways.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Production Schedulers and Planning Analysts</div>
+                            <div class="role-desc">AI-driven production planning and scheduling systems, including platforms from Siemens, SAP, and specialist companies such as Aera Technology, are replacing the human judgment previously required in production sequencing, capacity allocation, and materials requirements planning. The production planner role, which required deep knowledge of plant capabilities and supply chain constraints, is being substantially automated by systems that model these constraints with greater completeness and speed than human planners can achieve.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="color:#a5d6a7">Emerging Roles and Growing Opportunities</div>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Robotics Technicians and Automation Engineers</div>
+                            <div class="role-desc">Every robot deployed in a manufacturing facility requires installation, programming, maintenance, and periodic reconfiguration. The ratio of robots to human technicians varies, but a facility deploying 500 robots typically requires 15-25 dedicated robotics and automation technicians. The Association for Advancing Automation estimates a shortage of approximately 2.4 million manufacturing and automation technician roles in the US by 2028, representing both a genuine employment opportunity and a significant workforce planning challenge.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Process Engineers and Manufacturing Data Scientists</div>
+                            <div class="role-desc">AI-driven process optimisation requires engineers who can combine manufacturing domain knowledge with data science capability, interpreting sensor data streams, building predictive maintenance models, and optimising production parameters using machine learning. Demand for this profile is growing faster than supply. Salaries for manufacturing data scientists with domain knowledge command significant premiums over either pure manufacturing engineers or pure data scientists without manufacturing context.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Semiconductor Fab Technicians</div>
+                            <div class="role-desc">The new US semiconductor fabrication facilities require cleanroom technicians, process technicians, and equipment engineers that the country's current vocational and technical education system is not producing at adequate scale. TSMC, Intel, and Micron are all engaged in active workforce development programmes to address this shortage. The roles are well-compensated, typically $60,000-$90,000 annually, and represent genuine middle-class employment pathways that do not require four-year degrees.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">EV Battery Manufacturing Specialists</div>
+                            <div class="role-desc">Battery cell production, module assembly, and battery management system integration require a new category of manufacturing expertise that is in short supply. The gigafactory buildout across the US requires electrode coating specialists, electrochemical engineers, formation technicians, and quality systems managers who combine manufacturing rigour with electrochemistry knowledge. Community colleges in Ohio, Georgia, Kentucky, and North Carolina are developing curricula specifically aligned with local battery manufacturing investment.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Sustainability and Circular Economy Engineers</div>
+                            <div class="role-desc">Manufacturing's ESG obligations, including Scope 1 and 2 emissions reduction, supply chain sustainability, and end-of-life product responsibility, are creating demand for engineers who can design and implement sustainability programmes at facility and enterprise level. The IRA's clean manufacturing provisions and SEC climate disclosure requirements are both driving corporate investment in this capability. Battery recycling, in particular, is emerging as a significant new industrial category requiring specialist engineering talent.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon transform"></div>
+                        <div>
+                            <div class="role-name">Experienced Production Workers (Transforming)</div>
+                            <div class="role-desc">The manufacturing worker who successfully navigates automation is not necessarily a technologist but is someone whose deep process knowledge, quality intuition, and problem-solving capability can be directed toward overseeing automated systems, managing exception cases, and contributing to continuous improvement programmes. Human-robot collaboration models, in which experienced workers supervise and collaborate with cobots rather than being replaced by them, are genuinely viable but require deliberate investment in worker training and job redesign that not all manufacturers are making.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 8: Human Impact ── -->
+    <section class="section">
+        <h2 class="section-title">Human Impact Considerations</h2>
+
+        <div class="impact-box red">
+            <h4>The Rust Belt's Second Wound</h4>
+            <p>The communities of the Great Lakes manufacturing belt have already absorbed one structural economic trauma: the offshoring of the 2000s that removed millions of stable, moderately-compensated manufacturing jobs that had sustained working-class prosperity for generations. Many of these communities have not recovered. Real wages in manufacturing-heavy Midwestern communities remain below their 2000 peaks for the median worker, and the social consequences of that sustained economic pressure, including elevated mortality rates from opioid addiction, reduced marriage rates, and declining civic participation, are well-documented in economic research. Automation's further displacement of the manufacturing employment that remains in these communities lands on populations that have already demonstrated, through experience, that the economy's promises of retraining and recovery do not reliably materialise at the pace or scale needed to prevent lasting community damage.</p>
+        </div>
+
+        <div class="impact-box">
+            <h4>Demographic Concentration of Manufacturing Displacement</h4>
+            <p>US manufacturing employment is disproportionately male, approximately 70% male overall, disproportionately concentrated among workers without four-year degrees, and includes significant concentrations of Hispanic workers, particularly in food processing and light manufacturing, and Black workers in automotive assembly and related industries. The automation-driven displacement of manufacturing roles falls with particular force on men in their 40s and 50s who built careers in the sector and who face the most significant barriers to retraining and redeployment. Research by economists David Autor and David Dorn and others has documented the social consequences of male manufacturing job loss, including declining labour force participation, rising mortality rates, and family formation disruption, in communities where manufacturing was the primary source of male employment.</p>
+        </div>
+
+        <div class="impact-box blue">
+            <h4>The Reshoring Promise and Its Distribution</h4>
+            <p>The jobs being created by reshoring investment are not reaching the communities that need them most. Semiconductor fabs are being built in Phoenix, Columbus, and Syracuse, not in Youngstown, Flint, or Gary. Battery factories are being built in rural Georgia, Tennessee, and Kansas, creating genuine opportunity in communities that previously had limited advanced manufacturing presence, but not in the communities whose displacement drove the political demand for reshoring in the first place. The geographic mismatch between where manufacturing jobs have been lost and where new manufacturing investment is landing is a structural policy failure whose consequences will become more visible as the reshoring investment matures and the promised revival fails to materialise in the specific places where political promises were most explicitly made.</p>
+        </div>
+
+        <div class="impact-box">
+            <h4>Immigrant and Minority Worker Exposure in Food Processing</h4>
+            <p>Food processing and light manufacturing employs approximately 1.9 million workers across the United States, with very high concentrations of recent immigrants, undocumented workers, and Hispanic and Southeast Asian workers in specific processing clusters: meatpacking in Iowa and Kansas, poultry processing in rural Georgia and Arkansas, seafood processing in the Pacific Northwest, and agricultural processing throughout California's Central Valley. These workers face automation exposure in repetitive tasks alongside other vulnerabilities including limited legal protections, language barriers to retraining, geographic isolation from alternative employment, and in many cases immigration status that creates additional barriers to accessing transition support programmes. The automation of food processing displaces workers who are among the least protected and most economically marginal in the US labour force.</p>
+        </div>
+
+        <div class="impact-box blue">
+            <h4>The Apprenticeship Gap</h4>
+            <p>Germany, the United States' primary peer in advanced manufacturing, has a formal apprenticeship system that provides structured pathways from secondary education into skilled manufacturing careers, with approximately 1.3 million registered apprentices at any given time. The United States has approximately 600,000 registered apprentices across all sectors, far fewer per capita and concentrated in construction trades rather than advanced manufacturing. The absence of a robust manufacturing apprenticeship system means that the skilled manufacturing roles being created by reshoring investment lack an established pipeline of qualified workers, while displaced manufacturing workers lack institutional pathways into the new skills those roles require. Building this infrastructure takes a decade, not a year, and the investment in doing so has consistently been inadequate to the stated policy ambition of manufacturing revival.</p>
+        </div>
+    </section>
+
+    <!-- ── Section 9: Future Prospects ── -->
+    <section class="section">
+        <h2 class="section-title">Future Prospects: 2025-2030</h2>
+
+        <div class="two-col">
+            <div class="chart-container">
+                <div class="chart-title">Employment Scenario Projections 2024-2030 (US Manufacturing, thousands)</div>
+                <canvas id="scenarioChart"></canvas>
+            </div>
+
+            <div>
+                <p>US manufacturing employment is shaped by more intersecting forces than almost any other sector in this tool: trade policy, industrial policy incentives, automation economics, energy transition, geopolitical risk, and the differential between US and Mexican labour costs all play material roles. The uncertainty range on projections is consequently wide.</p>
+
+                <p>A conservative scenario, in which reshoring investment creates substantial employment, automation adoption is moderated by labour shortages and worker negotiation, and the EV transition proceeds more slowly than current projections, suggests that US manufacturing employment could be roughly stable at 12.5-13 million by 2030, with significant compositional change but limited net loss. This scenario requires active policy support and strong worker advocacy and may be optimistic about the pace of EV adoption in particular.</p>
+
+                <p>A base scenario, reflecting current trajectories of automation adoption, EV transition timelines, and reshoring investment at announced levels, suggests net manufacturing employment of approximately 11.5-12 million by 2030. This scenario implies a net loss of 900,000 to 1.4 million positions from the current base, with losses concentrated in automotive supply chain, repetitive assembly, and quality inspection roles, partially offset by growth in advanced manufacturing technician, robotics maintenance, and process engineering positions.</p>
+
+                <p>A disruptive scenario, in which AI-driven process optimisation reaches a threshold that enables widespread lights-out manufacturing adoption in sectors currently requiring human oversight, and in which the EV transition proceeds faster than anticipated while ICE supplier consolidation accelerates, could see net employment fall to 10-10.5 million by 2030. This represents a 19-22% decline from current levels and would represent the largest five-year manufacturing employment reduction since the China shock of the early 2000s.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 10: Policy Recommendations ── -->
+    <section class="section">
+        <h2 class="section-title">Policy Recommendations</h2>
+
+        <div class="policy-grid">
+            <div class="policy-card">
+                <h4>Automotive Just Transition Fund</h4>
+                <p>The federal government should establish a dedicated Automotive Just Transition Fund, modelled on the coal community transition support provided under the Energy Act of 2020, specifically addressing ICE supply chain workers displaced by the EV transition. The fund should provide income replacement for up to three years, retraining grants for credentialled programmes in advanced manufacturing and adjacent sectors, and community economic development investment in the specific geographies most concentrated with ICE supplier employment. The IRA's transition benefits should not flow primarily to new entrants in new locations while leaving existing workers without structured support.</p>
+            </div>
+            <div class="policy-card">
+                <h4>National Manufacturing Apprenticeship Programme</h4>
+                <p>Federal investment of at least $5 billion over five years in a national advanced manufacturing apprenticeship programme, modelled on the German dual-education system, would begin to build the workforce pipeline that reshoring investment requires and that displaced manufacturing workers need as a transition pathway. Community colleges, community-based organisations, and manufacturers should be funded as tripartite delivery partners, with apprenticeship completion linked to job guarantees at sponsoring firms. The skills gap that is currently preventing US workers from accessing reshoring-created jobs is a solvable problem but requires investment orders of magnitude larger than current federal workforce development allocations.</p>
+            </div>
+            <div class="policy-card">
+                <h4>CHIPS Act Workforce Provisions Expansion</h4>
+                <p>The CHIPS Act's $200 million workforce development allocation should be expanded to at least $2 billion, with specific provisions requiring that semiconductor manufacturers receiving CHIPS funding demonstrate local workforce development outcomes, including the share of roles filled by workers from the local community and the credential pathways developed in partnership with local educational institutions. The current provisions are insufficient to ensure that the communities hosting semiconductor investment benefit from it through employment rather than simply hosting the physical and environmental footprint of advanced manufacturing without the workforce returns.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Automation Impact Assessment Requirements</h4>
+                <p>Manufacturing facilities above defined employment thresholds should be required to conduct and publish community economic impact assessments before implementing automation programmes that will reduce headcount by more than 10% within a 12-month period. The WARN Act's 60-day notice requirement for mass layoffs should be extended to automation-driven reductions and should require disclosure of retraining commitments, severance provisions, and community impact mitigation plans. Firms should not be required to forgo productivity-enhancing automation, but they should be required to plan transparently for its human consequences.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Food Processing Worker Protections</h4>
+                <p>The specific vulnerabilities of food processing workers, including immigration status barriers to transition support access, geographic isolation from alternative employment, and language barriers to retraining, require targeted policy responses that mainstream workforce development programmes do not provide. Federal investment in bilingual retraining provision, legal status pathways for long-term immigrant workers facing displacement, and community-based career support in food processing clusters should be developed in partnership with agricultural and food processing worker advocacy organisations that have the trust and reach to deliver these programmes effectively.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Right-to-Work and Labour Standards Alignment</h4>
+                <p>Federal industrial policy investments through the CHIPS Act, IRA, and related programmes should incorporate labour standards requirements that prevent taxpayer-funded subsidies from flowing to facilities whose labour practices are inconsistent with the stated goal of creating good manufacturing jobs. Prevailing wage requirements, neutrality agreements in union organising campaigns, and anti-retaliation provisions for workers raising safety and automation concerns should be conditions of receiving substantial federal manufacturing investment incentives. Public investment should not subsidise labour practices that maximise automation pace at the expense of worker transition protections.</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="page-footer">
+    <div class="footer-brand">
+        <span>AI Human Impact Index</span> | North America: Manufacturing
+        <br>Andrew Phipps, PhD Candidate, University of Sussex | andrewphipps.ai
+    </div>
+    <div class="footer-note">
+        Employment figures drawn from BLS, NAM, International Federation of Robotics, and industry sources.<br>
+        Data reflects best available information as of early 2025. Subject to ongoing revision.
+    </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════
+     CHART.JS SCRIPTS
+═══════════════════════════════════════════════════ -->
+<script>
+    Chart.defaults.color = '#7a9bbf';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+
+    /* Sub-sector horizontal bar */
+    new Chart(document.getElementById('subsectorChart'), {
+        type: 'bar',
+        data: {
+            labels: [
+                'Automotive and Transport Equip.',
+                'Food and Beverage',
+                'Aerospace and Defence',
+                'Chemicals and Plastics',
+                'Fabricated Metal Products',
+                'Machinery and Equipment',
+                'Electronics and Semiconductors',
+                'Pharmaceutical and Medical',
+                'Other Manufacturing'
+            ],
+            datasets: [{
+                label: 'Employment (thousands)',
+                data: [1050, 1780, 510, 880, 1420, 1060, 520, 340, 5340],
+                backgroundColor: [
+                    'rgba(239,83,80,0.7)',
+                    'rgba(255,152,0,0.7)',
+                    'rgba(66,165,245,0.7)',
+                    'rgba(171,71,188,0.7)',
+                    'rgba(38,198,218,0.7)',
+                    'rgba(102,187,106,0.7)',
+                    'rgba(255,235,59,0.7)',
+                    'rgba(120,200,180,0.7)',
+                    'rgba(120,120,140,0.55)'
+                ],
+                borderRadius: 4,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf', callback: v => v >= 1000 ? (v/1000).toFixed(1)+'M' : v+'K' } },
+                y: { ticks: { color: '#9fb8d8', font: { size: 9 } }, grid: { display: false } }
+            }
+        }
+    });
+
+    /* Employment Forecast */
+    new Chart(document.getElementById('forecastChart'), {
+        type: 'line',
+        data: {
+            labels: ['2022','2023','2024','2025','2026','2027','2028','2029','2030'],
+            datasets: [
+                {
+                    label: 'Assembly and Production Operators',
+                    data: [5100, 4980, 4820, 4600, 4340, 4100, 3880, 3710, 3590],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.07)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Skilled Trades and Maintenance',
+                    data: [2850, 2820, 2800, 2770, 2730, 2690, 2660, 2640, 2620],
+                    borderColor: '#ff9800',
+                    backgroundColor: 'rgba(255,152,0,0.06)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Engineering and Technical',
+                    data: [1680, 1710, 1740, 1760, 1790, 1820, 1850, 1870, 1890],
+                    borderColor: '#42a5f5',
+                    backgroundColor: 'rgba(66,165,245,0.07)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Robotics, AI and Advanced Mfg',
+                    data: [180, 230, 290, 380, 490, 610, 730, 840, 930],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.08)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 9 }, padding: 8 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: { ticks: { color: '#7a9bbf', callback: v => (v/1000).toFixed(1)+'M' } }
+            }
+        }
+    });
+
+    /* Robot Density Chart */
+    new Chart(document.getElementById('robotDensityChart'), {
+        type: 'bar',
+        data: {
+            labels: [
+                'South Korea',
+                'Singapore',
+                'Germany',
+                'Japan',
+                'China',
+                'USA (Automotive)',
+                'USA (Average)',
+                'Mexico',
+                'Canada'
+            ],
+            datasets: [{
+                label: 'Robots per 10,000 Workers',
+                data: [1012, 730, 415, 397, 392, 1540, 285, 74, 188],
+                backgroundColor: ctx => {
+                    const labels = ['South Korea','Singapore','Germany','Japan','China','USA (Automotive)','USA (Average)','Mexico','Canada'];
+                    const us = ['USA (Automotive)', 'USA (Average)'];
+                    const l = ctx.chart.data.labels[ctx.dataIndex];
+                    if (us.includes(l)) return 'rgba(66,165,245,0.75)';
+                    return 'rgba(120,140,170,0.5)';
+                },
+                borderRadius: 5,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf', font: { size: 9 } }, grid: { display: false } },
+                y: { ticks: { color: '#7a9bbf' } }
+            }
+        }
+    });
+
+    /* Automation Exposure */
+    new Chart(document.getElementById('automationChart'), {
+        type: 'bar',
+        data: {
+            labels: [
+                'Repetitive Assembly',
+                'Visual Inspection / QC',
+                'Material Handling',
+                'Welding and Painting',
+                'Production Scheduling',
+                'Machine Operation (Standard)',
+                'ICE Powertrain Components',
+                'Process / Manufacturing Engineer',
+                'Robotics Technician',
+                'Semiconductor Fab Tech'
+            ],
+            datasets: [{
+                label: 'Automation Exposure (%)',
+                data: [88, 82, 79, 74, 68, 70, 91, 20, 8, 12],
+                backgroundColor: ctx => {
+                    const v = ctx.dataset.data[ctx.dataIndex];
+                    if (v >= 65) return 'rgba(239,83,80,0.7)';
+                    if (v >= 30) return 'rgba(255,152,0,0.7)';
+                    return 'rgba(102,187,106,0.7)';
+                },
+                borderRadius: 4,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: true,
+            scales: {
+                x: { max: 100, ticks: { color: '#7a9bbf', callback: v => v + '%' } },
+                y: { ticks: { color: '#9fb8d8', font: { size: 9 } }, grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    /* Scenario Projection */
+    new Chart(document.getElementById('scenarioChart'), {
+        type: 'line',
+        data: {
+            labels: ['2024','2025','2026','2027','2028','2029','2030'],
+            datasets: [
+                {
+                    label: 'Conservative Scenario',
+                    data: [12900, 12750, 12600, 12480, 12400, 12360, 12340],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.05)',
+                    borderDash: [6,3], tension: 0.3, borderWidth: 2, fill: true
+                },
+                {
+                    label: 'Base Scenario',
+                    data: [12900, 12580, 12180, 11780, 11440, 11210, 11080],
+                    borderColor: '#42a5f5',
+                    backgroundColor: 'rgba(66,165,245,0.07)',
+                    tension: 0.3, borderWidth: 2.5, fill: true
+                },
+                {
+                    label: 'Disruptive Scenario',
+                    data: [12900, 12400, 11720, 11040, 10500, 10160, 10300],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.06)',
+                    borderDash: [4,2], tension: 0.3, borderWidth: 2, fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 10 }, padding: 10 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: {
+                    ticks: { color: '#7a9bbf', callback: v => (v/1000).toFixed(1)+'M' },
+                    min: 9500, max: 13500
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

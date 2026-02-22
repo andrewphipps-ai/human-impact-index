@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Services (North America) | AI Human Impact Index</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0e1a;
+            color: #e0e6f0;
+            line-height: 1.7;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a2a4a 50%, #0d2035 100%);
+            border-bottom: 1px solid rgba(64, 180, 255, 0.2);
+            padding: 0;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .back-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #64b5f6;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .back-nav:hover { color: #90caf9; }
+
+        .region-badge {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            border: 1px solid rgba(100, 181, 246, 0.4);
+            color: #90caf9;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-main {
+            padding: 40px 40px 36px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 40px;
+            align-items: end;
+        }
+
+        .sector-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #64b5f6;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .sector-title {
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.15;
+            margin-bottom: 14px;
+        }
+
+        .sector-subtitle {
+            font-size: 1.05rem;
+            color: #9fb8d8;
+            max-width: 680px;
+        }
+
+        .header-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-width: 280px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(100,181,246,0.15);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 1.9rem; font-weight: 800; color: #64b5f6; line-height: 1; }
+        .stat-value.warning { color: #ff9800; }
+        .stat-value.danger  { color: #ef5350; }
+        .stat-value.positive { color: #66bb6a; }
+        .stat-label { font-size: 0.78rem; color: #7a9bbf; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .momentum-bar-section {
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 24px 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .momentum-label { font-size: 0.85rem; font-weight: 700; color: #7a9bbf; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+
+        .momentum-track { flex: 1; height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; }
+
+        .momentum-fill { height: 100%; background: linear-gradient(90deg, #1565c0, #42a5f5, #ef5350); border-radius: 5px; }
+
+        .momentum-score { font-size: 1.5rem; font-weight: 800; color: #ef5350; white-space: nowrap; }
+        .momentum-descriptor { font-size: 0.82rem; color: #9fb8d8; white-space: nowrap; }
+
+        .content-wrapper { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .section { margin-bottom: 50px; }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(64,180,255,0.25);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 22px;
+            background: #42a5f5;
+            border-radius: 2px;
+        }
+
+        p { color: #c8d8ea; margin-bottom: 14px; font-size: 0.97rem; }
+
+        .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; }
+
+        .card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .card-title { font-size: 0.95rem; font-weight: 700; color: #90caf9; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .region-table { width: 100%; border-collapse: collapse; }
+
+        .region-table th {
+            background: rgba(21,101,192,0.3);
+            color: #90caf9;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid rgba(64,180,255,0.3);
+        }
+
+        .region-table td {
+            padding: 13px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+            color: #c8d8ea;
+            vertical-align: top;
+        }
+
+        .region-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+        .region-name { font-weight: 700; color: #ffffff; }
+        .region-hub  { font-size: 0.8rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-pill { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+        .impact-high     { background: rgba(239,83,80,0.2);  color: #ef9a9a; border: 1px solid rgba(239,83,80,0.3); }
+        .impact-medium   { background: rgba(255,152,0,0.2);  color: #ffcc80; border: 1px solid rgba(255,152,0,0.3); }
+        .impact-emerging { background: rgba(102,187,106,0.2);color: #a5d6a7; border: 1px solid rgba(102,187,106,0.3); }
+
+        .chart-container {
+            position: relative;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .chart-title { font-size: 0.9rem; font-weight: 700; color: #90caf9; margin-bottom: 18px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        canvas { max-height: 280px; }
+
+        .role-list { list-style: none; }
+
+        .role-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .role-item:last-child { border-bottom: none; }
+
+        .role-icon { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+        .role-icon.decline   { background: #ef5350; }
+        .role-icon.grow      { background: #66bb6a; }
+        .role-icon.transform { background: #ff9800; }
+
+        .role-name { font-weight: 700; color: #e0e6f0; font-size: 0.9rem; }
+        .role-desc { font-size: 0.82rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-box { background: rgba(255,152,0,0.06); border: 1px solid rgba(255,152,0,0.2); border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+        .impact-box h4 { color: #ffcc80; font-size: 0.95rem; margin-bottom: 8px; font-weight: 700; }
+        .impact-box p  { color: #c8d8ea; margin-bottom: 0; font-size: 0.9rem; }
+
+        .impact-box.blue { background: rgba(66,165,245,0.06); border-color: rgba(66,165,245,0.2); }
+        .impact-box.blue h4 { color: #90caf9; }
+
+        .impact-box.red { background: rgba(239,83,80,0.06); border-color: rgba(239,83,80,0.2); }
+        .impact-box.red h4 { color: #ef9a9a; }
+
+        .impact-box.green { background: rgba(102,187,106,0.06); border-color: rgba(102,187,106,0.2); }
+        .impact-box.green h4 { color: #a5d6a7; }
+
+        .policy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+        .policy-card { background: rgba(21,101,192,0.08); border: 1px solid rgba(100,181,246,0.15); border-radius: 12px; padding: 20px; }
+        .policy-card h4 { font-size: 0.9rem; font-weight: 700; color: #64b5f6; margin-bottom: 8px; }
+        .policy-card p  { font-size: 0.87rem; margin-bottom: 0; }
+
+        .metrics-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 40px; }
+
+        .metric-tile { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px 14px; text-align: center; }
+        .metric-tile .value { font-size: 1.6rem; font-weight: 800; line-height: 1; }
+        .metric-tile .label { font-size: 0.75rem; color: #7a9bbf; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+        .metric-tile .sub   { font-size: 0.72rem; color: #5a7a9b; margin-top: 3px; }
+
+        .callout { background: rgba(21,101,192,0.1); border-left: 4px solid #42a5f5; border-radius: 0 10px 10px 0; padding: 16px 20px; margin: 20px 0; }
+        .callout p { color: #b0ccec; font-size: 0.92rem; margin-bottom: 0; }
+
+        .callout.warning { background: rgba(255,152,0,0.08); border-left-color: #ff9800; }
+        .callout.warning p { color: #ffe0b2; }
+
+        .callout.danger { background: rgba(239,83,80,0.08); border-left-color: #ef5350; }
+        .callout.danger p { color: #ffcdd2; }
+
+        .subsector-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 28px; }
+
+        .subsector-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .subsector-card h4 { font-size: 0.88rem; font-weight: 700; color: #90caf9; margin-bottom: 8px; }
+        .subsector-card p  { font-size: 0.83rem; color: #9fb8d8; margin-bottom: 6px; }
+
+        .subsector-momentum {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .subsector-bar-track { flex: 1; height: 5px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+        .subsector-bar-fill  { height: 100%; border-radius: 3px; }
+        .subsector-score { font-size: 0.78rem; font-weight: 700; }
+
+        .page-footer {
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 28px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .footer-brand { font-size: 0.85rem; color: #5a7a9b; }
+        .footer-brand span { color: #64b5f6; font-weight: 700; }
+        .footer-note { font-size: 0.78rem; color: #3a5a7b; text-align: right; }
+
+        @media (max-width: 1024px) {
+            .two-col, .three-col, .policy-grid, .subsector-grid { grid-template-columns: 1fr; }
+            .metrics-strip { grid-template-columns: repeat(3, 1fr); }
+            .header-main   { grid-template-columns: 1fr; }
+            .header-stats  { flex-direction: row; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE HEADER
+═══════════════════════════════════════════════════ -->
+<header class="page-header">
+    <div class="header-top">
+        <a href="index.html" class="back-nav">&#8592; AI Human Impact Index</a>
+        <div class="region-badge">&#127482;&#127480; North America</div>
+    </div>
+
+    <div class="header-main">
+        <div class="header-text">
+            <div class="sector-label">Sector Analysis</div>
+            <h1 class="sector-title">Financial Services</h1>
+            <p class="sector-subtitle">How AI, automation, and algorithmic systems are restructuring banking, capital markets, insurance, asset management, and fintech across the United States and Canada, and what the pace of that restructuring means for the 6.6 million Americans whose livelihoods depend on the sector.</p>
+        </div>
+
+        <div class="header-stats">
+            <div class="stat-card">
+                <div class="stat-value warning">~6.6M</div>
+                <div class="stat-label">US Financial Services Employment</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value danger">37%</div>
+                <div class="stat-label">Roles at High Automation Risk</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value positive">$5.4T</div>
+                <div class="stat-label">US Financial Sector GDP Contribution</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="momentum-bar-section">
+        <span class="momentum-label">Disruption Momentum</span>
+        <div class="momentum-track">
+            <div class="momentum-fill" style="width: 79%"></div>
+        </div>
+        <span class="momentum-score">79 / 100</span>
+        <span class="momentum-descriptor">Very High Disruption</span>
+    </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════ -->
+<main class="content-wrapper">
+
+    <!-- Key Metrics Strip -->
+    <div class="metrics-strip">
+        <div class="metric-tile">
+            <div class="value" style="color:#ef5350">79</div>
+            <div class="label">Momentum Score</div>
+            <div class="sub">vs. 74 UK equivalent</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ef5350">~1.1M</div>
+            <div class="label">Jobs at Risk 2025-30</div>
+            <div class="sub">Automation and consolidation</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ff9800">$35B+</div>
+            <div class="label">Annual AI Investment</div>
+            <div class="sub">US financial sector 2024</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#66bb6a">~290K</div>
+            <div class="label">Emerging Roles by 2030</div>
+            <div class="sub">AI, risk, compliance, advisory</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ab47bc">9,000+</div>
+            <div class="label">US Bank Branch Closures</div>
+            <div class="sub">Since 2019</div>
+        </div>
+    </div>
+
+    <!-- ── Section 1: Current Landscape ── -->
+    <section class="section">
+        <h2 class="section-title">Current Landscape</h2>
+
+        <p>Financial services is the sector most exposed to AI-driven transformation across the entire North American economy. With approximately 6.6 million employees in the United States and a further 820,000 in Canada, the sector encompasses commercial and retail banking, capital markets, investment management, insurance, payments, and a rapidly expanding fintech layer that is actively disintermediating traditional incumbents. The sector contributes roughly 7.4% of US GDP and remains the highest-compensating major employer in the economy, which means that even modest headcount reductions carry disproportionate wage bill consequences for the individuals affected.</p>
+
+        <p>AI adoption in financial services is not a future possibility; it is the present reality. JPMorgan Chase, the largest US bank by assets, has described itself as a technology company that holds a banking licence and employs more software engineers than Google did at a comparable stage of its development. Goldman Sachs has deployed AI tools across its trading, compliance, and legal functions and has publicly acknowledged that AI could replicate a significant proportion of the work previously performed by junior investment banking analysts. Citigroup launched a major AI-transformation programme in 2023-24 that explicitly links headcount management to automation deployment.</p>
+
+        <p>The transformation is not uniform across the sector. Capital markets and investment banking automation is concentrated at the top of the income distribution; the junior analysts displaced are highly educated professionals who will find alternative roles, albeit often outside the sector. The far more consequential human story, in terms of scale and social impact, is the automation of the retail banking, insurance back-office, and payments processing workforce, where millions of workers in lower-wage roles are facing displacement with considerably fewer alternatives.</p>
+
+        <div class="callout danger">
+            <p>The United States has closed more than 9,000 bank branches since 2019, a rate of closure that accelerated sharply through the pandemic and has not meaningfully slowed. Each branch closure represents not just a reduction in consumer access but an employment event affecting branch managers, personal bankers, tellers, and support staff, disproportionately in rural communities and lower-income urban neighbourhoods where alternative financial services access is already limited.</p>
+        </div>
+
+        <!-- Sub-sector Momentum Overview -->
+        <div class="subsector-grid">
+            <div class="subsector-card">
+                <h4>Retail Banking</h4>
+                <p>Branch network rationalisation, teller automation, and AI-driven mortgage processing eliminating roles at scale. Community banks under existential pressure.</p>
+                <div class="subsector-momentum">
+                    <div class="subsector-bar-track"><div class="subsector-bar-fill" style="width:82%; background: linear-gradient(90deg,#ef5350,#ff7043)"></div></div>
+                    <span class="subsector-score" style="color:#ef9a9a">82</span>
+                </div>
+            </div>
+            <div class="subsector-card">
+                <h4>Capital Markets / IB</h4>
+                <p>AI eliminating junior analyst cohorts; algo trading reducing trading floor headcount; deal execution increasingly automated.</p>
+                <div class="subsector-momentum">
+                    <div class="subsector-bar-track"><div class="subsector-bar-fill" style="width:76%; background: linear-gradient(90deg,#ef5350,#ff9800)"></div></div>
+                    <span class="subsector-score" style="color:#ef9a9a">76</span>
+                </div>
+            </div>
+            <div class="subsector-card">
+                <h4>Asset Management</h4>
+                <p>Passive investing and algorithmic portfolio management compressing active management headcount and fee structures simultaneously.</p>
+                <div class="subsector-momentum">
+                    <div class="subsector-bar-track"><div class="subsector-bar-fill" style="width:71%; background: linear-gradient(90deg,#ff9800,#ffc107)"></div></div>
+                    <span class="subsector-score" style="color:#ffcc80">71</span>
+                </div>
+            </div>
+            <div class="subsector-card">
+                <h4>Insurance</h4>
+                <p>Claims processing, underwriting, and policy administration automation displacing large back-office workforces. Actuarial tools reducing human modelling time significantly.</p>
+                <div class="subsector-momentum">
+                    <div class="subsector-bar-track"><div class="subsector-bar-fill" style="width:74%; background: linear-gradient(90deg,#ef5350,#ff9800)"></div></div>
+                    <span class="subsector-score" style="color:#ef9a9a">74</span>
+                </div>
+            </div>
+            <div class="subsector-card">
+                <h4>Payments and Fintech</h4>
+                <p>Automation-native sector creating new roles but simultaneously replacing traditional payment processing and compliance headcount at legacy institutions.</p>
+                <div class="subsector-momentum">
+                    <div class="subsector-bar-track"><div class="subsector-bar-fill" style="width:68%; background: linear-gradient(90deg,#ff9800,#ffc107)"></div></div>
+                    <span class="subsector-score" style="color:#ffcc80">68</span>
+                </div>
+            </div>
+            <div class="subsector-card">
+                <h4>Wealth Management</h4>
+                <p>Robo-advisory platforms compressing the lower end of the market; human advisors increasingly serving high-net-worth clients with AI-augmented tools.</p>
+                <div class="subsector-momentum">
+                    <div class="subsector-bar-track"><div class="subsector-bar-fill" style="width:62%; background: linear-gradient(90deg,#ff9800,#ffc107)"></div></div>
+                    <span class="subsector-score" style="color:#ffcc80">62</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 2: Regional Employment Analysis ── -->
+    <section class="section">
+        <h2 class="section-title">Regional Employment Analysis</h2>
+
+        <p>Financial services employment is concentrated in major metropolitan areas but the distribution of disruption risk is not uniform. Gateway cities experience disruption primarily in high-skill, high-compensation roles; secondary markets and smaller communities experience it in the retail banking and insurance back-office jobs that have long formed the stable backbone of middle-income employment.</p>
+
+        <table class="region-table">
+            <thead>
+                <tr>
+                    <th>Region</th>
+                    <th>Est. Employment</th>
+                    <th>Key Hubs</th>
+                    <th>Dominant Subsectors</th>
+                    <th>Disruption Exposure</th>
+                    <th>Structural Dynamics</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="region-name">New York Metro</div>
+                        <div class="region-hub">Manhattan, Jersey City, Greenwich CT, Stamford CT</div>
+                    </td>
+                    <td>~680,000</td>
+                    <td>Wall Street, Midtown Manhattan, Hudson Yards</td>
+                    <td>Capital markets, IB, hedge funds, private equity, asset management</td>
+                    <td><span class="impact-pill impact-high">Very High</span></td>
+                    <td>Goldman, JPMorgan, Citi, Morgan Stanley, BlackRock concentrated here; AI eliminating junior analyst cohorts fastest in IB; hedge fund quant automation mature; Greenwich/Stamford hedge fund cluster facing strategy automation; some roles migrating to lower-cost hubs such as Dallas and Salt Lake City</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Charlotte, NC</div>
+                        <div class="region-hub">Uptown Charlotte, Ballantyne, Lake Norman</div>
+                    </td>
+                    <td>~115,000</td>
+                    <td>Bank of America HQ, Truist HQ, Wells Fargo East Coast ops</td>
+                    <td>Retail banking operations, mortgage processing, card services, corporate banking</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Second-largest US banking centre by employment; concentration in operational and processing roles most vulnerable to automation; Bank of America and Truist both deploying AI across operations actively; mortgage processing automation already reducing headcount in major processing centres</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">San Francisco Bay Area</div>
+                        <div class="region-hub">San Francisco, San Jose, Palo Alto</div>
+                    </td>
+                    <td>~165,000</td>
+                    <td>Wells Fargo HQ, Visa HQ, Salesforce Tower financial tenants</td>
+                    <td>Fintech, payments, venture-backed financial services, Wells Fargo operations</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Fintech sector automating from inception rather than retrofitting; payments innovation eliminating traditional processing roles; Wells Fargo restructuring accelerated under regulatory pressure; Stripe, Brex, Chime displacing rather than augmenting traditional bank employment; crypto and digital assets employing new roles while disrupting old ones</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Chicago Metro</div>
+                        <div class="region-hub">Loop Chicago, Naperville, Schaumburg</div>
+                    </td>
+                    <td>~235,000</td>
+                    <td>CME Group, Northern Trust, Morningstar, GATX Financial</td>
+                    <td>Derivatives trading, asset management, insurance, regional banking</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>CME Group algorithmic trading reducing trading floor employment materially; Northern Trust deploying AI across wealth and custody operations; Midwest insurance sector restructuring; significant suburban banking workforce exposure in secondary communities; Allstate and Nationwide restructuring accelerating</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Greater Boston</div>
+                        <div class="region-hub">Financial District Boston, Back Bay, Waltham, Marlborough</div>
+                    </td>
+                    <td>~142,000</td>
+                    <td>Fidelity, State Street, Liberty Mutual, Putnam, MFS</td>
+                    <td>Asset management, custody banking, insurance, fintech</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Fidelity and State Street both deploying AI across fund operations and custody services; Fidelity's robo-advisor platform cannibalising its own human advisory base at lower AUM tiers; insurance automation displacing claims processing headcount; MIT and Harvard fintech ecosystem accelerating disruption from outside; significant mutual fund administration workforce under pressure</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Midwest Secondary Markets</div>
+                        <div class="region-hub">Columbus OH, Minneapolis, Indianapolis, Des Moines, Kansas City</div>
+                    </td>
+                    <td>~320,000</td>
+                    <td>Progressive Insurance (Mayfield OH), Principal Financial (Des Moines), US Bancorp (Minneapolis)</td>
+                    <td>Insurance operations, retail banking, card processing, mortgage services</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Des Moines is the US insurance capital; Progressive, Principal, and Nationwide deploying claims and underwriting automation that directly threatens the operational workforce that sustains those local economies; Columbus and Indianapolis banking operations centres facing consolidation; redeployment options in these markets considerably more limited than in gateway cities</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Southeast / Sunbelt</div>
+                        <div class="region-hub">Atlanta, Miami, Tampa, Jacksonville, Dallas, Phoenix</div>
+                    </td>
+                    <td>~380,000</td>
+                    <td>SunTrust/Truist (Atlanta), Raymond James (St. Petersburg), USAA (San Antonio)</td>
+                    <td>Retail banking, consumer credit, wealth management, insurance</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Fastest-growing population driving some offsetting demand; Dallas emerging as capital markets hub with Goldman, Morgan Stanley, and JPMorgan expanding Texas presences; Miami becoming a Latin American financial hub with some role creation; Jacksonville consumer finance operations centres exposed to automation; USAA San Antonio a major employer deploying AI aggressively in customer service</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Canada (Toronto, Montreal, Calgary, Vancouver)</div>
+                        <div class="region-hub">Bay Street Toronto, Square Mile Montreal, Energy Corridor Calgary</div>
+                    </td>
+                    <td>~820,000</td>
+                    <td>RBC, TD, Scotiabank, BMO, CIBC, Manulife, Sun Life</td>
+                    <td>Retail banking, capital markets, insurance, pension management</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Canadian banking oligopoly moderates competitive disruption pace; stronger regulatory environment and union presence slowing automation deployment relative to US; Bay Street capital markets automation broadly aligned with Wall Street trajectory; pension fund sector (CPP, Ontario Teachers') deploying AI in investment management; Montreal fintech cluster growing; Calgary energy finance facing sector-specific headwinds alongside automation</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- ── Section 3: Charts ── -->
+    <section class="section">
+        <h2 class="section-title">Employment and Disruption Visualisations</h2>
+
+        <div class="two-col">
+            <div class="chart-container">
+                <div class="chart-title">Financial Services Employment by Sub-Sector (US, 2024)</div>
+                <canvas id="subsectorChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Role Category Employment Forecast 2024-2030 (US, thousands)</div>
+                <canvas id="forecastChart"></canvas>
+            </div>
+        </div>
+
+        <div class="two-col" style="margin-top: 28px">
+            <div class="chart-container">
+                <div class="chart-title">Automation Exposure by Role Type</div>
+                <canvas id="automationChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">US Bank Branch Closures 2015-2024 (cumulative)</div>
+                <canvas id="branchChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 4: Wall Street Automation in Depth ── -->
+    <section class="section">
+        <h2 class="section-title">Wall Street Automation: Capital Markets and Investment Banking</h2>
+
+        <p>The automation of Wall Street is the most publicly discussed dimension of AI in financial services, but it is far from the most consequential in terms of headcount. The approximately 200,000 people employed in US investment banking, capital markets, and securities trading are highly educated, highly compensated professionals whose displacement, though economically significant, occurs in a context of relatively more transferable skills and a stronger professional safety net than the millions displaced from retail banking and insurance operations.</p>
+
+        <div class="two-col">
+            <div>
+                <p>Goldman Sachs represents the clearest articulation of the Wall Street AI trajectory. Having disclosed in 2023 that AI could perform tasks previously taking junior analysts 40 hours in a matter of minutes, the firm has significantly reduced its intake of traditional analyst cohorts while increasing hiring in technology and AI roles. The investment banking model of pyramid staffing, in which large cohorts of junior analysts perform data gathering, financial modelling, and pitch book production before most exit to buy-side or other roles, is under direct challenge from AI tools that can perform these tasks faster and without the overheads of a junior workforce.</p>
+
+                <p>JPMorgan's COiN (Contract Intelligence) system has been extracting information from commercial credit agreements since 2017, a task that previously consumed 360,000 hours of lawyer and loan officer time annually. The firm's AI investments have expanded well beyond that initial use case into trading, risk management, fraud detection, and customer service. JPMorgan has been transparent that these investments will affect headcount, though it has framed this primarily as enabling existing staff to do higher-value work rather than as a programme of displacement.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">The Junior Analyst Pipeline Under Pressure</div>
+                <p>The traditional Wall Street talent pipeline operates on a specific model: banks hire large cohorts of high-achieving graduates as analysts, work them intensively for two to three years on modelling, research, and transaction support, and then graduate them into senior roles or lose them to private equity, hedge funds, and corporate development. This model served as a de facto training ground for the broader financial sector for decades.</p>
+                <p style="margin-top: 12px">AI tools that can produce first-draft pitch books, run comparable company analyses, build leveraged buyout models, and summarise hundreds of pages of legal documentation are directly attacking the value proposition of this junior cohort. If the work can be done by AI in a fraction of the time, the economic case for maintaining large analyst classes weakens significantly, which has implications not just for those specific jobs but for the pipeline of experienced talent that the broader sector depends on.</p>
+                <p style="margin-top: 12px">Several banks, including Citi and Deutsche Bank's US operations, have already reduced their analyst programme intakes. The human consequence extends beyond the individuals not hired; it reshapes the career pathways available to a generation of ambitious finance graduates and the broader talent ecosystem that downstream employers depend on.</p>
+            </div>
+        </div>
+
+        <div class="callout warning">
+            <p>Algorithmic trading now accounts for an estimated 60-73% of all US equity market volume, depending on methodology and measurement period. The trading floor employment that characterised Wall Street through the 1980s and 1990s has largely disappeared. The CME Group's Chicago trading floors, once employing thousands of open-outcry traders, now operate with a fraction of that headcount. This transition is largely complete, but the asset management and advisory layers above it are now entering their own automation phase.</p>
+        </div>
+    </section>
+
+    <!-- ── Section 5: Regional Banking Challenges ── -->
+    <section class="section">
+        <h2 class="section-title">Regional Banking: Community Impact and Branch Closures</h2>
+
+        <p>The human story of financial services automation that receives the least attention but carries the greatest social weight is the systematic closure of the US retail banking network and the displacement of its workforce. Since 2019, more than 9,000 US bank branches have closed, a figure that represents not just changing consumer behaviour but a deliberate strategic response to the economics of branch-based banking in an era of digital alternatives.</p>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">The Teller Collapse</div>
+                <p>Bank teller employment in the United States peaked at approximately 638,000 in 2000 and has declined steadily to an estimated 390,000 in 2024, representing a 39% reduction over a quarter century that accelerated sharply from 2019 onwards. The Bureau of Labor Statistics projects continued decline to approximately 320,000 by 2030.</p>
+                <p style="margin-top: 12px">The teller role has historically been an entry point to a banking career, providing pathways to personal banking, branch management, and other roles. As this entry point narrows, the career development pipeline within retail banking constricts alongside it. The workers most affected are disproportionately women (approximately 70% of tellers are female), members of minority groups, and individuals without four-year degrees for whom the banking sector provided stable, benefits-eligible employment without requiring advanced credentials.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">The Community Bank Existential Crisis</div>
+                <p>The United States has approximately 4,500 community banks and credit unions serving local markets, down from more than 14,000 in 1985. These institutions, which serve as primary financial service providers in thousands of rural and small-town markets, face existential pressure from multiple directions simultaneously: the technology investment required to remain competitive with large banks and fintechs, regulatory compliance costs that are proportionally far heavier for smaller institutions, and the narrowing margins that result from the interest rate environment.</p>
+                <p style="margin-top: 12px">Where a community bank closes or is absorbed by a larger institution, the employment impact is immediate and local. A branch closure in a town of 8,000 people is a qualitatively different event from a branch closure in midtown Manhattan. The five or ten jobs lost may represent a meaningful fraction of white-collar employment in the community, and the banking relationship capital built over decades does not transfer to a mobile app.</p>
+            </div>
+        </div>
+
+        <div class="two-col" style="margin-top: 22px">
+            <div class="card">
+                <div class="card-title">Mortgage Processing and Consumer Lending</div>
+                <p>AI-driven mortgage origination platforms, including Rocket Mortgage, Better.com, and AI-enhanced versions of traditional bank platforms, have dramatically compressed the human labour required to process a mortgage application. What previously involved loan officers, processors, underwriters, and closers working sequentially across 30-45 day timelines is increasingly compressed into automated workflows that require human intervention only at defined exception points.</p>
+                <p style="margin-top: 12px">The Mortgage Bankers Association estimates that productivity per loan originator has increased by approximately 35% since 2019, which is a different way of saying that the same volume of mortgages can be processed with significantly fewer people. In a contracting origination market, as 2023-24 demonstrated with interest rate headwinds reducing volumes sharply, this productivity gain translates directly into headcount reduction rather than volume growth.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Sunbelt and Midwest Branch Impacts</div>
+                <p>Branch closures are not uniformly distributed. Lower-income urban neighbourhoods and rural markets, which are least served by alternative digital banking infrastructure, experience the most severe access consequences. The Federal Reserve has identified "banking deserts," defined as areas more than 10 miles from a bank branch, as a growing concern particularly affecting rural Midwest and South communities.</p>
+                <p style="margin-top: 12px">In the Midwest, states including Ohio, Michigan, and Indiana have seen significant community bank consolidation, with mid-size cities such as Youngstown, Flint, and Gary losing branch networks that served as employers and financial access points simultaneously. The intersection of manufacturing decline, population loss, and banking retreat creates layered vulnerability for communities already under economic stress.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 6: Insurance Sector ── -->
+    <section class="section">
+        <h2 class="section-title">Insurance: The Quiet Automation</h2>
+
+        <p>Insurance is, in some respects, the financial sub-sector most ripe for AI-driven disruption and least discussed in public conversations about AI and employment. The sector employs approximately 1.4 million people in the United States across carriers, agencies, and brokerages, with a large proportion performing tasks, including claims processing, policy administration, underwriting support, and customer communications, that are highly amenable to automation.</p>
+
+        <div class="two-col">
+            <div>
+                <p>Progressive Insurance, headquartered in Mayfield Village, Ohio, has built one of the most sophisticated AI and telematics operations in the US insurance industry. Its Snapshot programme collects driving behaviour data to personalise pricing, a model that reduces the human underwriting judgment required and shifts risk assessment to algorithmic analysis. Progressive has consistently improved loss ratios and grown market share while managing headcount growth carefully below revenue growth, a pattern that reflects the efficiency gains of algorithmic underwriting.</p>
+
+                <p>Lemonade, Oscar Health, and other insurance-native fintechs have built their business models explicitly around AI-first claims processing and underwriting. Lemonade's AI system, named Jim, handles the majority of claims without human involvement, resolving some in seconds. These models do not create the same employment base per dollar of premium as traditional carriers, which creates competitive pressure on the incumbent workforces of companies like Allstate, Nationwide, and The Hartford that must either adopt similar efficiency models or accept structural cost disadvantages.</p>
+
+                <p>The Des Moines, Iowa insurance concentration illustrates the geographic concentration of this risk. Principal Financial, Nationwide, EMC Insurance, and Farm Bureau are among the major employers in a metropolitan area of approximately 720,000 people. Automation-driven operational restructuring at these firms does not simply affect individual workers; it shapes the economic trajectory of the entire region.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Claims Processing: The Largest Exposed Cohort</div>
+                <p>Insurance claims processing employs an estimated 330,000 Americans and represents the single largest category of financial services employment at high automation risk. AI systems can now handle routine property and casualty claims, including damage assessment through image analysis, liability determination through document processing, and settlement calculation through historical data modelling, with minimal human involvement.</p>
+                <p style="margin-top:12px">State Farm, GEICO, and Allstate have all deployed AI-assisted claims tools that have materially reduced the time and human labour required per claim. GEICO's parent Berkshire Hathaway has been explicit about cost reduction targets that imply significant headcount reduction in claims operations.</p>
+                <p style="margin-top:12px">The workers most exposed are concentrated in specific geographic locations. USAA's San Antonio campus employs approximately 20,000 people, many in claims and customer service functions. Nationwide's Columbus Ohio operations, Progressive's Ohio campuses, and Allstate's suburban Chicago locations together represent concentrations of exposure in markets where alternative high-quality employment options are meaningful but not unlimited.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 7: Fintech Disruption ── -->
+    <section class="section">
+        <h2 class="section-title">Fintech Disruption: Creating and Destroying Simultaneously</h2>
+
+        <p>The fintech sector presents a genuinely complex picture for employment analysis. It creates new roles, often high-skill and high-compensation, while simultaneously enabling the disintermediation of traditional financial service employment at scale. The net effect on the total financial services workforce is negative in the short term and probably negative across the full time horizon, though the composition of the workforce that remains is shifting toward higher-skill profiles.</p>
+
+        <div class="three-col">
+            <div class="card">
+                <div class="card-title">Payments Innovation</div>
+                <p>Stripe, Square, Adyen, and Braintree have built payments infrastructure that processes trillions of dollars annually with workforces a fraction of the size that traditional bank payments operations would require. Stripe employs approximately 8,000 people globally and processes hundreds of billions in volume annually; a comparable volume through traditional bank payment operations would require multiples of that headcount.</p>
+                <p style="margin-top:10px">The employment created in fintech payments is concentrated in software engineering, product management, and data science, not in the processing, customer service, and compliance roles that characterised the bank payments workforce it is displacing.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Robo-Advisory and Wealth Tech</div>
+                <p>Betterment, Wealthfront, and robo-advisory platforms at Schwab, Fidelity, and Vanguard manage hundreds of billions in assets with algorithmic portfolio management that requires minimal human advisor involvement below approximately $500,000 in investable assets. This has not collapsed human wealth management employment, because market growth has offset much of the efficiency pressure, but it has fundamentally altered the economics of the advisor model for mass-affluent clients.</p>
+                <p style="margin-top:10px">The human advisors who survive and thrive in this environment are those offering genuine planning complexity, behavioural coaching, and relationship depth that algorithms cannot replicate. The transactional order-taker advisor model has been largely automated away.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Lending and Credit</div>
+                <p>LendingClub, SoFi, Affirm, and buy-now-pay-later platforms have built consumer credit operations with AI-native underwriting that approves or declines applications in seconds without human loan officers. The convenience gain for consumers is real; the employment consequence is that traditional consumer lending, which employed substantial numbers of loan officers, credit analysts, and underwriters, has its labour content dramatically compressed.</p>
+                <p style="margin-top:10px">The regulatory environment around algorithmic lending, particularly fair lending requirements and the Equal Credit Opportunity Act, creates some human review requirements. However, the trend in regulatory interpretation has generally been toward accepting algorithmic decision-making with appropriate audit trails rather than requiring human decision-making in individual cases.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 8: Job Transformation Dynamics ── -->
+    <section class="section">
+        <h2 class="section-title">Job Transformation Dynamics</h2>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title" style="color:#ef9a9a">Roles Under Significant Pressure</div>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Bank Tellers and Branch Service Representatives</div>
+                            <div class="role-desc">ATM networks, mobile banking, and AI-assisted self-service have compressed demand continuously since 2000. The pace is accelerating. BLS projects approximately 15% further decline by 2032. The healthcare benefits and schedule stability of these roles make their loss particularly consequential for the communities they serve.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Loan Officers and Mortgage Processors</div>
+                            <div class="role-desc">AI underwriting platforms and automated document processing are compressing the human labour content of origination significantly. Refinancing volumes, which sustained large origination workforces through the low-rate era, have collapsed and are unlikely to recover to prior levels regardless of rate changes. Estimated 20-25% headcount reduction in origination roles by 2030.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Insurance Claims Adjusters and Processors</div>
+                            <div class="role-desc">AI image recognition, document analysis, and settlement modelling are automating the majority of routine P&C claims without human involvement. Estimated 35% reduction in claims processing roles by 2030, concentrated among lower-complexity claims handlers. Complex and contested claims still require human judgment, preserving a smaller, higher-skilled cohort.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Junior Investment Banking Analysts</div>
+                            <div class="role-desc">Pitch book production, financial modelling, comparable analysis, and document review, the core tasks of the analyst role, are increasingly performed or substantially accelerated by AI tools. Analyst cohort intakes at several major banks have declined materially. The pyramid structure of investment banking is flattening from the bottom.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Compliance and Regulatory Reporting Staff</div>
+                            <div class="role-desc">AI-native compliance platforms from companies including ComplySci, Behavox, and ComplyAdvantage are automating transaction monitoring, suspicious activity reporting, and regulatory change management. The compliance headcount expansion of the post-2008 regulatory era is being reversed through technology rather than regulatory rollback.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Middle-Office and Back-Office Operations</div>
+                            <div class="role-desc">Trade settlement, reconciliation, corporate actions processing, and fund accounting are among the most automatable functions in financial services. State Street, BNY Mellon, and Northern Trust have all deployed robotics and AI across these functions and have been explicit that operational efficiency improvements will affect headcount over the medium term.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="color:#a5d6a7">Emerging Roles and Growing Opportunities</div>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">AI Risk and Model Validation Specialists</div>
+                            <div class="role-desc">As financial institutions deploy AI models in credit, trading, and compliance, the regulatory requirement to validate, audit, and document these models is creating sustained demand for specialists who understand both quantitative modelling and regulatory expectations. The OCC, Fed, and FDIC have all issued guidance creating compliance requirements around model risk management that human specialists must fulfil.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Cybersecurity and Financial Crime Intelligence</div>
+                            <div class="role-desc">The same AI capabilities that automate legitimate financial processes are being deployed by adversaries to conduct fraud, money laundering, and cyberattacks at unprecedented scale. The demand for financial crime intelligence professionals, combining domain expertise with technical capability, is growing faster than supply. FinCEN and BSA compliance requirements sustain a human oversight floor.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">ESG and Climate Risk Analysts</div>
+                            <div class="role-desc">The SEC's climate disclosure framework, Task Force on Climate-related Financial Disclosures (TCFD) adoption, and the integration of climate scenarios into stress testing are creating demand for analysts who can assess physical and transition risk across loan books, investment portfolios, and insurance liabilities. This is one of the clearest genuine growth areas in financial services employment.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Quantitative and Machine Learning Researchers</div>
+                            <div class="role-desc">Hedge funds, asset managers, and major banks are competing intensely for machine learning researchers capable of developing proprietary alpha-generating models. Compensation in this category is extraordinary relative to traditional finance roles, but the total number of positions is modest and the credential requirements are effectively limited to PhDs in quantitative disciplines from a small number of institutions.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Complex Wealth and Financial Planning Advisors</div>
+                            <div class="role-desc">The human advisor serving high-net-worth clients with multi-dimensional planning needs, including estate structuring, business transition, philanthropic strategy, and behavioural coaching, is not being displaced by robo-advisory. Demand for this tier of service is growing as wealth concentration increases. The human consequence is that advisory employment is bifurcating: significant growth at the top, significant decline in the middle and at the transactional end.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon transform"></div>
+                        <div>
+                            <div class="role-name">Personal Banking Relationship Managers (Transforming)</div>
+                            <div class="role-desc">The branch manager and personal banker roles are not disappearing in their entirety, but they are transforming from transaction-processing positions to relationship and advisory roles. Banks keeping branches open are redesigning them around advice and complex needs rather than routine transactions. This requires different skills, and existing transaction-oriented staff face a genuine capability transition challenge.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 9: Human Impact Considerations ── -->
+    <section class="section">
+        <h2 class="section-title">Human Impact Considerations</h2>
+
+        <div class="impact-box red">
+            <h4>Healthcare Access: The Hidden Cost of Financial Services Job Loss</h4>
+            <p>A distinctive feature of financial services employment in the United States is its relatively high rate of employer-sponsored healthcare provision. Bank tellers, insurance processors, and loan officers have historically held jobs that, while not high-wage, provided employer-paid health benefits that are unavailable through self-employment or gig work. When these roles are automated away, the displaced workers face not just income loss but potential loss of health coverage for themselves and their dependants. In the US system, this is not a peripheral concern; it is a central human consequence of automation in a sector that has provided benefits-eligible employment to millions of workers without four-year degrees.</p>
+        </div>
+
+        <div class="impact-box">
+            <h4>Gender Concentration in Exposed Roles</h4>
+            <p>Women represent approximately 55% of the total US financial services workforce but are heavily concentrated in the roles most exposed to automation. Bank tellers are approximately 70% female; insurance claims processors and loan processing staff are similarly skewed. The emerging roles in quantitative research, AI development, and technology management within financial services are male-dominated. Without deliberate intervention, AI-driven restructuring in financial services will have a disproportionate adverse impact on female employment in the sector, reversing some of the workforce participation gains of recent decades.</p>
+        </div>
+
+        <div class="impact-box blue">
+            <h4>The Geography of Displacement: Rural Banking Deserts</h4>
+            <p>Branch closures create employment consequences and access consequences simultaneously. The communities losing branches are frequently those with the fewest digital alternatives, the weakest broadband infrastructure, and the highest proportion of residents who depend on in-person banking, including elderly populations, unbanked and underbanked communities, and small business owners who need physical cash handling. The Federal Reserve's 2024 Survey of Consumer Finances found that branch closure concentration in lower-income zip codes is statistically significant, raising fair access concerns alongside employment concerns. The workers who lose their jobs in these closures are also the customers who lose their access.</p>
+        </div>
+
+        <div class="impact-box">
+            <h4>The Mid-Career Transition Problem</h4>
+            <p>A loan officer with fifteen years of experience, a mortgage processor with twenty years of operational knowledge, or an insurance claims adjuster who has built their career around domain expertise in property damage assessment faces a mid-career transition challenge that no amount of optimism about retraining programmes adequately addresses. The skills these professionals have built are valuable; they are simply becoming less scarce as AI systems acquire some of the same capabilities. Retraining a 48-year-old claims adjuster to become an AI model validation specialist requires not just a willingness to retrain but access to programmes, time, financial support during transition, and a genuine pathway to employment at the end that the market data must be honest about being uncertain.</p>
+        </div>
+
+        <div class="impact-box blue">
+            <h4>Concentrations of Systemic Risk</h4>
+            <p>Several US cities and regions carry a concentration of financial services employment that makes them systemically exposed to sector automation in a way that broader economic diversification statistics conceal. Des Moines is effectively an insurance-sector monoculture among white-collar employers. Charlotte's economy is deeply tied to Bank of America and Truist's operational presence. Salt Lake City has become a back-office banking hub for several major institutions. When automation reaches the operational layers of these employers at scale, the local economic consequence will be disproportionate relative to national employment statistics that aggregate the effect across a much larger base.</p>
+        </div>
+    </section>
+
+    <!-- ── Section 10: Regulatory Environment ── -->
+    <section class="section">
+        <h2 class="section-title">US Regulatory Environment and AI in Financial Services</h2>
+
+        <div class="three-col">
+            <div class="card">
+                <div class="card-title">SEC and Capital Markets Oversight</div>
+                <p>The Securities and Exchange Commission has been actively developing AI governance frameworks for capital markets participants, including requirements around algorithmic trading controls, AI-generated investment advice disclosures, and model documentation for registered investment advisers. The SEC's 2023 proposed rules on predictive data analytics and conflicts of interest in AI-powered advisory represent the most significant regulatory intervention in this space to date, though implementation timelines have been subject to political and legal challenge.</p>
+                <p style="margin-top:10px">The regulatory requirement for human oversight of consequential AI decisions in securities contexts creates a floor beneath certain advisory and compliance roles, moderating (though not preventing) the most extreme automation scenarios in regulated capital markets activities.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">OCC, Fed, and FDIC Banking Oversight</div>
+                <p>The Office of the Comptroller of the Currency, Federal Reserve, and FDIC have issued joint guidance on model risk management (SR 11-7) that requires banks to maintain human oversight, validation, and documentation for AI models used in credit decisions, risk assessment, and customer-facing applications. This regulatory framework has preserved meaningful employment in model validation, internal audit, and risk management functions that might otherwise have been more aggressively automated.</p>
+                <p style="margin-top:10px">Fair lending requirements under the Equal Credit Opportunity Act and the Community Reinvestment Act create additional human oversight requirements, particularly around how AI credit models treat protected class characteristics, which regulators are actively scrutinising. This regulatory pressure has moderated the pace of consumer credit automation at federally regulated institutions.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">State Insurance Regulation</div>
+                <p>Insurance regulation in the United States operates at the state level through 50 separate insurance departments with varying frameworks and attitudes toward AI in underwriting and claims. States including California, Colorado, and Illinois have been most active in requiring human review of AI-driven underwriting decisions and prohibiting the use of certain proxy variables that correlate with protected characteristics. This state-level variation creates an uneven pace of automation across geographies, with more protective states slowing automation in ways that partially preserve employment in those jurisdictions.</p>
+                <p style="margin-top:10px">The National Association of Insurance Commissioners has developed model bulletin guidance on AI use that individual states are adopting at varying rates, gradually creating more consistency but not uniformity in the regulatory floor beneath AI deployment in insurance.</p>
+            </div>
+        </div>
+
+        <div class="callout">
+            <p>The regulatory environment creates a meaningful but impermanent floor beneath financial services employment. Regulators are developing frameworks at a pace considerably slower than technology deployment, and the political environment around financial regulation in 2025-26 is not consistently moving toward stronger human oversight requirements. The floor is real but it is not stable, and planning for workforce transitions that assume it will remain in its current form would be optimistic.</p>
+        </div>
+    </section>
+
+    <!-- ── Section 11: Future Prospects ── -->
+    <section class="section">
+        <h2 class="section-title">Future Prospects: 2025-2030</h2>
+
+        <div class="two-col">
+            <div class="chart-container">
+                <div class="chart-title">Employment Scenario Projections 2024-2030 (US Financial Services, thousands)</div>
+                <canvas id="scenarioChart"></canvas>
+            </div>
+
+            <div>
+                <p>The trajectory of US financial services employment over the next five years depends critically on the interaction between AI capability development, regulatory restraint, and the economic cycle. A structural decline in total headcount is the most probable outcome under any scenario, but the scale and pace vary significantly depending on those parameters.</p>
+
+                <p>A conservative scenario, in which regulatory oversight remains robust, economic growth sustains financial services demand, and firms invest in reskilling alongside restructuring, suggests net headcount decline of 8-12% by 2030, approximately 530,000-790,000 positions on the current base. This scenario requires deliberate policy and corporate action to materialise and is probably optimistic given current trends.</p>
+
+                <p>A base scenario, reflecting the current trajectory of regulatory development and corporate AI investment without significant new protective intervention, suggests net decline of 15-20%, approximately 990,000-1,320,000 positions. This scenario accounts for continued branch closures, operational automation at major carriers and banks, and the flattening of investment banking analyst pyramids, partially offset by growth in technology, compliance, and specialist advisory roles.</p>
+
+                <p>A disruptive scenario, in which AI capabilities advance faster than current projections and regulatory protections are weakened through the legislative or interpretive process, could see net decline of 25% or more by 2030, affecting up to 1.65 million workers. This scenario may appear extreme but is within the range of credible projections from institutions including Goldman Sachs's own research arm, which has published analysis suggesting that AI could affect 300 million full-time jobs globally, with financial services among the sectors most exposed.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 12: Policy Recommendations ── -->
+    <section class="section">
+        <h2 class="section-title">Policy Recommendations</h2>
+
+        <div class="policy-grid">
+            <div class="policy-card">
+                <h4>Mandatory Transition Support Levies</h4>
+                <p>Financial institutions deploying AI systems that demonstrably reduce headcount should be subject to a mandatory transition support contribution, proportional to the scale of displacement, funding retraining programmes, income bridges, and career counselling for displaced workers. The sector has the financial capacity to fund this support; the question is whether the political will exists to require it. A 0.1% levy on the AI-enabled productivity gains at major institutions would generate several billion dollars annually for worker transition programmes.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Community Reinvestment Act Expansion</h4>
+                <p>The Community Reinvestment Act framework, which currently assesses banks on their lending and investment in underserved communities, should be expanded to consider the employment and access consequences of branch closure decisions. Banks closing branches in banking desert-creating patterns should face CRA rating consequences, creating a regulatory incentive aligned with both access and employment preservation in vulnerable communities.</p>
+            </div>
+            <div class="policy-card">
+                <h4>AI Audit and Explainability Requirements</h4>
+                <p>Federal financial regulators should establish mandatory third-party audit requirements for AI systems used in consumer-facing credit, insurance, and advisory decisions above defined thresholds. Audit requirements should cover not just technical model validation but fairness testing across protected class characteristics, explainability requirements for adverse decisions, and documentation of the human oversight processes in place. This preserves meaningful employment in oversight functions while protecting consumers.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Portable Benefits Framework</h4>
+                <p>The healthcare-employment linkage that makes financial services job displacement particularly consequential in the United States requires structural policy response that extends beyond the sector itself. A portable benefits framework, in which retirement contributions, healthcare, and other benefits are attached to the individual rather than the employer relationship, would significantly reduce the human cost of transitions between roles, industries, or employment statuses that AI-driven disruption is making more frequent.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Financial Sector Reskilling Partnerships</h4>
+                <p>The federal government, working with the major financial services trade associations (ABA, SIFMA, ACLI), should develop sector-specific reskilling pathways that are realistic about which workers can transition to which roles. This requires honest assessment of the actual demand for emerging roles relative to the supply of displaced workers and the design of programmes grounded in that reality rather than in optimistic assumptions about universal redeployment. Community college partnerships, paid learning leave provisions, and income protection during retraining are minimum requirements for effective programmes.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Rural Banking Access Protection</h4>
+                <p>Congress should consider expanding the definition of basic banking infrastructure that qualifies for universal service-style protections, analogous to those that exist for telecommunications, to include minimum banking access standards in rural and low-income communities. This could take the form of required banking access windows in post offices or other public buildings, subsidised community bank technology investment, or direct incentives for maintaining branches in banking desert-risk areas. The access and employment consequences of branch closure deserve explicit policy attention rather than treatment as purely market-driven outcomes.</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="page-footer">
+    <div class="footer-brand">
+        <span>AI Human Impact Index</span> | North America: Financial Services
+        <br>Andrew Phipps, PhD Candidate, University of Sussex | andrewphipps.ai
+    </div>
+    <div class="footer-note">
+        Employment figures drawn from BLS, FDIC, Federal Reserve, and industry sources.<br>
+        Data reflects best available information as of early 2025. Subject to ongoing revision.
+    </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════
+     CHART.JS SCRIPTS
+═══════════════════════════════════════════════════ -->
+<script>
+    Chart.defaults.color = '#7a9bbf';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+
+    /* Sub-sector Donut */
+    new Chart(document.getElementById('subsectorChart'), {
+        type: 'doughnut',
+        data: {
+            labels: [
+                'Retail Banking',
+                'Insurance',
+                'Capital Markets / IB',
+                'Asset Management',
+                'Credit Intermediation',
+                'Payments / Fintech',
+                'Wealth Management',
+                'Other Financial'
+            ],
+            datasets: [{
+                data: [1480, 1400, 520, 680, 980, 420, 380, 740],
+                backgroundColor: [
+                    'rgba(239,83,80,0.75)',
+                    'rgba(255,152,0,0.75)',
+                    'rgba(66,165,245,0.75)',
+                    'rgba(102,187,106,0.75)',
+                    'rgba(171,71,188,0.75)',
+                    'rgba(38,198,218,0.75)',
+                    'rgba(255,235,59,0.75)',
+                    'rgba(120,120,140,0.6)'
+                ],
+                borderColor: '#0a0e1a',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: { color: '#9fb8d8', font: { size: 10 }, padding: 8 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString()}K`
+                    }
+                }
+            }
+        }
+    });
+
+    /* Employment Forecast Line */
+    new Chart(document.getElementById('forecastChart'), {
+        type: 'line',
+        data: {
+            labels: ['2022','2023','2024','2025','2026','2027','2028','2029','2030'],
+            datasets: [
+                {
+                    label: 'Retail / Operational Roles',
+                    data: [2850, 2740, 2640, 2500, 2350, 2200, 2070, 1960, 1870],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.08)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Advisory / Relationship Roles',
+                    data: [1820, 1790, 1750, 1720, 1690, 1660, 1640, 1620, 1600],
+                    borderColor: '#42a5f5',
+                    backgroundColor: 'rgba(66,165,245,0.07)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Tech, Risk, AI, ESG Roles',
+                    data: [280, 340, 420, 510, 610, 700, 790, 860, 920],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.08)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 10 }, padding: 10 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: { ticks: { color: '#7a9bbf', callback: v => v >= 1000 ? (v/1000).toFixed(1)+'M' : v+'K' } }
+            }
+        }
+    });
+
+    /* Automation Exposure Horizontal Bar */
+    new Chart(document.getElementById('automationChart'), {
+        type: 'bar',
+        data: {
+            labels: [
+                'Bank Tellers',
+                'Claims Processors',
+                'Loan Processors / Underwriters',
+                'Back-Office Operations',
+                'Compliance / Reporting',
+                'Junior IB Analysts',
+                'Insurance Underwriting Support',
+                'Personal Banking Advisors',
+                'Wealth Managers (HNW)',
+                'AI Risk / Model Validation'
+            ],
+            datasets: [{
+                label: 'Automation Exposure (%)',
+                data: [81, 76, 72, 69, 64, 60, 71, 30, 12, 6],
+                backgroundColor: function(ctx) {
+                    const v = ctx.dataset.data[ctx.dataIndex];
+                    if (v >= 60) return 'rgba(239,83,80,0.7)';
+                    if (v >= 30) return 'rgba(255,152,0,0.7)';
+                    return 'rgba(102,187,106,0.7)';
+                },
+                borderRadius: 4, borderWidth: 0
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: true,
+            scales: {
+                x: { max: 100, ticks: { color: '#7a9bbf', callback: v => v + '%' } },
+                y: { ticks: { color: '#9fb8d8', font: { size: 10 } }, grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    /* Branch Closure Chart */
+    new Chart(document.getElementById('branchChart'), {
+        type: 'line',
+        data: {
+            labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'],
+            datasets: [
+                {
+                    label: 'Total US Bank Branches (thousands)',
+                    data: [93.2, 91.8, 90.1, 88.4, 86.9, 83.2, 80.4, 78.6, 77.3, 76.1],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.1)',
+                    tension: 0.3, fill: true, borderWidth: 2.5, yAxisID: 'y'
+                },
+                {
+                    label: 'Annual Closures',
+                    data: [1100, 1400, 1700, 1700, 1500, 3700, 2800, 1800, 1300, 1200],
+                    borderColor: '#ff9800',
+                    backgroundColor: 'rgba(255,152,0,0.0)',
+                    tension: 0.3, fill: false, borderWidth: 2, borderDash: [5,3], yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 10 }, padding: 10 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: {
+                    type: 'linear', position: 'left',
+                    ticks: { color: '#ef9a9a', callback: v => v + 'K branches' },
+                    min: 70
+                },
+                y1: {
+                    type: 'linear', position: 'right',
+                    ticks: { color: '#ffcc80', callback: v => v.toLocaleString() + ' closures' },
+                    grid: { drawOnChartArea: false }
+                }
+            }
+        }
+    });
+
+    /* Scenario Projection */
+    new Chart(document.getElementById('scenarioChart'), {
+        type: 'line',
+        data: {
+            labels: ['2024','2025','2026','2027','2028','2029','2030'],
+            datasets: [
+                {
+                    label: 'Conservative Scenario',
+                    data: [6600, 6450, 6280, 6120, 6000, 5920, 5870],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.05)',
+                    borderDash: [6,3], tension: 0.3, borderWidth: 2, fill: true
+                },
+                {
+                    label: 'Base Scenario',
+                    data: [6600, 6380, 6100, 5830, 5600, 5430, 5300],
+                    borderColor: '#42a5f5',
+                    backgroundColor: 'rgba(66,165,245,0.07)',
+                    tension: 0.3, borderWidth: 2.5, fill: true
+                },
+                {
+                    label: 'Disruptive Scenario',
+                    data: [6600, 6280, 5850, 5380, 5000, 4780, 4950],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.06)',
+                    borderDash: [4,2], tension: 0.3, borderWidth: 2, fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 10 }, padding: 10 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: {
+                    ticks: { color: '#7a9bbf', callback: v => (v/1000).toFixed(1) + 'M' },
+                    min: 4500, max: 7000
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

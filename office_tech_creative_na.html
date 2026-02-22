@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Tech Creative (North America) | AI Human Impact Index</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0e1a;
+            color: #e0e6f0;
+            line-height: 1.7;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a2a4a 50%, #0d2035 100%);
+            border-bottom: 1px solid rgba(64, 180, 255, 0.2);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .back-nav { color: #64b5f6; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+        .back-nav:hover { color: #90caf9; }
+
+        .region-badge {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            border: 1px solid rgba(100,181,246,0.4);
+            color: #90caf9;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-main {
+            padding: 40px 40px 36px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 40px;
+            align-items: end;
+        }
+
+        .sector-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; color: #64b5f6; text-transform: uppercase; margin-bottom: 12px; }
+        .sector-title { font-size: 2.6rem; font-weight: 800; color: #ffffff; line-height: 1.15; margin-bottom: 14px; }
+        .sector-subtitle { font-size: 1.05rem; color: #9fb8d8; max-width: 680px; }
+
+        .header-stats { display: flex; flex-direction: column; gap: 14px; min-width: 280px; }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(100,181,246,0.15);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 1.9rem; font-weight: 800; color: #64b5f6; line-height: 1; }
+        .stat-value.warning  { color: #ff9800; }
+        .stat-value.danger   { color: #ef5350; }
+        .stat-value.positive { color: #66bb6a; }
+        .stat-label { font-size: 0.78rem; color: #7a9bbf; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .momentum-bar-section {
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 24px 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .momentum-label { font-size: 0.85rem; font-weight: 700; color: #7a9bbf; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .momentum-track { flex: 1; height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; }
+        .momentum-fill  { height: 100%; background: linear-gradient(90deg, #1565c0, #42a5f5, #ef5350); border-radius: 5px; }
+        .momentum-score { font-size: 1.5rem; font-weight: 800; color: #ef5350; white-space: nowrap; }
+        .momentum-descriptor { font-size: 0.82rem; color: #9fb8d8; white-space: nowrap; }
+
+        .content-wrapper { max-width: 1400px; margin: 0 auto; padding: 40px; }
+        .section { margin-bottom: 50px; }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(64,180,255,0.25);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 22px;
+            background: #42a5f5;
+            border-radius: 2px;
+        }
+
+        p { color: #c8d8ea; margin-bottom: 14px; font-size: 0.97rem; }
+
+        .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; }
+
+        .card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .card-title { font-size: 0.95rem; font-weight: 700; color: #90caf9; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .region-table { width: 100%; border-collapse: collapse; }
+
+        .region-table th {
+            background: rgba(21,101,192,0.3);
+            color: #90caf9;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid rgba(64,180,255,0.3);
+        }
+
+        .region-table td {
+            padding: 13px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+            color: #c8d8ea;
+            vertical-align: top;
+        }
+
+        .region-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+        .region-name { font-weight: 700; color: #ffffff; }
+        .region-hub  { font-size: 0.8rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-pill { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+        .impact-high   { background: rgba(239,83,80,0.2);  color: #ef9a9a; border: 1px solid rgba(239,83,80,0.3); }
+        .impact-medium { background: rgba(255,152,0,0.2);  color: #ffcc80; border: 1px solid rgba(255,152,0,0.3); }
+        .impact-low    { background: rgba(102,187,106,0.2);color: #a5d6a7; border: 1px solid rgba(102,187,106,0.3); }
+
+        .chart-container {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .chart-title { font-size: 0.9rem; font-weight: 700; color: #90caf9; margin-bottom: 18px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        canvas { max-height: 280px; }
+
+        .role-list { list-style: none; }
+
+        .role-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .role-item:last-child { border-bottom: none; }
+
+        .role-icon { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+        .role-icon.decline   { background: #ef5350; }
+        .role-icon.grow      { background: #66bb6a; }
+        .role-icon.transform { background: #ff9800; }
+
+        .role-name { font-weight: 700; color: #e0e6f0; font-size: 0.9rem; }
+        .role-desc { font-size: 0.82rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-box { background: rgba(255,152,0,0.06); border: 1px solid rgba(255,152,0,0.2); border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+        .impact-box h4 { color: #ffcc80; font-size: 0.95rem; margin-bottom: 8px; font-weight: 700; }
+        .impact-box p  { color: #c8d8ea; margin-bottom: 0; font-size: 0.9rem; }
+        .impact-box.blue  { background: rgba(66,165,245,0.06); border-color: rgba(66,165,245,0.2); }
+        .impact-box.blue h4 { color: #90caf9; }
+        .impact-box.red   { background: rgba(239,83,80,0.06); border-color: rgba(239,83,80,0.2); }
+        .impact-box.red h4  { color: #ef9a9a; }
+
+        @media (max-width: 1200px) {
+            .header-main { grid-template-columns: 1fr; gap: 28px; }
+            .header-stats { flex-direction: row; min-width: auto; }
+            .two-col, .three-col { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .header-top, .header-main, .momentum-bar-section, .content-wrapper { padding-left: 20px; padding-right: 20px; }
+            .sector-title { font-size: 2rem; }
+            .header-stats { flex-direction: column; }
+            .momentum-bar-section { flex-direction: column; align-items: stretch; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="page-header">
+    <div class="header-top">
+        <a href="index.html" class="back-nav">← Back to Index</a>
+        <div class="region-badge">NORTH AMERICA</div>
+    </div>
+
+    <div class="header-main">
+        <div>
+            <div class="sector-label">Technology & Creative Sector</div>
+            <h1 class="sector-title">Office Tech Creative</h1>
+            <p class="sector-subtitle">
+                Software development, IT operations, digital marketing, graphic design, and creative content production roles experiencing fundamental transformation through AI-powered tools and platforms
+            </p>
+        </div>
+        <div class="header-stats">
+            <div class="stat-card">
+                <div class="stat-value">8.2M</div>
+                <div class="stat-label">Current Employment</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value danger">-18%</div>
+                <div class="stat-label">Projected 2024-2030</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="momentum-bar-section">
+        <div class="momentum-label">AI Momentum</div>
+        <div class="momentum-track">
+            <div class="momentum-fill" style="width: 88%;"></div>
+        </div>
+        <div class="momentum-score">88</div>
+        <div class="momentum-descriptor">Extreme Acceleration</div>
+    </div>
+</header>
+
+<main class="content-wrapper">
+
+    <!-- Overview -->
+    <section class="section">
+        <h2 class="section-title">Sector Overview</h2>
+        <p>
+            North America's tech and creative office sector encompasses approximately 8.2 million workers across software development, IT operations, digital marketing, UX/UI design, graphic design, content creation, and video production. This sector stands at the epicentre of AI disruption, as the very tools being created by technology workers are simultaneously transforming how their own work is performed. Unlike traditional office roles where AI adoption is gradual, tech and creative professionals are experiencing rapid, fundamental changes to their daily workflows and career trajectories.
+        </p>
+        <p>
+            The sector exhibits a paradoxical dynamic: while new AI-related roles are emerging rapidly, they require substantially different skill sets than traditional positions, and overall employment growth cannot keep pace with displacement in routine technical and creative tasks. Software developers face AI-powered code generation tools that can produce functional code from natural language descriptions. Graphic designers and content creators confront generative AI platforms capable of producing professional-quality images, videos, and written content in seconds. The transformation is not simply about automation of repetitive tasks, but about fundamental redefinition of what constitutes valuable human contribution in creative and technical work.
+        </p>
+        <p>
+            Regional disparities are substantial. Major tech hubs like Silicon Valley, Seattle, Boston, Austin, and Toronto experience the most rapid AI adoption and workforce transformation. These centres benefit from proximity to AI research, venture capital, and early-adopter corporate cultures. Meanwhile, secondary tech markets and distributed tech workforces face a skills gap challenge: workers must rapidly upskill to remain competitive, yet access to training resources and emerging AI-augmented roles remains concentrated in primary markets. The sector's traditional meritocracy narrative is under pressure as workers discover that technical excellence alone no longer guarantees job security without continuous adaptation to AI-augmented workflows.
+        </p>
+    </section>
+
+    <!-- Regional Analysis -->
+    <section class="section">
+        <h2 class="section-title">Regional Employment Analysis</h2>
+        <table class="region-table">
+            <thead>
+                <tr>
+                    <th>Region & Tech Hubs</th>
+                    <th>Current Employment</th>
+                    <th>AI Impact Level</th>
+                    <th>Primary Sectors Affected</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="region-name">Pacific States</div>
+                        <div class="region-hub">Silicon Valley, San Francisco, Seattle, Portland</div>
+                    </td>
+                    <td>2,840,000</td>
+                    <td><span class="impact-pill impact-high">Extreme</span></td>
+                    <td>Software Development, AI/ML Engineering, UX Design, Tech Marketing</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Southwest</div>
+                        <div class="region-hub">Austin, Phoenix, Denver, Salt Lake City</div>
+                    </td>
+                    <td>1,120,000</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Software Engineering, DevOps, Digital Marketing, Content Creation</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Northeast Corridor</div>
+                        <div class="region-hub">New York, Boston, Philadelphia, Washington DC</div>
+                    </td>
+                    <td>1,680,000</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Fintech Development, Ad Tech, Media Production, IT Services</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Midwest Tech Hubs</div>
+                        <div class="region-hub">Chicago, Minneapolis, Detroit, Columbus</div>
+                    </td>
+                    <td>880,000</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Enterprise Software, Industrial IT, Corporate Digital Teams</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Southeast</div>
+                        <div class="region-hub">Atlanta, Miami, Charlotte, Nashville, Raleigh</div>
+                    </td>
+                    <td>940,000</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Software Development, IT Operations, Creative Services</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Canada Tech Centres</div>
+                        <div class="region-hub">Toronto, Vancouver, Montreal, Calgary</div>
+                    </td>
+                    <td>740,000</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Software Engineering, AI Research, Game Development, VFX</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Two-Column Charts -->
+    <div class="two-col">
+        <div class="chart-container">
+            <h3 class="chart-title">Employment by Role Category</h3>
+            <canvas id="employmentChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3 class="chart-title">Automation Exposure by Role</h3>
+            <canvas id="automationChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Role Transformation -->
+    <section class="section">
+        <h2 class="section-title">Role-Level Transformation Analysis</h2>
+        <div class="three-col">
+            <div class="card">
+                <h3 class="card-title">Roles in Decline</h3>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <span class="role-icon decline"></span>
+                        <div>
+                            <div class="role-name">Junior Developers & QA Testers</div>
+                            <div class="role-desc">Entry-level coding and routine testing increasingly automated by AI code generators and automated testing platforms</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon decline"></span>
+                        <div>
+                            <div class="role-name">Stock Media Creators</div>
+                            <div class="role-desc">Photographers, illustrators, and videographers producing generic content displaced by generative AI platforms</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon decline"></span>
+                        <div>
+                            <div class="role-name">Basic Web Developers</div>
+                            <div class="role-desc">Template-based website creation and simple customisation replaced by AI-powered no-code platforms</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon decline"></span>
+                        <div>
+                            <div class="role-name">Content Writers (SEO/Blog)</div>
+                            <div class="role-desc">Formula-driven content production automated by language models capable of generating optimised web copy</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon decline"></span>
+                        <div>
+                            <div class="role-name">First-Line IT Support</div>
+                            <div class="role-desc">Basic troubleshooting and password resets handled by AI chatbots and automated resolution systems</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Roles Being Transformed</h3>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <span class="role-icon transform"></span>
+                        <div>
+                            <div class="role-name">Software Engineers</div>
+                            <div class="role-desc">Shifting from code writing to AI-assisted development, prompt engineering, and complex system architecture</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon transform"></span>
+                        <div>
+                            <div class="role-name">Graphic Designers</div>
+                            <div class="role-desc">Evolving from manual creation to AI art direction, brand strategy, and human-centred design curation</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon transform"></span>
+                        <div>
+                            <div class="role-name">Digital Marketers</div>
+                            <div class="role-desc">Moving from campaign execution to strategic oversight of AI-driven personalisation and analytics platforms</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon transform"></span>
+                        <div>
+                            <div class="role-name">Video Editors</div>
+                            <div class="role-desc">Transitioning from manual editing to AI-assisted post-production, narrative design, and creative direction</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon transform"></span>
+                        <div>
+                            <div class="role-name">Data Analysts</div>
+                            <div class="role-desc">Advancing from manual analysis to AI-augmented insight generation and strategic business intelligence</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Emerging & Growing Roles</h3>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <span class="role-icon grow"></span>
+                        <div>
+                            <div class="role-name">AI/ML Engineers</div>
+                            <div class="role-desc">Specialists designing, training, and deploying machine learning models and AI systems across industries</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon grow"></span>
+                        <div>
+                            <div class="role-name">Prompt Engineers</div>
+                            <div class="role-desc">Experts optimising AI system inputs to generate desired outputs across creative and technical applications</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon grow"></span>
+                        <div>
+                            <div class="role-name">AI Ethics & Governance Specialists</div>
+                            <div class="role-desc">Professionals ensuring responsible AI development, bias mitigation, and regulatory compliance</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon grow"></span>
+                        <div>
+                            <div class="role-name">UX Researchers (Human-AI Interaction)</div>
+                            <div class="role-desc">Designers specialising in interfaces between humans and AI systems, ensuring usability and accessibility</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon grow"></span>
+                        <div>
+                            <div class="role-name">AI Training Data Specialists</div>
+                            <div class="role-desc">Experts curating, labelling, and quality-checking datasets used to train machine learning models</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Forecast -->
+    <section class="section">
+        <h2 class="section-title">Employment Trajectory Forecast (2022-2030)</h2>
+        <div class="chart-container">
+            <canvas id="forecastChart"></canvas>
+        </div>
+        <p style="margin-top: 20px;">
+            Employment forecasts reveal dramatic divergence across role categories. Junior developer and QA tester positions face 58% decline by 2030 as AI code generation and automated testing become standard practice. Stock media creation roles decline 64% as generative AI platforms produce unlimited images, videos, and graphics on demand. Meanwhile, AI/ML engineering and related specialist roles grow 380%, though from a smaller base, creating approximately 520,000 new positions by 2030. The net effect is substantial workforce contraction: overall sector employment declines from 8.2 million to 6.7 million workers, a reduction of 1.5 million positions despite strong growth in AI-specific roles.
+        </p>
+    </section>
+
+    <!-- Human Impact -->
+    <section class="section">
+        <h2 class="section-title">Human Impact Assessment</h2>
+
+        <div class="impact-box red">
+            <h4>Immediate Workforce Displacement (2024-2026)</h4>
+            <p>
+                Junior developers, QA testers, and entry-level designers experience the most acute displacement. These roles traditionally served as career entry points, providing pathways for skill development and industry experience. Their rapid automation creates a "missing rung" problem: aspiring tech workers lack accessible entry positions, while experienced professionals struggle to mentor and develop talent. Creative professionals producing routine content, template websites, and stock media face immediate income loss as clients shift to AI-generated alternatives. The psychological impact extends beyond job loss to professional identity crisis, as workers trained in technical craftsmanship confront tools that replicate their skills in seconds.
+            </p>
+        </div>
+
+        <div class="impact-box">
+            <h4>Mid-Career Skill Obsolescence (2026-2028)</h4>
+            <p>
+                Mid-career professionals in traditional software engineering, graphic design, and digital marketing roles face skill devaluation. Workers with 10-15 years of experience in now-automatable tasks discover their expertise commands diminishing premium. Salary compression occurs as AI-augmented junior workers achieve output previously requiring senior expertise. Career advancement pathways blur as organisations flatten hierarchies, questioning the value of middle-management technical roles when AI handles routine decision-making. Workers experience status anxiety, comparing their hard-won skills against AI capabilities achieved through simple prompts. The sector's rapid change pace means continuous learning becomes mandatory, not optional, straining work-life balance and family commitments.
+            </p>
+        </div>
+
+        <div class="impact-box blue">
+            <h4>Geographic Opportunity Concentration (2024-2030)</h4>
+            <p>
+                Emerging AI-related roles concentrate in major tech hubs with access to venture capital, research institutions, and early-adopter companies. Silicon Valley, Seattle, Boston, and Toronto capture disproportionate shares of AI/ML engineering, prompt engineering, and AI ethics positions. Secondary markets and rural areas experience talent drain as skilled workers relocate to access emerging opportunities. Remote work, initially seen as geographical equaliser, proves insufficient as companies prioritise in-person collaboration for cutting-edge AI development. Regional inequality deepens as tax revenues decline in displaced-worker communities while primary markets experience strain on housing, infrastructure, and cost of living.
+            </p>
+        </div>
+
+        <div class="impact-box red">
+            <h4>Identity and Meaning in Creative Work (2025-2030)</h4>
+            <p>
+                Creative professionals face existential questions about the value and meaning of human creativity. Graphic designers, illustrators, and content creators who defined professional identity through craft mastery confront AI systems producing comparable work without years of skill development. The democratisation of creative production, while expanding access, simultaneously devalues professional expertise. Freelancers compete against AI-generated content priced near zero, forcing radical business model shifts. Workers struggle to articulate their unique human value when clients perceive AI outputs as "good enough" for most purposes. The sector's traditional narrative of meritocracy and creative expression erodes as economic pressures supersede aesthetic considerations.
+            </p>
+        </div>
+
+        <div class="impact-box">
+            <h4>Career Pathway Restructuring (2026-2030)</h4>
+            <p>
+                Traditional career progression pathways dissolve. The junior-to-mid-to-senior developer ladder collapses as AI eliminates rungs. Entry-level positions vanish, yet senior roles demand skills learned through now-automated work. Educational institutions struggle to prepare students for roles that don't yet exist or require capabilities only developed through work experience. Career switchers face heightened barriers as retraining programmes cannot keep pace with skill requirement evolution. Age discrimination intensifies as organisations favour younger workers perceived as more adaptable to AI-augmented workflows. The sector's previous promise of stable, well-compensated creative and technical careers gives way to uncertainty and contingent employment.
+            </p>
+        </div>
+
+        <div class="impact-box blue">
+            <h4>Opportunity in Human-Centred Specialisation (2027-2030)</h4>
+            <p>
+                A minority of workers successfully pivot to high-value human-centred roles. AI ethics specialists, UX researchers focused on human-AI interaction, and creative directors who curate AI outputs find expanding opportunities. These positions require uniquely human capacities: ethical judgement, empathy, cultural understanding, and strategic vision. Workers who combine technical AI literacy with domain expertise in healthcare, education, or public service access meaningful roles designing human-centred AI applications. The transition is challenging, requiring substantial reskilling, yet offers purpose and stability for those who successfully navigate the shift.
+            </p>
+        </div>
+    </section>
+
+    <!-- Two More Charts -->
+    <div class="two-col">
+        <div class="chart-container">
+            <h3 class="chart-title">Historical & Projected Employment Trend</h3>
+            <canvas id="trendChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3 class="chart-title">Scenario Analysis: 2024-2030</h3>
+            <canvas id="scenarioChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Key Challenges -->
+    <section class="section">
+        <h2 class="section-title">Key Human-Centred Challenges</h2>
+        <div class="two-col">
+            <div class="card">
+                <h3 class="card-title">Workforce Displacement & Transition</h3>
+                <p>
+                    Approximately 1.5 million tech and creative workers face displacement or severe role transformation by 2030. Entry-level positions vanish, eliminating traditional career pathways and reducing diversity as barriers to entry increase. Workers in stock content creation, basic web development, and routine coding roles experience immediate income loss and professional identity crisis. Retraining programmes fail to match pace of change, leaving workers in perpetual catch-up mode. Age discrimination intensifies as employers favour younger workers perceived as more adaptable to AI tools.
+                </p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Skills Gap & Educational Mismatch</h3>
+                <p>
+                    Educational institutions struggle to prepare students for rapidly evolving roles. Computer science curricula emphasise skills increasingly automated while underweighting prompt engineering, AI ethics, and human-AI collaboration. Bootcamps and online courses cannot keep pace with industry needs, leaving self-taught learners vulnerable to skill obsolescence. Workers lack accessible pathways to transition from displaced roles to emerging AI-specialised positions. The skills required for AI-augmented work differ fundamentally from those valued in traditional tech careers, creating educational and training crises.
+                </p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Economic Inequality & Regional Disparity</h3>
+                <p>
+                    Wage polarisation accelerates. High-skilled AI specialists command premium compensation while displaced workers face underemployment and wage compression. Geographic inequality deepens as AI opportunities concentrate in expensive coastal hubs, excluding workers unable to relocate. Freelancers and independent contractors lose pricing power as AI-generated alternatives flood markets. Small creative agencies and boutique development shops struggle against platforms offering AI-powered services at fraction of traditional costs. Economic insecurity spreads through sector previously associated with stability and upward mobility.
+                </p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Professional Identity & Meaning</h3>
+                <p>
+                    Creative workers confront existential questions about value of human creativity when AI produces comparable outputs. Developers trained in coding craftsmanship discover their skills replicated by language models. Designers who defined themselves through aesthetic judgement compete against generative AI platforms. Professional communities fragment as workers debate collaboration with versus resistance to AI tools. Burnout increases as continuous learning demands compound with production pressure. Workers struggle to articulate unique human value proposition in AI-saturated markets.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Policy Recommendations -->
+    <section class="section">
+        <h2 class="section-title">Human-Centred Policy Recommendations</h2>
+        <div class="two-col">
+            <div class="card">
+                <h3 class="card-title">Workforce Transition & Support</h3>
+                <p><strong>Income Support During Transition:</strong> Establish wage insurance programmes providing partial income replacement for tech and creative workers undergoing retraining. Extend unemployment benefits for displaced workers enrolled in accredited AI skills programmes. Create portable benefits systems allowing freelancers and contractors access to healthcare and retirement security during career transitions.</p>
+                <p><strong>Accelerated Reskilling Programmes:</strong> Partner with technology companies to develop industry-recognised AI literacy certifications. Fund intensive bootcamps focused on prompt engineering, AI operations, and human-AI interaction design. Subsidise apprenticeships placing displaced workers in emerging AI-related roles with structured mentorship.</p>
+                <p><strong>Career Counselling & Placement:</strong> Establish regional AI career transition centres providing assessment, counselling, and job matching services. Create peer support networks connecting displaced workers with successfully transitioned professionals. Fund case management services helping individuals navigate complex retraining and job search processes.</p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Educational System Reform</h3>
+                <p><strong>Curriculum Modernisation:</strong> Mandate integration of AI literacy, prompt engineering, and AI ethics across computer science and creative programmes. Shift emphasis from rote coding to system design, algorithmic thinking, and human-AI collaboration. Require universities to demonstrate graduate placement rates in AI-augmented roles as programme effectiveness metric.</p>
+                <p><strong>Lifelong Learning Infrastructure:</strong> Create tuition-free micro-credential programmes at community colleges focused on AI tool proficiency. Establish tax credits for individuals pursuing AI-related continuing education. Partner with employers to develop work-study models allowing employed workers to upskill without career interruption.</p>
+                <p><strong>Diversity & Access Initiatives:</strong> Fund scholarship programmes prioritising underrepresented groups in AI education pathways. Establish free AI literacy programmes in underserved communities. Create bridge programmes helping humanities graduates access tech careers emphasising human-centred AI design.</p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Economic & Labour Market Interventions</h3>
+                <p><strong>Freelancer Protections:</strong> Extend employment protections to gig workers in creative and tech sectors, including minimum wage guarantees for platform-based work. Regulate AI-generated content markets to ensure fair competition and transparent labelling. Create collective bargaining frameworks allowing freelancers to negotiate with platform companies.</p>
+                <p><strong>Regional Development Initiatives:</strong> Incentivise AI companies to establish satellite offices in secondary markets through tax credits and infrastructure support. Fund remote work infrastructure in rural areas enabling distributed AI development teams. Create federal grants supporting regional AI innovation hubs outside traditional tech centres.</p>
+                <p><strong>Wage Protection Measures:</strong> Establish wage transparency requirements forcing companies to disclose pay ranges for AI-augmented versus traditional roles. Monitor and address age discrimination in hiring for AI-related positions. Consider wage subsidies for employers hiring displaced tech workers in career transition.</p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Ethical AI Development & Deployment</h3>
+                <p><strong>Responsible AI Standards:</strong> Mandate impact assessments before deploying AI systems affecting employment in tech and creative sectors. Require companies to provide transition support for workers displaced by AI implementation. Establish oversight mechanisms ensuring AI augments rather than replaces workers where feasible.</p>
+                <p><strong>Human-Centred Design Requirements:</strong> Incentivise development of AI tools designed for human collaboration rather than replacement. Fund research into human-AI teaming models preserving meaningful human roles. Require user consent and transparency when creative outputs involve significant AI generation.</p>
+                <p><strong>Creative Rights Protection:</strong> Update intellectual property frameworks addressing AI-generated creative works. Ensure artists maintain rights when their styles are used to train generative models. Establish fair compensation mechanisms when AI systems derive value from human-created training data.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Future Outlook -->
+    <section class="section">
+        <h2 class="section-title">Future Outlook & Human Considerations</h2>
+        <p>
+            The North American tech and creative sector faces transformation more profound than previous technological disruptions. Unlike past automation waves affecting primarily manual or routine cognitive work, AI now challenges domains previously considered distinctly human: creative expression, problem-solving, and strategic thinking. The sector's workers, often digital natives who embraced technology as career foundation, experience particular disorientation as their tools become competitors rather than enablers.
+        </p>
+        <p>
+            By 2030, the sector will likely bifurcate into high-skilled AI specialists commanding premium compensation and a diminished workforce of AI-augmented generalists facing wage compression and job insecurity. The traditional promise of tech careers, stable employment combining creativity, problem-solving, and comfortable compensation, erodes for all but an elite minority. This transformation carries implications beyond individual workers: it affects innovation dynamics, creative culture, and the broader knowledge economy.
+        </p>
+        <p>
+            The human cost of this transition risks being severe without proactive intervention. Workers face not merely job loss but professional identity dissolution and skills devaluation. Communities dependent on tech sector employment experience economic decline. Educational institutions struggle to prepare students for roles that evolve faster than curriculum development cycles. The psychological toll of continuous adaptation, comparison against AI capabilities, and uncertainty about career viability strains mental health and family stability.
+        </p>
+        <p>
+            Yet opportunities exist for human-centred transition. Roles requiring ethical judgement, cultural understanding, empathy, and strategic vision resist automation. AI creates demands for oversight, quality assurance, and human-AI interface design. Workers who successfully navigate this transition can access meaningful, well-compensated roles. The key is ensuring transition pathways are accessible, adequately supported, and genuinely available to displaced workers rather than only those with existing advantages of geography, education, or economic security.
+        </p>
+        <p>
+            The sector's transformation will test society's commitment to workers whose skills become obsolete through no fault of their own. Will displaced tech workers receive support commensurate with their previous contributions? Will educational systems adapt quickly enough to prepare the next generation? Will companies prioritise responsible AI deployment or maximise cost savings through aggressive automation? These questions have answers in policy choices made over the coming years. The outcome will determine whether AI transformation creates broadly shared prosperity or concentrates benefits among a privileged few while leaving millions of skilled workers economically and psychologically adrift.
+        </p>
+    </section>
+
+</main>
+
+<script>
+    /* Employment by Role */
+    new Chart(document.getElementById('employmentChart'), {
+        type: 'bar',
+        data: {
+            labels: [
+                'Software Development',
+                'IT Operations & DevOps',
+                'Digital Marketing',
+                'UX/UI Design',
+                'Graphic Design',
+                'Content Creation',
+                'Video Production',
+                'Data Analysis',
+                'AI/ML Specialists'
+            ],
+            datasets: [{
+                label: 'Employment (thousands)',
+                data: [2400, 1800, 1200, 680, 740, 560, 420, 620, 180],
+                backgroundColor: [
+                    'rgba(255,152,0,0.7)',
+                    'rgba(255,152,0,0.7)',
+                    'rgba(255,152,0,0.7)',
+                    'rgba(255,152,0,0.7)',
+                    'rgba(239,83,80,0.7)',
+                    'rgba(239,83,80,0.7)',
+                    'rgba(239,83,80,0.7)',
+                    'rgba(66,165,245,0.7)',
+                    'rgba(102,187,106,0.7)'
+                ],
+                borderRadius: 4, borderWidth: 0
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf', callback: v => v >= 1000 ? (v/1000).toFixed(1)+'M' : v+'K' } },
+                y: { ticks: { color: '#9fb8d8', font: { size: 9 } }, grid: { display: false } }
+            }
+        }
+    });
+
+    /* Automation Exposure */
+    new Chart(document.getElementById('automationChart'), {
+        type: 'bar',
+        data: {
+            labels: [
+                'Stock Media Creation',
+                'Basic Web Development',
+                'Junior Developers',
+                'QA Testing',
+                'Content Writing (SEO)',
+                'First-Line IT Support',
+                'Social Media Management',
+                'Graphic Design (Template)',
+                'Video Editing (Routine)',
+                'UX Research'
+            ],
+            datasets: [{
+                label: 'Automation Exposure (%)',
+                data: [87, 82, 78, 74, 71, 68, 64, 59, 52, 24],
+                backgroundColor: ctx => {
+                    const v = ctx.dataset.data[ctx.dataIndex];
+                    if (v >= 60) return 'rgba(239,83,80,0.7)';
+                    if (v >= 30) return 'rgba(255,152,0,0.7)';
+                    return 'rgba(102,187,106,0.7)';
+                },
+                borderRadius: 4, borderWidth: 0
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: true,
+            scales: {
+                x: { max: 100, ticks: { color: '#7a9bbf', callback: v => v + '%' } },
+                y: { ticks: { color: '#9fb8d8', font: { size: 9 } }, grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    /* Forecast Line */
+    new Chart(document.getElementById('forecastChart'), {
+        type: 'line',
+        data: {
+            labels: ['2022','2023','2024','2025','2026','2027','2028','2029','2030'],
+            datasets: [
+                {
+                    label: 'Junior Developers & QA',
+                    data: [1680, 1620, 1540, 1400, 1220, 1040, 880, 760, 700],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.07)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Stock Media Creators',
+                    data: [840, 800, 740, 620, 480, 360, 300, 280, 300],
+                    borderColor: '#ab47bc',
+                    backgroundColor: 'rgba(171,71,188,0.06)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Traditional Designers & Marketers',
+                    data: [3200, 3140, 3060, 2900, 2700, 2520, 2380, 2280, 2240],
+                    borderColor: '#ff9800',
+                    backgroundColor: 'rgba(255,152,0,0.06)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'AI/ML & Emerging Specialists',
+                    data: [180, 240, 320, 440, 580, 720, 840, 920, 980],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.08)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 9 }, padding: 7 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: { ticks: { color: '#7a9bbf', callback: v => (v/1000).toFixed(1)+'M' } }
+            }
+        }
+    });
+
+    /* Historical & Projected Trend */
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: ['2000','2004','2008','2010','2014','2018','2022','2024','2026','2028','2030'],
+            datasets: [
+                {
+                    label: 'Actual Employment',
+                    data: [3200, 4100, 5800, 5400, 6700, 7900, 8600, 8200, null, null, null],
+                    borderColor: '#42a5f5',
+                    backgroundColor: 'rgba(66,165,245,0.08)',
+                    tension: 0.3, fill: true, borderWidth: 2,
+                    pointRadius: 3
+                },
+                {
+                    label: 'Base Scenario Projection',
+                    data: [null, null, null, null, null, null, null, 8200, 7600, 7000, 6700],
+                    borderColor: '#ff9800',
+                    backgroundColor: 'rgba(255,152,0,0.06)',
+                    tension: 0.3, borderWidth: 2, borderDash: [5,3], fill: true,
+                    pointRadius: 3
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 10 }, padding: 10 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: {
+                    ticks: { color: '#7a9bbf', callback: v => (v/1000).toFixed(0)+'M' },
+                    min: 2000, max: 10000
+                }
+            }
+        }
+    });
+
+    /* Scenario Analysis */
+    new Chart(document.getElementById('scenarioChart'), {
+        type: 'line',
+        data: {
+            labels: ['2024','2025','2026','2027','2028','2029','2030'],
+            datasets: [
+                {
+                    label: 'Conservative Scenario',
+                    data: [8200, 7900, 7600, 7400, 7200, 7100, 7000],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.05)',
+                    borderDash: [6,3], tension: 0.3, borderWidth: 2, fill: true
+                },
+                {
+                    label: 'Base Scenario',
+                    data: [8200, 7800, 7300, 6900, 6700, 6700, 6700],
+                    borderColor: '#42a5f5',
+                    backgroundColor: 'rgba(66,165,245,0.07)',
+                    tension: 0.3, borderWidth: 2.5, fill: true
+                },
+                {
+                    label: 'Disruptive Scenario',
+                    data: [8200, 7500, 6800, 6300, 6000, 5900, 5900],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.06)',
+                    borderDash: [4,2], tension: 0.3, borderWidth: 2, fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 10 }, padding: 10 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: {
+                    ticks: { color: '#7a9bbf', callback: v => (v/1000).toFixed(1)+'M' },
+                    min: 5000, max: 9000
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

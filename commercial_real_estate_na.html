@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commercial Real Estate Services (North America) | AI Human Impact Index</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0e1a;
+            color: #e0e6f0;
+            line-height: 1.7;
+        }
+
+        /* ── Header ── */
+        .page-header {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a2a4a 50%, #0d2035 100%);
+            border-bottom: 1px solid rgba(64, 180, 255, 0.2);
+            padding: 0;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .back-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #64b5f6;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .back-nav:hover { color: #90caf9; }
+
+        .region-badge {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            border: 1px solid rgba(100, 181, 246, 0.4);
+            color: #90caf9;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-main {
+            padding: 40px 40px 36px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 40px;
+            align-items: end;
+        }
+
+        .sector-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #64b5f6;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .sector-title {
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.15;
+            margin-bottom: 14px;
+        }
+
+        .sector-subtitle {
+            font-size: 1.05rem;
+            color: #9fb8d8;
+            max-width: 680px;
+        }
+
+        .header-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-width: 280px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(100,181,246,0.15);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #64b5f6;
+            line-height: 1;
+        }
+
+        .stat-value.warning { color: #ff9800; }
+        .stat-value.danger  { color: #ef5350; }
+        .stat-value.positive { color: #66bb6a; }
+
+        .stat-label {
+            font-size: 0.78rem;
+            color: #7a9bbf;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Momentum Bar ── */
+        .momentum-bar-section {
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 24px 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .momentum-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #7a9bbf;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .momentum-track {
+            flex: 1;
+            height: 10px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .momentum-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1565c0, #42a5f5, #ff9800);
+            border-radius: 5px;
+            transition: width 1s ease;
+        }
+
+        .momentum-score {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #ff9800;
+            white-space: nowrap;
+        }
+
+        .momentum-descriptor {
+            font-size: 0.82rem;
+            color: #9fb8d8;
+            white-space: nowrap;
+        }
+
+        /* ── Layout ── */
+        .content-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(64,180,255,0.25);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 22px;
+            background: #42a5f5;
+            border-radius: 2px;
+        }
+
+        p { color: #c8d8ea; margin-bottom: 14px; font-size: 0.97rem; }
+
+        /* ── Grid layouts ── */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; }
+
+        /* ── Cards ── */
+        .card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #90caf9;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Regional employment table ── */
+        .region-table { width: 100%; border-collapse: collapse; }
+
+        .region-table th {
+            background: rgba(21,101,192,0.3);
+            color: #90caf9;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid rgba(64,180,255,0.3);
+        }
+
+        .region-table td {
+            padding: 13px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+            color: #c8d8ea;
+            vertical-align: top;
+        }
+
+        .region-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+        .region-name { font-weight: 700; color: #ffffff; }
+        .region-hub  { font-size: 0.8rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .impact-high    { background: rgba(239,83,80,0.2);  color: #ef9a9a; border: 1px solid rgba(239,83,80,0.3); }
+        .impact-medium  { background: rgba(255,152,0,0.2);  color: #ffcc80; border: 1px solid rgba(255,152,0,0.3); }
+        .impact-emerging{ background: rgba(102,187,106,0.2);color: #a5d6a7; border: 1px solid rgba(102,187,106,0.3); }
+
+        /* ── Chart containers ── */
+        .chart-container {
+            position: relative;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .chart-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #90caf9;
+            margin-bottom: 18px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        canvas { max-height: 280px; }
+
+        /* ── Role lists ── */
+        .role-list { list-style: none; }
+
+        .role-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .role-item:last-child { border-bottom: none; }
+
+        .role-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .role-icon.decline  { background: #ef5350; }
+        .role-icon.grow     { background: #66bb6a; }
+        .role-icon.transform{ background: #ff9800; }
+
+        .role-name  { font-weight: 700; color: #e0e6f0; font-size: 0.9rem; }
+        .role-desc  { font-size: 0.82rem; color: #7a9bbf; margin-top: 2px; }
+
+        /* ── Human impact boxes ── */
+        .impact-box {
+            background: rgba(255,152,0,0.06);
+            border: 1px solid rgba(255,152,0,0.2);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .impact-box h4 {
+            color: #ffcc80;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .impact-box p { color: #c8d8ea; margin-bottom: 0; font-size: 0.9rem; }
+
+        .impact-box.blue {
+            background: rgba(66,165,245,0.06);
+            border-color: rgba(66,165,245,0.2);
+        }
+
+        .impact-box.blue h4 { color: #90caf9; }
+
+        .impact-box.red {
+            background: rgba(239,83,80,0.06);
+            border-color: rgba(239,83,80,0.2);
+        }
+
+        .impact-box.red h4 { color: #ef9a9a; }
+
+        /* ── Policy recommendations ── */
+        .policy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+        .policy-card {
+            background: rgba(21,101,192,0.08);
+            border: 1px solid rgba(100,181,246,0.15);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .policy-card h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #64b5f6;
+            margin-bottom: 8px;
+        }
+
+        .policy-card p { font-size: 0.87rem; margin-bottom: 0; }
+
+        /* ── Key metrics strip ── */
+        .metrics-strip {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .metric-tile {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 18px 14px;
+            text-align: center;
+        }
+
+        .metric-tile .value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .metric-tile .label {
+            font-size: 0.75rem;
+            color: #7a9bbf;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .metric-tile .sub {
+            font-size: 0.72rem;
+            color: #5a7a9b;
+            margin-top: 3px;
+        }
+
+        /* ── Footer ── */
+        .page-footer {
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 28px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .footer-brand { font-size: 0.85rem; color: #5a7a9b; }
+        .footer-brand span { color: #64b5f6; font-weight: 700; }
+
+        .footer-note { font-size: 0.78rem; color: #3a5a7b; text-align: right; }
+
+        /* ── Highlight callout ── */
+        .callout {
+            background: rgba(21,101,192,0.1);
+            border-left: 4px solid #42a5f5;
+            border-radius: 0 10px 10px 0;
+            padding: 16px 20px;
+            margin: 20px 0;
+        }
+
+        .callout p { color: #b0ccec; font-size: 0.92rem; margin-bottom: 0; }
+
+        @media (max-width: 1024px) {
+            .two-col, .three-col, .policy-grid { grid-template-columns: 1fr; }
+            .metrics-strip { grid-template-columns: repeat(3, 1fr); }
+            .header-main { grid-template-columns: 1fr; }
+            .header-stats { flex-direction: row; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE HEADER
+═══════════════════════════════════════════════════ -->
+<header class="page-header">
+    <div class="header-top">
+        <a href="index.html" class="back-nav">
+            &#8592; AI Human Impact Index
+        </a>
+        <div class="region-badge">NORTH AMERICA</div>
+    </div>
+
+    <div class="header-main">
+        <div class="header-text">
+            <div class="sector-label">Sector Analysis</div>
+            <h1 class="sector-title">Commercial Real Estate<br>Services</h1>
+            <p class="sector-subtitle">How AI, PropTech, and automation are reshaping the advisory, brokerage, valuation, and facilities management professions across the United States and Canada, with particular focus on the human cost of structural transformation at scale.</p>
+        </div>
+
+        <div class="header-stats">
+            <div class="stat-card">
+                <div class="stat-value warning">~437,000</div>
+                <div class="stat-label">US CRE Services Employment</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value danger">31%</div>
+                <div class="stat-label">Roles at High Automation Risk</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value positive">$890B</div>
+                <div class="stat-label">US CRE Services Market Value</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="momentum-bar-section">
+        <span class="momentum-label">Disruption Momentum</span>
+        <div class="momentum-track">
+            <div class="momentum-fill" style="width: 72%"></div>
+        </div>
+        <span class="momentum-score">72 / 100</span>
+        <span class="momentum-descriptor">High Disruption</span>
+    </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════ -->
+<main class="content-wrapper">
+
+    <!-- Key Metrics Strip -->
+    <div class="metrics-strip">
+        <div class="metric-tile">
+            <div class="value" style="color:#64b5f6">72</div>
+            <div class="label">Momentum Score</div>
+            <div class="sub">vs. 67 UK equivalent</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ef5350">~87K</div>
+            <div class="label">Jobs at Risk 2025-30</div>
+            <div class="sub">Automation and consolidation</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ff9800">$4.2B</div>
+            <div class="label">PropTech VC Investment</div>
+            <div class="sub">US 2024 estimate</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#66bb6a">~23K</div>
+            <div class="label">Emerging Roles by 2030</div>
+            <div class="sub">Data, AI, sustainability</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ab47bc">68%</div>
+            <div class="label">Big Three Market Share</div>
+            <div class="sub">CBRE, JLL, C&W combined</div>
+        </div>
+    </div>
+
+    <!-- ── Section 1: Current Landscape ── -->
+    <section class="section">
+        <h2 class="section-title">Current Landscape</h2>
+
+        <p>Commercial real estate services in North America employs approximately 437,000 people across the United States and roughly 38,000 in Canada, spanning brokerage, property management, corporate advisory, valuation, facilities management, and investment sales. The sector is dominated at the top by three global firms with deep US roots: CBRE Group (headquartered in Dallas, ~115,000 US employees), Jones Lang LaSalle (Chicago, ~55,000 US), and Cushman & Wakefield (Chicago, ~44,000 US), collectively commanding roughly 68% of institutional CRE services revenue in the country.</p>
+
+        <p>Below the Big Three sits a complex ecosystem: regional powerhouses including Colliers, Avison Young, and Newmark; specialist boutiques in leasing, investment sales, and debt advisory; and a vast base of small and mid-size brokerages that form the backbone of local commercial markets. This layered structure is now under acute pressure from three simultaneous forces: AI-enabled automation of analytical and transactional workflows, PropTech platforms disintermediating traditional service delivery, and the structural reconfiguration of demand driven by the post-pandemic office market collapse.</p>
+
+        <p>The United States is moving faster than comparable markets in adopting automation within CRE services, reflecting its larger pool of available venture capital, a regulatory environment that creates fewer barriers to labour substitution, and an at-will employment model that makes workforce restructuring easier than in European counterparts. For the professionals whose careers have been built on information asymmetry, relationship networks, and analytical expertise, the pace of change creates genuine economic and psychological disruption at scale.</p>
+
+        <div class="callout">
+            <p>The office market correction compounds automation pressure significantly. With US office vacancy reaching 19.8% nationally in 2024 and effective demand for new leasing transactions sharply reduced, many brokerage professionals are competing for a smaller transaction pool precisely as AI tools reduce the labour required to service each transaction.</p>
+        </div>
+    </section>
+
+    <!-- ── Section 2: Regional Employment Analysis ── -->
+    <section class="section">
+        <h2 class="section-title">Regional Employment Analysis</h2>
+
+        <p>CRE services employment is geographically concentrated but present in every major metro. The following analysis covers the eight primary regions, accounting for approximately 78% of total US sector employment.</p>
+
+        <table class="region-table">
+            <thead>
+                <tr>
+                    <th>Region</th>
+                    <th>Est. Employment</th>
+                    <th>Key Hubs</th>
+                    <th>Dominant Employers</th>
+                    <th>Disruption Exposure</th>
+                    <th>Structural Dynamics</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="region-name">New York Metro</div>
+                        <div class="region-hub">NY, NJ, CT tri-state</div>
+                    </td>
+                    <td>~82,000</td>
+                    <td>Midtown Manhattan, Hudson Yards, Stamford CT</td>
+                    <td>CBRE, Cushman, JLL, Newmark, Savills</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Highest density of investment sales and capital markets roles; AI disrupting debt advisory and valuation fastest; office vacancy at 22% suppressing transactional volumes; strong tenant rep practices under pressure</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">California (Bay Area + LA/SD)</div>
+                        <div class="region-hub">San Francisco, Los Angeles, San Diego</div>
+                    </td>
+                    <td>~68,000</td>
+                    <td>Downtown SF, Century City LA, UTC San Diego</td>
+                    <td>CBRE, Colliers, Kidder Mathews, Lee &amp; Associates</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Tech tenant contraction devastating SF office market; PropTech adoption fastest among local brokerages; sustainability advisory growing rapidly; LA industrial/logistics remains relatively strong</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Texas Tri-City Corridor</div>
+                        <div class="region-hub">Dallas-Fort Worth, Houston, Austin</div>
+                    </td>
+                    <td>~52,000</td>
+                    <td>Uptown Dallas, Greenway Plaza Houston, East Austin</td>
+                    <td>CBRE (HQ), Transwestern, Stream Realty, Whitebox</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Strongest net absorption in US; data center and industrial boom creating new advisory demand; corporate relocation advisory a growing practice; energy sector clients returning; CBRE HQ presence accelerates AI adoption models</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Greater Chicago / Midwest</div>
+                        <div class="region-hub">Chicago, Minneapolis, Columbus, Indianapolis</div>
+                    </td>
+                    <td>~48,000</td>
+                    <td>Loop Chicago, Naperville suburbs, O'Hare corridor</td>
+                    <td>JLL (HQ), Cushman (HQ), Bradford Allen, Inland</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Two of three Big Three headquartered here; logistics and cold storage advisory expanding; downtown Chicago office market weakening; property management automation reducing headcount in suburban office parks</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Southeast / Sunbelt</div>
+                        <div class="region-hub">Atlanta, Miami, Charlotte, Nashville, Raleigh</div>
+                    </td>
+                    <td>~44,000</td>
+                    <td>Buckhead Atlanta, Brickell Miami, Uptown Charlotte</td>
+                    <td>CBRE, Colliers, Foundry Commercial, Avison Young</td>
+                    <td><span class="impact-pill impact-medium">Medium</span></td>
+                    <td>Population growth sustaining demand; multifamily advisory booming; healthcare and life sciences tenant representation growing; lower density of legacy back-office roles relative to Northeast; faster technology adoption culture</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Pacific Northwest</div>
+                        <div class="region-hub">Seattle, Portland, Vancouver BC</div>
+                    </td>
+                    <td>~22,000</td>
+                    <td>Bellevue, South Lake Union Seattle, Pearl District Portland</td>
+                    <td>CBRE, JLL, Kidder Mathews, Broderick Group</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Amazon and Microsoft campus decisions outsized impact on leasing volumes; tech sector AI adoption filtering into client relationships rapidly; Vancouver market tied to cross-border capital flows; data center advisory strengthening</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">DC Metro / Mid-Atlantic</div>
+                        <div class="region-hub">Washington DC, Northern Virginia, Maryland suburbs</div>
+                    </td>
+                    <td>~31,000</td>
+                    <td">K Street DC, Tysons Corner, Bethesda, Rosslyn</td>
+                    <td>CBRE, JLL, Cushman, Newmark, Transwestern</td>
+                    <td><span class="impact-pill impact-medium">Medium</span></td>
+                    <td>Government and government-adjacent tenant base relatively stable; Northern Virginia data center corridor generating specialist advisory demand; federal real estate portfolio rationalisation creating occupier advisory opportunity; government contract uncertainty creating risk in 2025-26</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Canada (Toronto, Montreal, Vancouver)</div>
+                        <div class="region-hub">GTA, Greater Montreal, Metro Vancouver</div>
+                    </td>
+                    <td>~38,000</td>
+                    <td>Financial District Toronto, Downtown Montreal, Burrard St Vancouver</td>
+                    <td>CBRE Canada, Colliers (HQ), Avison Young (HQ), JLL Canada</td>
+                    <td><span class="impact-pill impact-medium">Medium</span></td>
+                    <td>Two global CRE firms headquartered in Toronto; stronger unionisation and regulatory protections moderating automation pace; immigration-driven demand sustaining industrial and multi-residential advisory; office market weaker in downtown cores</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- ── Section 3: Charts ── -->
+    <section class="section">
+        <h2 class="section-title">Employment and Disruption Visualisations</h2>
+
+        <div class="two-col">
+            <div class="chart-container">
+                <div class="chart-title">Regional Employment Distribution (US + Canada)</div>
+                <canvas id="regionalChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Role Category Employment Forecast 2024-2030</div>
+                <canvas id="forecastChart"></canvas>
+            </div>
+        </div>
+
+        <div class="two-col" style="margin-top: 28px">
+            <div class="chart-container">
+                <div class="chart-title">Automation Exposure by Sub-Sector</div>
+                <canvas id="automationChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">PropTech Investment Trends (US $B)</div>
+                <canvas id="proptechChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 4: Job Transformation Dynamics ── -->
+    <section class="section">
+        <h2 class="section-title">Job Transformation Dynamics</h2>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title" style="color:#ef9a9a">Roles Under Significant Pressure</div>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Research Analysts and Market Intelligence</div>
+                            <div class="role-desc">AI tools now produce market reports, rent trend analyses, and demand forecasts at a fraction of traditional analyst time. Senior headcount is flat or declining; junior analyst hiring has collapsed at several major firms. Estimated 40% reduction in analytical FTE by 2028.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Valuation and Appraisal Associates</div>
+                            <div class="role-desc">Automated valuation models (AVMs) and AI-enhanced comparable analysis are compressing the time required per appraisal. Routine commercial appraisals increasingly handled by software with senior review. FIRREA compliance creates a floor, but headcount growth has stalled.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Transaction Coordination and Lease Administration</div>
+                            <div class="role-desc">Document management, lease abstraction, and transaction tracking are among the most automatable tasks in CRE. AI-native platforms like Leverton, Kira, and Prophia have materially reduced the headcount required to manage large lease portfolios. Estimated 35-45% reduction by 2030.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Property Management Administrative Staff</div>
+                            <div class="role-desc">Building management platforms, predictive maintenance AI, and tenant communication automation are reducing the administrative layer in property management operations. On-site staffing models are being restructured around smaller teams supported by remote monitoring technology.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Marketing and Listing Production Coordinators</div>
+                            <div class="role-desc">AI-generated property descriptions, automated floor plan rendering, and generative imagery are eliminating the production-level marketing roles that supported brokerage teams. What required a coordinator and graphic designer now requires a prompt and a review.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Regional Back-Office and Support Functions</div>
+                            <div class="role-desc">Finance, HR, IT, and compliance support roles in regional CRE offices are being centralised and automated. Firms operating 50+ regional offices have reduced combined back-office headcount by an estimated 20-30% since 2020 through consolidation and automation.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="color:#a5d6a7">Emerging Roles and Growing Opportunities</div>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">AI and Data Strategy Specialists</div>
+                            <div class="role-desc">Firms are hiring professionals who can deploy, manage, and translate AI tools for brokerage and advisory teams. Roles bridging CRE domain knowledge with data science capability command significant salary premiums. CBRE, JLL, and Cushman all have dedicated AI centres of excellence with growing headcount.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Sustainability and ESG Advisory</div>
+                            <div class="role-desc">Demand for professionals who can assess carbon exposure, advise on net zero pathways, and navigate emerging SEC climate disclosure requirements is growing rapidly. Estimated 8,000-10,000 new roles across the sector by 2030. Green building certifications and energy analytics are core skill requirements.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">PropTech Integration and Platform Management</div>
+                            <div class="role-desc">As firms deploy new technology stacks, specialists who can manage vendor relationships, oversee implementations, and train brokerage teams on new tools are in demand. Not pure technology roles: the sweet spot is deep CRE operational knowledge combined with technology fluency.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Data Centre and Digital Infrastructure Advisory</div>
+                            <div class="role-desc">The AI compute buildout is generating significant CRE advisory work around hyperscale data centre siting, power infrastructure, and colocation markets. Specialist brokers and advisors in this niche command premium fees. Northern Virginia, Texas, and Phoenix are the primary markets.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Occupier Experience and Workplace Strategy</div>
+                            <div class="role-desc">As corporate tenants wrestle with hybrid work models, demand for advisory that goes beyond square footage to address human experience, workplace culture, and operational effectiveness is growing. Roles increasingly require organisational psychology, change management, and data interpretation skills.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon transform"></div>
+                        <div>
+                            <div class="role-name">Senior Brokerage Professionals (Transforming)</div>
+                            <div class="role-desc">The experienced broker role is not disappearing but is restructuring. Client relationships, negotiation expertise, and market judgment remain human domains. However, brokers who resist adopting AI tools for deal sourcing, comparable analysis, and pitch preparation will lose competitive ground to those who embrace them as force multipliers.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 5: Physical Space Transformation ── -->
+    <section class="section">
+        <h2 class="section-title">Physical Space Transformation</h2>
+
+        <p>The physical footprint of CRE services firms is itself undergoing a significant restructuring, creating an irony that is not lost on the sector: the firms that advise corporations on their real estate decisions are themselves dramatically reducing their own space.</p>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">Corporate Office Footprint Reduction</div>
+                <p>CBRE, JLL, and Cushman & Wakefield have each reduced their own leased office footprint by 15-25% since 2020, driven by hybrid working adoption and consolidation of regional offices. CBRE's own Dallas headquarters was restructured to a hub model in 2022-23. The largest firms have moved from city-by-city presence models to hub-and-spoke, with satellite "deal rooms" replacing full-service offices in secondary markets.</p>
+                <p>The back-office consolidation is particularly stark: what were once local accounting, HR, and research teams have been centralised to national service centres in lower-cost locations, or outsourced entirely. Phoenix, Tampa, and Columbus have emerged as back-office consolidation destinations for firms rationalising their New York and California operational costs.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Market Intelligence Infrastructure</div>
+                <p>Traditional CRE research infrastructure, including large teams producing periodic market reports and proprietary data products, is being replaced by AI-native intelligence platforms. CoStar's AI investment, MSCI's analytics build-out, and proprietary AI tools being developed inside CBRE and JLL are reducing the need for human labour to assemble, analyse, and present market data.</p>
+                <p>Physical "research libraries" and dedicated research floors in major offices, once a mark of institutional capability, are disappearing. The data that powered them is increasingly sourced from APIs, satellite imagery analysis, and real-time transactional feeds, accessible from anywhere and requiring far fewer human hands to process and interpret.</p>
+            </div>
+        </div>
+
+        <div class="two-col" style="margin-top: 22px">
+            <div class="card">
+                <div class="card-title">Property Management Operational Models</div>
+                <p>Building operations are migrating toward centralised command centres supported by IoT sensors, predictive maintenance AI, and remote monitoring platforms. Firms including CBRE's GWS (Global Workplace Solutions) division and JLL's Integrated Facilities Management are actively marketing AI-enabled service delivery as a competitive differentiator, which simultaneously reduces their own labour cost per square foot managed.</p>
+                <p>The human impact is felt most acutely among building engineers, property administrators, and on-site management staff, particularly in secondary markets where the cost-efficiency case for automation is weakest and the redeployment options are most limited.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">The Conversion Advisory Opportunity</div>
+                <p>Office-to-residential conversion activity, driven by persistent downtown office vacancy across nearly every major US market, is creating a specific advisory sub-practice with meaningful employment potential. Conversion work requires deep technical understanding of building systems, zoning, and capital structuring, but it is generating transaction volume in markets where traditional leasing activity has declined sharply.</p>
+                <p>Cities including New York, Chicago, San Francisco, and Washington DC have introduced incentive programmes to accelerate conversions, creating a policy-driven demand signal for advisory capacity. However, the total number of professional roles created is modest relative to the scale of transactional role losses in the traditional leasing market.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 6: Growth Dynamics and Competitive Landscape ── -->
+    <section class="section">
+        <h2 class="section-title">Growth Dynamics and Competitive Landscape</h2>
+
+        <div class="two-col">
+            <div>
+                <p>The competitive landscape in US CRE services is bifurcating. At the top, the Big Three are investing heavily in AI and technology capability, acquiring PropTech companies, and using their balance sheets to fund the transition. CBRE's acquisition of Turner and Townsend and its investment in Industrious reflect a deliberate move toward higher-margin, technology-enabled services that rely less on transactional headcount. JLL's JLL Technologies platform has become a significant internal and external product, generating revenue beyond traditional advisory.</p>
+
+                <p>Below the top tier, the competitive pressure is more acute. Mid-size regional firms lack the capital to build proprietary technology but must compete with firms that have it. Many are adopting third-party PropTech platforms from companies including VTS, Buildout, and Altus Group, but the cost of adoption and the training burden are meaningful constraints. The firms most at risk are those in the $50-500 million revenue band: large enough to have substantial overhead, but not large enough to absorb technology investment easily.</p>
+
+                <p>Private equity has accelerated consolidation. Several PE-backed roll-up strategies have been active since 2021, acquiring independent regional brokerages at scale. This consolidation concentrates market power but also accelerates workforce rationalisation: the economics of integration invariably involve reducing combined headcount in overlapping roles.</p>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Competitive Positioning: Market Share vs. Technology Investment</div>
+                <canvas id="competitiveChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 7: Human Impact Considerations ── -->
+    <section class="section">
+        <h2 class="section-title">Human Impact Considerations</h2>
+
+        <div class="impact-box red">
+            <h4>The Experience Trap: Mid-Career Displacement Risk</h4>
+            <p>The CRE services sector employs a large cohort of professionals in their 40s and 50s who built careers on skills, including market knowledge, relationship networks, and analytical expertise, that are now being partially automated. Unlike technology sector workers, these individuals often lack transferable technical credentials and face significant retraining barriers. The geographic concentration of the sector means that displacement in a market like San Francisco or downtown Chicago is also a local economic event with ripple effects.</p>
+        </div>
+
+        <div class="impact-box">
+            <h4>Gender and Diversity Dynamics</h4>
+            <p>CRE services has historically been a sector with significant gender and racial imbalance in senior roles, particularly in brokerage. The current wave of automation is disproportionately affecting support and administrative roles, which have higher female representation. Meanwhile, the emerging roles in AI strategy, data science, and technology advisory skew heavily toward profiles with technology and quantitative backgrounds, which themselves carry existing diversity deficits. Without deliberate intervention, AI-driven restructuring risks deepening existing inequalities in who holds valued roles within the sector.</p>
+        </div>
+
+        <div class="impact-box blue">
+            <h4>Commission Income Vulnerability</h4>
+            <p>A large proportion of brokerage professionals in the United States are compensated primarily through commission, meaning they are independent contractors without access to employer-sponsored healthcare, retirement contributions, or unemployment insurance. As transaction volumes fluctuate and AI tools compress the number of transactions a reduced team can service, the independent contractor model means displacement often arrives without any safety net. The healthcare-employment linkage in the US makes this particularly consequential: losing commission income can mean losing health coverage simultaneously.</p>
+        </div>
+
+        <div class="impact-box">
+            <h4>Geographic Inequality of Impact</h4>
+            <p>The most sophisticated adoption of AI in CRE is occurring in the largest markets: New York, San Francisco, Chicago, Dallas. Secondary and tertiary markets are experiencing automation pressure but have far fewer emerging role opportunities to absorb displaced workers. A research analyst in Columbus or Memphis facing role elimination has fewer realistic alternatives within the sector than a counterpart in Manhattan. This geographic dimension of disruption is often invisible in aggregate employment statistics but profoundly shapes individual outcomes.</p>
+        </div>
+
+        <div class="impact-box blue">
+            <h4>The Relationship Capital Question</h4>
+            <p>One of the most complex human dimensions of AI adoption in CRE services is the question of what happens to relationship capital, the decades of cultivated client trust and institutional knowledge held by experienced professionals, as firm structures change around them. When PE-backed consolidations restructure teams, when firms pivot to technology-enabled delivery models, and when client relationships are migrated to platforms rather than people, the accumulated social capital of individual professionals often evaporates without acknowledgement or compensation. This represents a real human cost that does not appear in any restructuring charge.</p>
+        </div>
+    </section>
+
+    <!-- ── Section 8: US-Specific Regulatory and Structural Factors ── -->
+    <section class="section">
+        <h2 class="section-title">US-Specific Regulatory and Structural Factors</h2>
+
+        <div class="three-col">
+            <div class="card">
+                <div class="card-title">Licensing and State Variation</div>
+                <p>Commercial real estate brokerage is licensed at the state level in the United States, with significant variation in requirements across 50 jurisdictions. This creates both a barrier and a floor: some activities cannot be legally automated without a licensed individual in the chain. However, the trend in state-level regulation has generally been permissive toward technology-enabled services, and several states are reviewing whether traditional licensing requirements remain appropriate for AI-assisted transactions.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">SEC Climate Disclosure and ESG</div>
+                <p>The SEC's proposed climate disclosure rules, though contested and partially stayed as of 2024-25, have created significant uncertainty and advisory opportunity simultaneously. Large real estate owners and occupiers are investing in understanding their Scope 1, 2, and 3 emissions exposure, creating demand for advisory services at the intersection of real estate, finance, and sustainability. This is one of the clearest near-term growth areas for human expertise in the sector.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">FIRREA and Appraisal Requirements</div>
+                <p>The Financial Institutions Reform, Recovery, and Enforcement Act creates mandatory human appraisal requirements for commercial real estate transactions above certain thresholds, providing a regulatory floor beneath the appraisal profession. However, the definition of what requires a full appraisal versus a more automated evaluation continues to evolve, and banking regulators have shown increasing openness to technology-assisted valuation in lower-risk scenarios.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">At-Will Employment and Union Absence</div>
+                <p>The almost universal at-will employment model in US CRE services, combined with minimal union presence, means firms can restructure workforces quickly and with limited legal constraint. This accelerates the pace at which automation-driven headcount reductions occur relative to markets with stronger worker protections, and it means individuals have little institutional recourse when roles are eliminated. The speed of change is itself a human impact factor: transition periods are compressed.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">VC and PE Capital Dynamics</div>
+                <p>The United States remains the dominant destination for PropTech venture capital globally, with an estimated $4.2 billion invested in 2024. This capital does not simply fund technology; it funds competitive pressure on traditional service models. PE-backed PropTech firms can undercut traditional service providers on price by leveraging automation, forcing incumbents to accelerate their own technology adoption to defend margins, which in turn accelerates the labour displacement dynamic.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">GSA and Federal Footprint Uncertainty</div>
+                <p>The General Services Administration manages approximately 360 million square feet of federal real estate, making the US government the country's largest occupier. Policy shifts in federal workforce size, remote work, and office utilisation create significant demand uncertainty for CRE advisory firms active in the government market. The DC metro region, which hosts the highest concentration of government-adjacent occupiers, is particularly exposed to federal real estate policy changes in 2025-26.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 9: The Cushman, CBRE, JLL Triopoly Under Pressure ── -->
+    <section class="section">
+        <h2 class="section-title">The Big Three: Transformation Under Pressure</h2>
+
+        <p>CBRE, JLL, and Cushman & Wakefield collectively employ more than 200,000 people in North America and generate the vast majority of institutional CRE advisory revenue. Each is pursuing a distinct but partially overlapping strategy to maintain relevance and margin in an AI-disrupted environment, with significant implications for their workforces.</p>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">CBRE Group (Dallas, TX)</div>
+                <p>CBRE has positioned itself as the most aggressive technology adopter among the Big Three, investing in proprietary AI tools, acquiring data and analytics firms, and restructuring its GWS division around technology-enabled facilities management. Its acquisition of Turner and Townsend (project management) and investment in WeWork competitor Industrious reflect a deliberate pivot toward recurring, technology-enabled revenue streams less dependent on transactional commission income.</p>
+                <p>The human consequence of this strategy is a workforce that is growing in aggregate but changing composition rapidly, with technical and technology roles replacing traditional advisory and support functions. CBRE has been transparent that AI will reduce headcount in analytical and back-office functions, while growing headcount in technology and specialised advisory. The net effect for individual workers depends entirely on which category their role falls into.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Jones Lang LaSalle (Chicago, IL)</div>
+                <p>JLL has built JLL Technologies as a distinct revenue stream and has pursued a strategy of deploying technology both internally and as a product sold to real estate owners and occupiers. Its AI investments span building operations, lease management, and capital markets analytics. JLL has also been active in workforce restructuring, reducing headcount in functions where technology substitution has become viable while investing in the talent capable of building and selling technology products.</p>
+                <p>JLL's approach reflects a genuine attempt to transform into a technology-enabled professional services firm rather than a traditional brokerage. This ambition is strategically coherent but creates significant transition costs for the large proportion of its workforce whose expertise is in traditional advisory rather than technology.</p>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 22px">
+            <div class="card-title">Cushman & Wakefield (Chicago, IL)</div>
+            <p>Cushman & Wakefield has faced the most acute financial pressure of the three, carrying significant debt from its 2018 IPO and the merger that preceded it. This financial constraint has shaped its technology investment capacity: where CBRE and JLL can fund proprietary AI development, Cushman has relied more heavily on vendor partnerships and platform adoption. The firm has made meaningful headcount reductions since 2022, with particular impact in the US operations, as it pursues margin improvement in a difficult transaction market.</p>
+            <p>The firm's human capital challenge is significant: it must invest in technology transformation while managing a debt load that limits capital availability, in a market where transaction volumes are suppressed and its largest competitors have deeper balance sheets. The professionals within the organisation face a period of sustained uncertainty about which services will be retained in-house, which will be automated, and which will be partnered or outsourced.</p>
+            <p>For professionals who have built careers within Cushman & Wakefield's global platform, the current period represents a genuine test of whether the firm's culture of human expertise and client relationship depth can be preserved through a period of necessary structural change. The outcome of that test has implications not just for shareholder value but for thousands of livelihoods distributed across the firm's North American office network.</p>
+        </div>
+    </section>
+
+    <!-- ── Section 10: Future Prospects ── -->
+    <section class="section">
+        <h2 class="section-title">Future Prospects: 2025-2030</h2>
+
+        <div class="two-col">
+            <div class="chart-container">
+                <div class="chart-title">Employment Scenario Projections 2024-2030 (US, thousands)</div>
+                <canvas id="scenarioChart"></canvas>
+            </div>
+
+            <div>
+                <p>The trajectory of employment in US CRE services over the next five years will be shaped by four intersecting dynamics: the pace of AI capability development, the rate of PropTech adoption across firm sizes, the recovery (or further deterioration) of the office market, and policy decisions around worker protections and retraining support.</p>
+
+                <p>A conservative scenario assumes that AI adoption continues at the current pace, office markets stabilise at 16-18% vacancy, and firms invest in retraining as well as restructuring. Under this scenario, net employment might decline by 8-12% by 2030, concentrated in analytical, administrative, and junior brokerage roles, while growing in technology, sustainability, and specialist advisory functions.</p>
+
+                <p>A more disruptive scenario, which is arguably where the current trajectory points, involves faster AI capability gains, continued office market weakness, and restructuring prioritised over retraining. Under this scenario, net employment could decline by 18-25% by 2030, with the impact concentrated among mid-career professionals in traditional roles and in secondary markets with fewer emerging opportunities.</p>
+
+                <p>The optimistic scenario requires deliberate action: firms investing meaningfully in reskilling programmes, professional associations updating licensing and education frameworks, and policymakers considering whether existing worker protections are adequate for a commission-heavy, contractor-dense sector facing rapid automation. None of these conditions are fully present in the current environment.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 11: Policy Recommendations ── -->
+    <section class="section">
+        <h2 class="section-title">Policy Recommendations</h2>
+
+        <div class="policy-grid">
+            <div class="policy-card">
+                <h4>Industry-Funded Transition Support</h4>
+                <p>The Big Three and major PE-backed CRE firms generating value through automation should fund a sector-wide transition programme providing retraining grants, career counselling, and income bridge support for displaced professionals. The analogy is the coal industry transition funds: the firms benefiting from the transition bear some responsibility for its human cost.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Licensing Framework Modernisation</h4>
+                <p>State real estate licensing bodies should proactively develop competency frameworks that include technology literacy, AI tool proficiency, and data interpretation alongside traditional transactional knowledge. Waiting for market forces to drive curriculum change will leave a generation of practitioners underprepared. The CCIM Institute and SIOR are positioned to lead this work.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Independent Contractor Protections</h4>
+                <p>The prevalence of commission-only and independent contractor arrangements in CRE brokerage leaves a large workforce without basic protections that W-2 employees take for granted. Federal and state policymakers should consider whether portable benefits frameworks, including portable healthcare and retirement contributions, could be extended to commission-based real estate professionals to reduce the human cost of transactional volatility and displacement.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Transparency in AI Deployment</h4>
+                <p>Firms deploying AI tools that affect client outcomes, including automated valuations, AI-generated lease recommendations, and algorithmic tenant screening, should be required to disclose the use of these tools and maintain human review processes for decisions above defined thresholds. This protects clients, maintains professional accountability, and preserves meaningful roles for human expertise in consequential decisions.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Diversity-Conscious Technology Transition</h4>
+                <p>Firms should conduct explicit analysis of the demographic impact of their technology-driven restructuring before implementation, not as a post-hoc reporting exercise. If automation disproportionately displaces women or people of colour, firms should design transition programmes specifically addressing those disparities, including targeted retraining pathways for emerging roles that currently lack diversity.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Secondary Market Support</h4>
+                <p>Federal economic development programmes should specifically consider the CRE services workforce in secondary and tertiary markets when designing workforce transition support. The professionals in Columbus, Memphis, or Albuquerque facing role displacement have far fewer local alternative opportunities than their counterparts in gateway cities, and this geographic dimension of disruption requires explicit policy attention rather than assumptions of mobility.</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="page-footer">
+    <div class="footer-brand">
+        <span>AI Human Impact Index</span> | North America: Commercial Real Estate Services
+        <br>Andrew Phipps, PhD Candidate, University of Sussex | andrewphipps.ai
+    </div>
+    <div class="footer-note">
+        Employment figures are estimates drawn from BLS, CoStar, and industry sources.<br>
+        Data reflects best available information as of early 2025. Subject to ongoing revision.
+    </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════
+     CHART.JS SCRIPTS
+═══════════════════════════════════════════════════ -->
+<script>
+    Chart.defaults.color = '#7a9bbf';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+
+    const chartDefaults = {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                labels: { color: '#9fb8d8', font: { size: 11 }, padding: 14 }
+            }
+        }
+    };
+
+    /* Regional Employment Bar Chart */
+    new Chart(document.getElementById('regionalChart'), {
+        type: 'bar',
+        data: {
+            labels: ['New York\nMetro','California','Texas\nTriangle','Chicago/\nMidwest','SE/\nSunbelt','Pacific\nNW','DC/\nMid-Atlantic','Canada'],
+            datasets: [{
+                label: 'Estimated Employment',
+                data: [82000, 68000, 52000, 48000, 44000, 22000, 31000, 38000],
+                backgroundColor: [
+                    'rgba(239,83,80,0.7)',
+                    'rgba(239,83,80,0.7)',
+                    'rgba(255,152,0,0.7)',
+                    'rgba(255,152,0,0.7)',
+                    'rgba(66,165,245,0.7)',
+                    'rgba(239,83,80,0.7)',
+                    'rgba(66,165,245,0.7)',
+                    'rgba(102,187,106,0.7)'
+                ],
+                borderColor: 'rgba(255,255,255,0.15)',
+                borderWidth: 1,
+                borderRadius: 5
+            }]
+        },
+        options: {
+            ...chartDefaults,
+            scales: {
+                x: { ticks: { color: '#7a9bbf', font: { size: 10 } }, grid: { display: false } },
+                y: {
+                    ticks: {
+                        color: '#7a9bbf',
+                        callback: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v
+                    }
+                }
+            },
+            plugins: { ...chartDefaults.plugins, legend: { display: false } }
+        }
+    });
+
+    /* Employment Forecast Line Chart */
+    new Chart(document.getElementById('forecastChart'), {
+        type: 'line',
+        data: {
+            labels: ['2022','2023','2024','2025','2026','2027','2028','2029','2030'],
+            datasets: [
+                {
+                    label: 'Senior Advisory / Brokerage',
+                    data: [118000, 115000, 112000, 109000, 107000, 106000, 105000, 104000, 104000],
+                    borderColor: '#42a5f5',
+                    backgroundColor: 'rgba(66,165,245,0.08)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Analytical / Admin / Support',
+                    data: [145000, 138000, 128000, 115000, 102000, 90000, 80000, 73000, 68000],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.08)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Tech, Data & ESG Roles',
+                    data: [8000, 11000, 16000, 22000, 28000, 34000, 39000, 43000, 46000],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.08)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            ...chartDefaults,
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: {
+                    ticks: {
+                        color: '#7a9bbf',
+                        callback: v => (v/1000).toFixed(0)+'K'
+                    }
+                }
+            }
+        }
+    });
+
+    /* Automation Exposure Horizontal Bar */
+    new Chart(document.getElementById('automationChart'), {
+        type: 'bar',
+        data: {
+            labels: [
+                'Lease Administration',
+                'Market Research / Analytics',
+                'Appraisal / Valuation',
+                'Property Mgmt Admin',
+                'Marketing Production',
+                'Transaction Coordination',
+                'Sustainability Advisory',
+                'Senior Brokerage',
+                'AI / Data Specialist'
+            ],
+            datasets: [{
+                label: 'Automation Exposure (%)',
+                data: [72, 65, 55, 60, 78, 68, 12, 15, 5],
+                backgroundColor: function(ctx) {
+                    const v = ctx.dataset.data[ctx.dataIndex];
+                    if (v >= 60) return 'rgba(239,83,80,0.7)';
+                    if (v >= 30) return 'rgba(255,152,0,0.7)';
+                    return 'rgba(102,187,106,0.7)';
+                },
+                borderRadius: 4, borderWidth: 0
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            ...chartDefaults,
+            scales: {
+                x: {
+                    max: 100,
+                    ticks: { color: '#7a9bbf', callback: v => v + '%' }
+                },
+                y: { ticks: { color: '#9fb8d8', font: { size: 10 } }, grid: { display: false } }
+            },
+            plugins: { ...chartDefaults.plugins, legend: { display: false } }
+        }
+    });
+
+    /* PropTech Investment Trend */
+    new Chart(document.getElementById('proptechChart'), {
+        type: 'bar',
+        data: {
+            labels: ['2018','2019','2020','2021','2022','2023','2024'],
+            datasets: [{
+                label: 'PropTech VC Investment ($B, US)',
+                data: [2.1, 2.8, 1.9, 9.4, 5.2, 3.1, 4.2],
+                backgroundColor: [
+                    'rgba(66,165,245,0.6)',
+                    'rgba(66,165,245,0.6)',
+                    'rgba(239,83,80,0.6)',
+                    'rgba(102,187,106,0.8)',
+                    'rgba(255,152,0,0.7)',
+                    'rgba(66,165,245,0.6)',
+                    'rgba(66,165,245,0.8)'
+                ],
+                borderRadius: 5, borderWidth: 0
+            }]
+        },
+        options: {
+            ...chartDefaults,
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { display: false } },
+                y: {
+                    ticks: { color: '#7a9bbf', callback: v => '$' + v + 'B' }
+                }
+            },
+            plugins: { ...chartDefaults.plugins, legend: { display: false } }
+        }
+    });
+
+    /* Competitive Positioning Bubble/Scatter */
+    new Chart(document.getElementById('competitiveChart'), {
+        type: 'bubble',
+        data: {
+            datasets: [
+                {
+                    label: 'CBRE',
+                    data: [{ x: 85, y: 88, r: 28 }],
+                    backgroundColor: 'rgba(66,165,245,0.5)',
+                    borderColor: '#42a5f5'
+                },
+                {
+                    label: 'JLL',
+                    data: [{ x: 75, y: 80, r: 20 }],
+                    backgroundColor: 'rgba(102,187,106,0.5)',
+                    borderColor: '#66bb6a'
+                },
+                {
+                    label: 'Cushman & Wakefield',
+                    data: [{ x: 65, y: 62, r: 18 }],
+                    backgroundColor: 'rgba(255,152,0,0.5)',
+                    borderColor: '#ff9800'
+                },
+                {
+                    label: 'Colliers',
+                    data: [{ x: 55, y: 58, r: 12 }],
+                    backgroundColor: 'rgba(171,71,188,0.5)',
+                    borderColor: '#ab47bc'
+                },
+                {
+                    label: 'Newmark',
+                    data: [{ x: 48, y: 52, r: 9 }],
+                    backgroundColor: 'rgba(239,83,80,0.5)',
+                    borderColor: '#ef5350'
+                },
+                {
+                    label: 'Regional Boutiques',
+                    data: [{ x: 25, y: 30, r: 14 }],
+                    backgroundColor: 'rgba(120,120,140,0.4)',
+                    borderColor: '#7a7a8c'
+                }
+            ]
+        },
+        options: {
+            ...chartDefaults,
+            scales: {
+                x: {
+                    title: { display: true, text: 'Market Share Score', color: '#7a9bbf' },
+                    min: 0, max: 100,
+                    ticks: { color: '#7a9bbf' }
+                },
+                y: {
+                    title: { display: true, text: 'Technology Investment Score', color: '#7a9bbf' },
+                    min: 0, max: 100,
+                    ticks: { color: '#7a9bbf' }
+                }
+            }
+        }
+    });
+
+    /* Scenario Projection */
+    new Chart(document.getElementById('scenarioChart'), {
+        type: 'line',
+        data: {
+            labels: ['2024','2025','2026','2027','2028','2029','2030'],
+            datasets: [
+                {
+                    label: 'Conservative Scenario',
+                    data: [437, 428, 415, 406, 400, 396, 393],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.05)',
+                    borderDash: [6,3], tension: 0.3, borderWidth: 2, fill: true
+                },
+                {
+                    label: 'Base Scenario',
+                    data: [437, 422, 405, 390, 376, 364, 354],
+                    borderColor: '#42a5f5',
+                    backgroundColor: 'rgba(66,165,245,0.07)',
+                    tension: 0.3, borderWidth: 2.5, fill: true
+                },
+                {
+                    label: 'Disruptive Scenario',
+                    data: [437, 415, 390, 366, 343, 326, 330],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.06)',
+                    borderDash: [4,2], tension: 0.3, borderWidth: 2, fill: true
+                }
+            ]
+        },
+        options: {
+            ...chartDefaults,
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: {
+                    ticks: {
+                        color: '#7a9bbf',
+                        callback: v => v + 'K'
+                    },
+                    min: 300, max: 460
+                }
+            }
+        }
+    });
+
+</script>
+
+</body>
+</html>

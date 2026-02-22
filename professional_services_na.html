@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Services (North America) | AI Human Impact Index</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0e1a;
+            color: #e0e6f0;
+            line-height: 1.7;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a2a4a 50%, #0d2035 100%);
+            border-bottom: 1px solid rgba(64, 180, 255, 0.2);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .back-nav { color: #64b5f6; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+        .back-nav:hover { color: #90caf9; }
+
+        .region-badge {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            border: 1px solid rgba(100,181,246,0.4);
+            color: #90caf9;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-main {
+            padding: 40px 40px 36px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 40px;
+            align-items: end;
+        }
+
+        .sector-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; color: #64b5f6; text-transform: uppercase; margin-bottom: 12px; }
+
+        .sector-title { font-size: 2.6rem; font-weight: 800; color: #ffffff; line-height: 1.15; margin-bottom: 14px; }
+
+        .sector-subtitle { font-size: 1.05rem; color: #9fb8d8; max-width: 680px; }
+
+        .header-stats { display: flex; flex-direction: column; gap: 14px; min-width: 280px; }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(100,181,246,0.15);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 1.9rem; font-weight: 800; color: #64b5f6; line-height: 1; }
+        .stat-value.warning  { color: #ff9800; }
+        .stat-value.danger   { color: #ef5350; }
+        .stat-value.positive { color: #66bb6a; }
+        .stat-label { font-size: 0.78rem; color: #7a9bbf; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .momentum-bar-section {
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 24px 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .momentum-label { font-size: 0.85rem; font-weight: 700; color: #7a9bbf; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .momentum-track { flex: 1; height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; }
+        .momentum-fill  { height: 100%; background: linear-gradient(90deg, #1565c0, #42a5f5, #ef5350); border-radius: 5px; }
+        .momentum-score { font-size: 1.5rem; font-weight: 800; color: #ef5350; white-space: nowrap; }
+        .momentum-descriptor { font-size: 0.82rem; color: #9fb8d8; white-space: nowrap; }
+
+        .content-wrapper { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .section { margin-bottom: 50px; }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(64,180,255,0.25);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 22px;
+            background: #42a5f5;
+            border-radius: 2px;
+        }
+
+        p { color: #c8d8ea; margin-bottom: 14px; font-size: 0.97rem; }
+
+        .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; }
+
+        .card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .card-title { font-size: 0.95rem; font-weight: 700; color: #90caf9; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .region-table { width: 100%; border-collapse: collapse; }
+
+        .region-table th {
+            background: rgba(21,101,192,0.3);
+            color: #90caf9;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid rgba(64,180,255,0.3);
+        }
+
+        .region-table td {
+            padding: 13px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+            color: #c8d8ea;
+            vertical-align: top;
+        }
+
+        .region-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+        .region-name { font-weight: 700; color: #ffffff; }
+        .region-hub  { font-size: 0.8rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-pill { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+        .impact-high   { background: rgba(239,83,80,0.2);  color: #ef9a9a; border: 1px solid rgba(239,83,80,0.3); }
+        .impact-medium { background: rgba(255,152,0,0.2);  color: #ffcc80; border: 1px solid rgba(255,152,0,0.3); }
+        .impact-low    { background: rgba(102,187,106,0.2);color: #a5d6a7; border: 1px solid rgba(102,187,106,0.3); }
+
+        .chart-container {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .chart-title { font-size: 0.9rem; font-weight: 700; color: #90caf9; margin-bottom: 18px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        canvas { max-height: 280px; }
+
+        .role-list { list-style: none; }
+
+        .role-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .role-item:last-child { border-bottom: none; }
+
+        .role-icon { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+        .role-icon.decline   { background: #ef5350; }
+        .role-icon.grow      { background: #66bb6a; }
+        .role-icon.transform { background: #ff9800; }
+
+        .role-name { font-weight: 700; color: #e0e6f0; font-size: 0.9rem; }
+        .role-desc { font-size: 0.82rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-box { background: rgba(255,152,0,0.06); border: 1px solid rgba(255,152,0,0.2); border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+        .impact-box h4 { color: #ffcc80; font-size: 0.95rem; margin-bottom: 8px; font-weight: 700; }
+        .impact-box p  { color: #c8d8ea; margin-bottom: 0; font-size: 0.9rem; }
+        .impact-box.blue  { background: rgba(66,165,245,0.06); border-color: rgba(66,165,245,0.2); }
+        .impact-box.blue h4 { color: #90caf9; }
+        .impact-box.red   { background: rgba(239,83,80,0.06); border-color: rgba(239,83,80,0.2); }
+        .impact-box.red h4  { color: #ef9a9a; }
+        .impact-box.green { background: rgba(102,187,106,0.06); border-color: rgba(102,187,106,0.2); }
+        .impact-box.green h4 { color: #a5d6a7; }
+
+        .policy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .policy-card { background: rgba(21,101,192,0.08); border: 1px solid rgba(100,181,246,0.15); border-radius: 12px; padding: 20px; }
+        .policy-card h4 { font-size: 0.9rem; font-weight: 700; color: #64b5f6; margin-bottom: 8px; }
+        .policy-card p  { font-size: 0.87rem; margin-bottom: 0; }
+
+        .metrics-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 40px; }
+
+        .metric-tile { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px 14px; text-align: center; }
+        .metric-tile .value { font-size: 1.6rem; font-weight: 800; line-height: 1; }
+        .metric-tile .label { font-size: 0.75rem; color: #7a9bbf; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+        .metric-tile .sub   { font-size: 0.72rem; color: #5a7a9b; margin-top: 3px; }
+
+        .callout { background: rgba(21,101,192,0.1); border-left: 4px solid #42a5f5; border-radius: 0 10px 10px 0; padding: 16px 20px; margin: 20px 0; }
+        .callout p { color: #b0ccec; font-size: 0.92rem; margin-bottom: 0; }
+        .callout.warning { background: rgba(255,152,0,0.08); border-left-color: #ff9800; }
+        .callout.warning p { color: #ffe0b2; }
+        .callout.danger { background: rgba(239,83,80,0.08); border-left-color: #ef5350; }
+        .callout.danger p { color: #ffcdd2; }
+
+        .subsector-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 32px; }
+
+        .subsector-tile {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 16px 14px;
+            text-align: center;
+        }
+
+        .subsector-tile h4 { font-size: 0.82rem; font-weight: 700; color: #90caf9; margin-bottom: 6px; }
+        .subsector-tile p  { font-size: 0.76rem; color: #7a9bbf; margin-bottom: 10px; line-height: 1.4; }
+        .subsector-score-badge {
+            font-size: 1.1rem;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .score-red    { background: rgba(239,83,80,0.2);  color: #ef9a9a; }
+        .score-orange { background: rgba(255,152,0,0.2);  color: #ffcc80; }
+        .score-green  { background: rgba(102,187,106,0.2);color: #a5d6a7; }
+
+        .page-footer {
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 28px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .footer-brand { font-size: 0.85rem; color: #5a7a9b; }
+        .footer-brand span { color: #64b5f6; font-weight: 700; }
+        .footer-note { font-size: 0.78rem; color: #3a5a7b; text-align: right; }
+
+        @media (max-width: 1024px) {
+            .two-col, .three-col, .policy-grid, .subsector-strip { grid-template-columns: 1fr; }
+            .metrics-strip { grid-template-columns: repeat(3, 1fr); }
+            .header-main  { grid-template-columns: 1fr; }
+            .header-stats { flex-direction: row; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE HEADER
+═══════════════════════════════════════════════════ -->
+<header class="page-header">
+    <div class="header-top">
+        <a href="index.html" class="back-nav">&#8592; AI Human Impact Index</a>
+        <div class="region-badge">&#127482;&#127480; North America</div>
+    </div>
+
+    <div class="header-main">
+        <div class="header-text">
+            <div class="sector-label">Sector Analysis</div>
+            <h1 class="sector-title">Professional Services</h1>
+            <p class="sector-subtitle">How generative AI, large language models, and legal technology are restructuring the knowledge economy across law, accounting, consulting, and advisory services in the United States and Canada, challenging the foundational economics of the billable hour, the partnership model, and the assumption that credentialled expertise is inherently safe from automation.</p>
+        </div>
+
+        <div class="header-stats">
+            <div class="stat-card">
+                <div class="stat-value warning">~9.4M</div>
+                <div class="stat-label">US Professional Services Employment</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value danger">38%</div>
+                <div class="stat-label">Roles at High Automation Risk</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value positive">$2.8T</div>
+                <div class="stat-label">US Professional Services Market Value</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="momentum-bar-section">
+        <span class="momentum-label">Disruption Momentum</span>
+        <div class="momentum-track">
+            <div class="momentum-fill" style="width: 77%"></div>
+        </div>
+        <span class="momentum-score">77 / 100</span>
+        <span class="momentum-descriptor">Very High Disruption</span>
+    </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════ -->
+<main class="content-wrapper">
+
+    <!-- Key Metrics Strip -->
+    <div class="metrics-strip">
+        <div class="metric-tile">
+            <div class="value" style="color:#ef5350">77</div>
+            <div class="label">Momentum Score</div>
+            <div class="sub">vs. 72 UK equivalent</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ef5350">~1.3M</div>
+            <div class="label">Jobs at Risk 2025-30</div>
+            <div class="sub">Automation and consolidation</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ff9800">$27B+</div>
+            <div class="label">LegalTech and AI Investment</div>
+            <div class="sub">US market 2024</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#66bb6a">~180K</div>
+            <div class="label">Emerging Roles by 2030</div>
+            <div class="sub">AI governance, legal tech, advisory</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ab47bc">~200</div>
+            <div class="label">AmLaw 200 Firms</div>
+            <div class="sub">Dominant US legal market structure</div>
+        </div>
+    </div>
+
+    <!-- ── Section 1: Current Landscape ── -->
+    <section class="section">
+        <h2 class="section-title">Current Landscape</h2>
+
+        <p>Professional services, encompassing legal, accounting, management consulting, and specialist advisory, employs approximately 9.4 million people in the United States and a further 1.1 million in Canada. It is, by compensation, among the highest-paying broad employment sectors in the economy, and it has historically been among the most resistant to automation, precisely because its value proposition rested on credentialled human expertise, professional judgment, and client relationships that appeared inherently irreplaceable by technology.</p>
+
+        <p>That assumption is under sustained challenge. Generative AI systems can now draft legal documents, conduct legal research, prepare first-pass tax returns, synthesise management information into board-ready presentations, and produce detailed financial models at a speed and cost that is materially reshaping the economics of professional service delivery. The consequence is not the elimination of the professions but the compression of the labour pyramid that has sustained them: the large cohorts of junior associates, analysts, and staff-level professionals who performed high-volume, lower-complexity knowledge work, and whose billable hours funded the economics of partnership-model firms, are now the most directly exposed cohort in the knowledge economy.</p>
+
+        <p>The United States is moving faster than comparable markets in adopting AI tools in professional services, driven by the scale of its legal and consulting markets, its larger venture capital investment in legal and professional technology, a regulatory environment that does not restrict AI tool use in professional practice as directly as some international counterparts, and the competitive intensity of a market where firms face pressure to pass AI-enabled cost efficiencies to clients before they lose mandates to competitors who will.</p>
+
+        <div class="callout danger">
+            <p>Goldman Sachs Research estimated in 2023 that legal services and management consulting are among the occupational categories with the highest exposure to generative AI automation globally, with approximately 44% of legal tasks and 37% of management consulting tasks having significant automation potential. The professional services sector's own economics, including the billable hour model that has historically made labour cost an accepted line item, are now making the business case for AI adoption more compelling, not less, than in lower-margin sectors.</p>
+        </div>
+
+        <!-- Sub-sector strip -->
+        <div class="subsector-strip">
+            <div class="subsector-tile">
+                <h4>BigLaw</h4>
+                <p>Associate model under structural pressure from AI document review and research tools</p>
+                <span class="subsector-score-badge score-red">Score: 81</span>
+            </div>
+            <div class="subsector-tile">
+                <h4>Big Four Accounting</h4>
+                <p>Audit, tax, and advisory automation compressing junior and staff-level headcount</p>
+                <span class="subsector-score-badge score-red">Score: 78</span>
+            </div>
+            <div class="subsector-tile">
+                <h4>Management Consulting</h4>
+                <p>AI research and analysis tools attacking the core work of analyst and associate cohorts</p>
+                <span class="subsector-score-badge score-red">Score: 76</span>
+            </div>
+            <div class="subsector-tile">
+                <h4>Mid-Market Law</h4>
+                <p>Alternative legal service providers and AI tools creating fee pressure across practice areas</p>
+                <span class="subsector-score-badge score-orange">Score: 68</span>
+            </div>
+            <div class="subsector-tile">
+                <h4>Specialist Advisory</h4>
+                <p>Actuarial, economic, and specialist expert roles partially protected by regulatory and court requirements</p>
+                <span class="subsector-score-badge score-orange">Score: 55</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 2: Regional Employment Analysis ── -->
+    <section class="section">
+        <h2 class="section-title">Regional Employment Analysis</h2>
+
+        <p>Professional services employment is among the most geographically concentrated of any major sector, clustered in the cities where corporate clients, government institutions, and capital markets activity are densest. The implications of disruption are therefore not uniformly distributed: the displaced junior associate in New York faces a dense alternative employment market that does not exist for the counterpart in a mid-size regional city.</p>
+
+        <table class="region-table">
+            <thead>
+                <tr>
+                    <th>Region</th>
+                    <th>Est. Employment</th>
+                    <th>Key Hubs</th>
+                    <th>Dominant Sub-sectors</th>
+                    <th>Disruption Exposure</th>
+                    <th>Structural Dynamics</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="region-name">New York Metro</div>
+                        <div class="region-hub">Manhattan, Midtown, Hudson Yards, White Plains, Newark</div>
+                    </td>
+                    <td>~1,240,000</td>
+                    <td>Sullivan and Cromwell, Skadden, McKinsey Global HQ, Deloitte and PwC major hubs</td>
+                    <td>BigLaw M&A and finance, management consulting, Big Four advisory, investment advisory</td>
+                    <td><span class="impact-pill impact-high">Very High</span></td>
+                    <td>Largest concentration of BigLaw revenue globally; Skadden, Kirkland, Sullivan and Cromwell, and Davis Polk all deploying AI document review, contract analysis, and research tools; McKinsey, BCG, and Bain deploying AI synthesis tools across their analyst and associate tiers; junior associate hiring at several major firms down 15-25% since 2022; alternative legal service providers including Axiom and UnitedLex competing for commoditised work</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Washington DC Metro</div>
+                        <div class="region-hub">K Street, Northern Virginia, Bethesda, Arlington</div>
+                    </td>
+                    <td>~420,000</td>
+                    <td>Covington and Burling, Hogan Lovells, Booz Allen Hamilton, Accenture Federal Services, KPMG Government</td>
+                    <td>Government relations law, regulatory advisory, federal consulting, defence consulting</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Government-adjacent practice creates some resilience through regulatory complexity that resists full automation; Booz Allen Hamilton and Accenture Federal Services are themselves deploying AI at scale in client delivery; K Street lobbying and regulatory advisory benefits from human relationship and political intelligence requirements; federal contractor consulting workforce exposed to budget uncertainty as well as automation; security clearance requirements create human minimum in classified advisory work</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Chicago Metro</div>
+                        <div class="region-hub">Loop Chicago, River North, Naperville, Evanston</div>
+                    </td>
+                    <td>~380,000</td>
+                    <td>Kirkland and Ellis (HQ), Sidley Austin, Baker McKenzie (HQ), A.T. Kearney (HQ), Grant Thornton (HQ)</td>
+                    <td>BigLaw private equity and M&A, global management consulting, mid-market accounting</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Kirkland and Ellis, the highest-revenue law firm in the world, is headquartered here and has been among the most aggressive adopters of AI legal tools; Baker McKenzie's global structure makes it an early deployer of standardised AI workflows across practices; Chicago's Big Four presence is substantial and automation of audit and tax work is advancing at all four firms; mid-market accounting firms facing LegalTech and FinTech competition from the bottom as well as Big Four from the top</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Greater Los Angeles</div>
+                        <div class="region-hub">Century City, Downtown LA, El Segundo, Irvine</div>
+                    </td>
+                    <td>~310,000</td>
+                    <td>O'Melveny, Gibson Dunn (HQ), Latham and Watkins, Deloitte West, entertainment industry advisory</td>
+                    <td>Entertainment and IP law, real estate advisory, entertainment consulting, tax services</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Entertainment industry legal work, including contract drafting, IP clearance, and talent agreements, is directly in the path of AI disruption; Gibson Dunn and Latham are both deploying AI tools across their practice groups; entertainment-specific advisory faces compounded disruption from both AI and the streaming economics reshaping the industry they serve; Century City concentration of entertainment law creating cluster risk if major studio clients internalise more advisory work</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">San Francisco Bay Area</div>
+                        <div class="region-hub">Financial District SF, Silicon Valley, Palo Alto, Menlo Park</div>
+                    </td>
+                    <td>~280,000</td>
+                    <td>Wilson Sonsini, Fenwick and West, Cooley, McKinsey San Francisco, Bain SF</td>
+                    <td>Tech and venture law, startup advisory, IP litigation, private equity advisory</td>
+                    <td><span class="impact-pill impact-high">Very High</span></td>
+                    <td>Irony that the region producing the AI tools disrupting professional services is itself heavily concentrated in professional services; Wilson Sonsini and Fenwick and West have built their practices around tech clients who are themselves the most sophisticated AI adopters and the most likely to question the value of traditional billable hour work; Bay Area management consulting practices serving tech clients experiencing compressed mandates as clients internalise advisory capacity; venture legal work exposed to deal volume cyclicality as well as automation</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Dallas-Houston-Austin</div>
+                        <div class="region-hub">Uptown Dallas, Houston Energy Corridor, Downtown Austin</div>
+                    </td>
+                    <td>~265,000</td>
+                    <td>Vinson and Elkins, Baker Botts, Haynes Boone, Deloitte Dallas, PwC Houston</td>
+                    <td>Energy law, corporate M&A, real estate advisory, Big Four audit (Texas public companies)</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Energy sector legal work, including oil and gas transactions, regulatory compliance, and environmental advisory, retains significant complexity that resists full automation but is not immune; Dallas is growing as a corporate relocation destination driving new M&A and restructuring advisory work; Texas has no state income tax and relatively light professional regulation, accelerating private equity-backed professional services consolidation; Austin's tech scene generating venture and employment law demand</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Boston and New England</div>
+                        <div class="region-hub">Financial District Boston, Back Bay, Cambridge, Route 128 corridor</div>
+                    </td>
+                    <td>~210,000</td>
+                    <td>WilmerHale, Ropes and Gray, Bain and Company (HQ), Monitor Deloitte, Life Sciences advisory</td>
+                    <td>Life sciences and biotech law, management consulting, academic and research advisory, IP</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Life sciences legal and regulatory advisory is growing faster than automation can compress it, driven by FDA complexity and the biotech M&A cycle; Bain's global headquarters creates a significant consulting employment anchor; Harvard and MIT academic consulting ecosystem generating unique advisory work with human expertise requirements; WilmerHale and Ropes and Gray both deploying AI tools while maintaining strong associate classes given client complexity</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Canada (Toronto, Montreal, Calgary, Vancouver)</div>
+                        <div class="region-hub">Bay Street Toronto, Downtown Montreal, Banker's Row Calgary</div>
+                    </td>
+                    <td>~1,100,000</td>
+                    <td>Osler, McCarthy Tetrault, Torys, Deloitte Canada, McKinsey Canada, Accenture Canada</td>
+                    <td>M&A and capital markets law, Big Four advisory, management consulting, energy advisory</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Canadian professional services are broadly aligned with US trajectory but with moderating factors including stronger provincial professional licensing oversight, law society governance of legal practice that limits non-lawyer ownership, and cultural preference for more deliberate technology adoption; Bay Street M&A and capital markets law following Wall Street in AI document review deployment; Calgary energy advisory sector facing structural questions about fossil fuel transition independently of AI disruption; French-language requirement in Quebec creating localisation complexity that slows some AI tool deployment</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- ── Section 3: Charts ── -->
+    <section class="section">
+        <h2 class="section-title">Employment and Disruption Visualisations</h2>
+
+        <div class="two-col">
+            <div class="chart-container">
+                <div class="chart-title">Professional Services Employment by Sub-Sector (US, 2024, thousands)</div>
+                <canvas id="subsectorChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Role Category Employment Forecast 2024-2030 (US, thousands)</div>
+                <canvas id="forecastChart"></canvas>
+            </div>
+        </div>
+
+        <div class="two-col" style="margin-top: 28px">
+            <div class="chart-container">
+                <div class="chart-title">Automation Exposure by Role Type</div>
+                <canvas id="automationChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">LegalTech and Professional AI Investment (US $B, 2019-2024)</div>
+                <canvas id="investmentChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 4: BigLaw in Depth ── -->
+    <section class="section">
+        <h2 class="section-title">BigLaw: The Billable Hour Under Structural Pressure</h2>
+
+        <p>The American legal market is the largest in the world, generating approximately $380 billion in annual revenue across firms of all sizes. The top tier, the AmLaw 200, comprises the largest and most profitable law firms in the country, dominated by New York, Chicago, Los Angeles, Washington DC, and San Francisco presences. These firms have been built around a specific economic model: large classes of highly credentialled associates billing thousands of hours annually at rates that fund the partnership draws of the senior lawyers who hold client relationships and bring in work. That model is under the most acute challenge it has faced since it was established.</p>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">AI Legal Research and Document Review</div>
+                <p>Contract Lawyer platforms such as Luminance, Harvey AI, and Casetext (acquired by Thomson Reuters) are deploying large language models specifically trained on legal text that can conduct legal research, review contracts for risk provisions, analyse discovery documents, and draft standard agreements at a fraction of the time required by human associates. Harvey AI has signed enterprise agreements with Allen and Overy, PwC Legal, and several AmLaw 100 firms. Luminance is deployed at more than 400 law firms globally.</p>
+                <p style="margin-top:12px">The practical consequence is stark. A due diligence review that previously required a team of four first and second-year associates working a combined 200 hours can now be completed with AI assistance in 20-30 hours with a reduced team, or in 40-50 hours with a single associate verifying AI-generated analysis. The revenue implication for firms is that the same matter generates less billable hour revenue from associate time, unless the efficiency gain is passed to the client and volume grows to compensate, or the partner rate is used to recover more of the margin.</p>
+                <p style="margin-top:12px">Major law firms are, with varying degrees of transparency, reducing their associate intake. Cravath, Swaine and Moore, historically the setter of associate compensation benchmarks and class sizes, has had years in which class sizes were smaller than traditional expectations. Kirkland and Ellis, now the highest-grossing law firm in the world, has been aggressive in deploying AI tools and has been more explicit than most peers that efficiency gains will affect the associate headcount model.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">The Partnership Pyramid and Its Disruption</div>
+                <p>The partnership model in BigLaw operates on a specific demographic logic. Large first-year classes are hired with the understanding that a small minority will make partner after eight to ten years of sustained performance. The majority will leave, providing the firm with high-quality labour during their tenure while managing out the cost of senior promotion at scale. The model works when clients accept the billable hour rate for associate work, when associate time is genuinely necessary for matter completion, and when the leverage ratio of associates to partners generates sufficient margin.</p>
+                <p style="margin-top:12px">AI disruption attacks this model at its base. If associate work can be substantially performed by AI tools at dramatically lower cost, clients will increasingly demand that efficiency gain be reflected in their bills, either through reduced hours or through alternative fee arrangements that cap total matter cost. Corporate legal departments, already under pressure to control outside counsel spend, are the most sophisticated buyers of legal services and the most likely to push for AI-enabled pricing that removes the associate labour premium.</p>
+                <p style="margin-top:12px">The consequence for the individuals in those associate classes is not abstract. The associate who joins a BigLaw firm in 2025 or 2026 is entering a career track whose traditional economics are in structural transition. The eight-to-ten-year pathway to partnership that justified the sacrifice of the early years may not exist in its current form by the time today's first-year associates reach their fifth or sixth year. The career development model that has produced generations of senior American lawyers is being disrupted at the point of entry into the profession.</p>
+            </div>
+        </div>
+
+        <div class="callout warning">
+            <p>The American Bar Association's Commission on the Future of Legal Services has noted that AI legal tools create both access to justice opportunities, lower-cost legal services for individuals who could not previously afford representation, and employment disruption risks for the legal workforce. The optimistic reading is that AI democratises legal services; the realistic reading is that it does so partly by compressing the employment base that delivers them. Both readings can be simultaneously true, and the policy challenge is navigating both consequences rather than choosing between them.</p>
+        </div>
+
+        <div class="two-col" style="margin-top: 22px">
+            <div class="card">
+                <div class="card-title">Alternative Legal Service Providers</div>
+                <p>The rise of alternative legal service providers (ALSPs), including Axiom, UnitedLex, Elevate, and the legal process outsourcing industry more broadly, was already compressing BigLaw's market share before generative AI arrived. ALSPs provide contract lawyers and standardised legal processes at rates 30-60% below BigLaw associate billing rates, targeting precisely the high-volume, lower-complexity work that is also most automatable.</p>
+                <p style="margin-top:12px">The combination of ALSP competition and AI automation is creating a two-front attack on the BigLaw revenue model: commoditised work is migrating to ALSPs and AI tools while the complex, relationship-dependent work at the top remains with BigLaw but supports fewer associate hours. The firms that will survive this transition at high profitability are those that successfully reposition their associate workforce as AI-augmented specialists rather than high-volume document processors, a transition that is conceptually straightforward but practically demanding for organisations whose culture and compensation systems were built around the billable hour.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Legal Specialisms Differentially Exposed</div>
+                <p>Not all legal practice is equally exposed to AI disruption. Document-intensive practices including M&A due diligence, commercial litigation discovery, immigration document processing, and real estate transaction management are most directly in the path of automation. Practices that depend on courtroom advocacy, judicial relationship intelligence, legislative and regulatory lobbying, and crisis management advice depend on human capabilities and institutional knowledge that AI tools can augment but not replace at the current state of development.</p>
+                <p style="margin-top:12px">Patent prosecution and IP management present a mixed picture: AI tools are accelerating prior art search and claim drafting, but the regulatory requirement for a licensed patent attorney to sign filings and the strategic judgment required in claim scope decisions preserve meaningful human roles. Life sciences regulatory advisory, where FDA approval pathways require nuanced interpretation of evolving guidance, retains strong human expertise requirements that AI can support but not substitute. The areas most at risk in BigLaw are precisely the high-volume practices that generate significant revenue but whose value proposition is most clearly based on labour quantity rather than specialised judgment.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 5: Big Four and Management Consulting ── -->
+    <section class="section">
+        <h2 class="section-title">The Big Four and Management Consulting: Scale Meets Disruption</h2>
+
+        <p>The Big Four accounting and professional services firms, Deloitte, PwC, EY, and KPMG, collectively employ approximately 370,000 people in the United States, making them among the largest professional services employers in the country. Their business model spans audit, tax, advisory, and consulting, and all four have been making significant and publicly disclosed investments in AI tools that will materially affect their own workforce composition over the coming five years.</p>
+
+        <div class="two-col">
+            <div>
+                <p>Deloitte has publicly committed to deploying AI across its audit practice in ways that reduce the hours required per engagement, while investing in the AI capabilities of its consulting division as a revenue growth vehicle. Its internal AI tool, PairD, is deployed across its global workforce with the explicit goal of productivity enhancement, which in a professional services context translates directly to the capacity to serve the same client volume with fewer people, or to scale revenue without proportional headcount growth.</p>
+
+                <p>PwC has announced a $1 billion investment in AI capability over three years, framing it as a growth initiative that will create new service lines. The framing is credible: the firms that master AI-enabled advisory may generate more revenue per partner than current models allow. But the distribution of that revenue growth across a workforce that is simultaneously being made more productive by AI tools does not automatically translate to proportional headcount growth at junior levels. The history of productivity-enhancing technology in professional services is that it raises partner income rather than expanding associate classes.</p>
+
+                <p>The management consulting sector, led by McKinsey, Boston Consulting Group, Bain, Oliver Wyman, and a second tier of specialist firms, faces a specific version of the disruption. Consulting value has historically been delivered through three mechanisms: proprietary data and benchmarks that clients cannot access themselves; analytical horsepower to synthesise large datasets into strategic recommendations; and experienced advisor judgment on implementation and change. AI tools are most directly attacking the second of these, while enhancing the analytical support for the third.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">The Analyst Cohort: A Profession's Entry Point at Risk</div>
+                <p>Management consulting firms recruit heavily from elite universities, offering two to three year analyst programmes that serve as a de facto graduate training ground for strategy, finance, and general management. The analyst role involves data gathering, model building, slide production, market sizing, and interview synthesis, precisely the tasks that AI tools are now capable of performing or substantially accelerating.</p>
+                <p style="margin-top:12px">McKinsey, BCG, and Bain have all been deploying internal AI tools that materially accelerate the work previously done by analyst cohorts. McKinsey's Lilli AI platform, deployed internally in 2023, can access the firm's global knowledge base, produce research summaries, draft client presentations, and synthesise interview notes. The platform does not eliminate the analyst role but fundamentally changes what the role requires and how many analysts are needed to support a given number of client engagements.</p>
+                <p style="margin-top:12px">Several consulting firms, including McKinsey, have reduced their analyst and associate intakes in recent years. The framing has been around quality over quantity, selecting smaller cohorts of individuals who can operate effectively with AI tools rather than large cohorts who process information in conventional ways. The consequence for ambitious graduates who viewed consulting as a career entry point is that the door has narrowed, which has distributional implications for the talent pathways from which consulting has traditionally drawn.</p>
+                <p style="margin-top:12px">The consulting firms' own advisory practices around AI transformation create a specific tension: they are selling clients on AI adoption programmes that will reduce those clients' workforces, while simultaneously managing the implications of AI adoption for their own. The credibility of that advisory is enhanced by demonstrated internal adoption and complicated by the workforce implications that internal adoption creates.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 6: Job Transformation Dynamics ── -->
+    <section class="section">
+        <h2 class="section-title">Job Transformation Dynamics</h2>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title" style="color:#ef9a9a">Roles Under Significant Pressure</div>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Junior Legal Associates (Years 1-4)</div>
+                            <div class="role-desc">Document review, legal research, contract drafting, and due diligence, the core tasks of early associate years, are the most directly automated legal functions. AI tools can perform a first pass on these tasks in minutes rather than hours, compressing the billable time and reducing the number of associates needed per matter. Estimated 20-30% reduction in junior associate intake at major firms by 2028 relative to 2021 levels.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Paralegal and Legal Support Staff</div>
+                            <div class="role-desc">The paralegal role, performing legal research, document management, case preparation, and client communication under attorney supervision, is directly in the path of AI legal tools. E-discovery platforms have already significantly reduced the paralegal hours required per litigation matter. AI is now extending that compression to transactional work. Estimated 25-35% decline in paralegal headcount at large firms by 2030.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Audit Staff and Associates (Big Four)</div>
+                            <div class="role-desc">AI-enabled audit tools are reducing the sampling, testing, and documentation hours required per engagement. The PCAOB's evolving standards around AI in audit create compliance requirements but also permit AI-assisted procedures that reduce associate-level work. All Big Four firms have stated efficiency targets for their audit practices that imply reduced headcount growth relative to revenue growth. The traditional path from audit associate to senior manager is narrowing.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Tax Preparation and Compliance Staff</div>
+                            <div class="role-desc">AI-driven tax preparation platforms, including Intuit's AI suite and AI-enhanced corporate tax tools, are reducing the labour required for standard compliance work. The human expertise premium in tax is concentrated at the planning and advisory end of the market; the compliance and return preparation work is progressively automating. Mid-market accounting firms whose revenue is primarily compliance-based face the most acute pressure.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Management Consulting Analysts and Associates</div>
+                            <div class="role-desc">Market sizing, competitor analysis, survey design and synthesis, financial modelling, and slide production, the work of consulting's entry-level workforce, are all partially automatable with current AI tools. Consulting firms are deploying AI to make their existing analysts more productive rather than to eliminate the role, but the productivity gain translates to smaller required cohorts for the same revenue base.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Legal Process Outsourcing Operatives</div>
+                            <div class="role-desc">The large legal process outsourcing industry, which grew rapidly by providing lower-cost document review and legal support, is itself subject to AI automation. The cost advantage that LPO provided over BigLaw is being compressed by AI tools that can perform similar work at even lower cost and faster speed. Several large LPO operations have announced significant restructuring in response to AI document review deployment.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="color:#a5d6a7">Emerging Roles and Growing Opportunities</div>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">AI Governance and Legal Technology Counsel</div>
+                            <div class="role-desc">The deployment of AI systems in regulated industries requires legal expertise at the intersection of technology law, data privacy, liability, and governance. As the FTC, SEC, and sector regulators develop AI governance frameworks, demand for lawyers who can navigate these frameworks is growing substantially. This is among the clearest growth specialisms in the legal market, with significant compensation premiums over general practice.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Legal Operations and Technology Directors</div>
+                            <div class="role-desc">Corporate legal departments and law firms are hiring professionals who can evaluate, implement, and manage AI legal tools, manage alternative service provider relationships, and redesign legal workflows around technology-enabled delivery. The Legal Operations discipline, formalized through the Corporate Legal Operations Consortium (CLOC), is growing rapidly and commanding significant compensation premiums in large corporate legal departments.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">ESG and Sustainability Advisory</div>
+                            <div class="role-desc">SEC climate disclosure requirements, voluntary ESG reporting frameworks, and supply chain sustainability due diligence are generating significant demand for advisory expertise across the Big Four, specialist boutiques, and management consulting firms. This practice area is growing faster than AI can currently compress it, creating genuine net employment growth within professional services for advisors who can credibly navigate regulatory complexity and stakeholder expectations.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Senior Strategy and Transformation Advisors</div>
+                            <div class="role-desc">The management consulting roles growing most strongly are those requiring experienced judgment, C-suite relationships, and sector-specific implementation knowledge that AI tools can support but not replace. Senior principals and partners at top consulting firms who can credibly advise on AI-enabled transformation from the vantage point of having managed comparable transformations are in strong demand. The paradox is that the advisors selling AI transformation have their own junior workforce being transformed.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Data and AI Audit Specialists</div>
+                            <div class="role-desc">As AI systems make consequential decisions in finance, healthcare, and other regulated domains, the need for independent assurance of those systems' reliability, fairness, and compliance is creating a new assurance practice area. The Big Four are actively building AI audit capabilities and developing service offerings for clients who need independent assurance of their own AI deployments. This is a genuine growth area within accounting and advisory that did not exist at meaningful scale five years ago.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon transform"></div>
+                        <div>
+                            <div class="role-name">Senior Associates and Mid-Level Partners (Transforming)</div>
+                            <div class="role-desc">The professionals most likely to successfully navigate the transition are experienced practitioners who develop genuine fluency with AI tools while retaining the client relationships, professional judgment, and sector expertise that remain distinctively human advantages. The transformation required is real: practitioners who resist AI tool adoption will find their productivity and competitiveness deteriorating relative to peers who embrace the tools as amplifiers of their existing expertise.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 7: Human Impact Considerations ── -->
+    <section class="section">
+        <h2 class="section-title">Human Impact Considerations</h2>
+
+        <div class="impact-box red">
+            <h4>The Student Debt and Career Expectation Collision</h4>
+            <p>The workers facing displacement from junior professional services roles are among the most financially leveraged in the US workforce. Law school graduates carry average debt of approximately $130,000, with graduates of elite law schools commonly carrying $200,000 or more. The traditional justification for that debt load has been the BigLaw associate salary, currently $215,000 at first-year level at major firms, which makes debt servicing manageable within a few years. If the BigLaw associate pipeline narrows substantially, the individuals left with law school debt but without BigLaw placements face a genuinely difficult financial position. MBA graduates at consulting firms carry similar debt loads with similar career expectation dependencies. The disruption of the career pathways that justified this debt is not a minor inconvenience; it is a significant personal financial crisis for the individuals who made educational investments based on career pathway expectations that are now in transition.</p>
+        </div>
+
+        <div class="impact-box">
+            <h4>Diversity Pipeline Implications</h4>
+            <p>Law firms and consulting firms have made meaningful but still incomplete progress on diversity in associate and analyst hiring over the past decade. The narrowing of these hiring pipelines through AI-driven efficiency has a non-neutral diversity consequence. Historically, large associate classes have provided access to elite professional careers for first-generation professionals, graduates of non-target schools who demonstrated high performance, and individuals from underrepresented groups who entered the profession through sheer capability and commitment. When class sizes shrink, the selection process intensifies, and the network, credential, and implicit bias effects that have historically disadvantaged underrepresented candidates become more consequential. A smaller door is harder to push through when you are already pushing against structural headwinds.</p>
+        </div>
+
+        <div class="impact-box blue">
+            <h4>The Access to Justice Dimension</h4>
+            <p>The disruption of professional services employment has a potential upside that is missing from most other sectors: AI legal tools may extend access to legal services to individuals and small businesses that currently cannot afford professional representation. The legal aid crisis in the United States, in which the vast majority of low-income individuals with civil legal needs receive no representation, is partly a supply and cost problem that AI tools could genuinely help address. This does not eliminate the employment displacement concern, but it does mean that the human impact calculus in professional services is more genuinely two-sided than in most disrupted sectors. The challenge is ensuring that the access benefits accrue to those who need them while the employment transition costs do not fall entirely on those least able to bear them.</p>
+        </div>
+
+        <div class="impact-box">
+            <h4>Geographic Concentration of High-Skill Displacement</h4>
+            <p>Unlike the retail or manufacturing displacement discussed elsewhere in this tool, professional services disruption is concentrated in the most expensive cities in the United States, New York, San Francisco, Chicago, Los Angeles, Washington DC. The displaced junior associate or analyst is typically a highly educated individual with transferable skills, living in a market with a dense alternative employment ecosystem. This makes the individual human consequence, while real and significant, less socially acute than the displacement of a retail worker in rural Iowa or a manufacturing worker in Youngstown. However, the scale of the professional services workforce and the concentration of high-income roles means that material displacement in this sector carries macroeconomic consequences, including depressed demand in expensive urban rental markets, reduced consumer spending in the service businesses that depend on professional services worker income, and reduced returns on the educational investments made by the families of these workers.</p>
+        </div>
+
+        <div class="impact-box blue">
+            <h4>The Mentorship and Knowledge Transfer Crisis</h4>
+            <p>Professional services careers are built on apprenticeship models in which junior practitioners learn their craft by working alongside senior colleagues, absorbing judgment, client management techniques, and professional identity through proximity and practice. The compression of junior cohorts threatens this knowledge transfer mechanism in ways that are not visible in employment statistics. If law firms and consulting firms stop hiring large associate classes, the pipeline of future senior practitioners narrows. The profession loses not just the current generation of junior workers but the future senior practitioners they would have become, creating a talent gap that will become visible a decade from now when the implications of smaller cohorts work their way through the career pipeline.</p>
+        </div>
+    </section>
+
+    <!-- ── Section 8: The Billable Hour Under Challenge ── -->
+    <section class="section">
+        <h2 class="section-title">The Billable Hour: An Economic Model Under Fundamental Challenge</h2>
+
+        <p>The billable hour is the foundational pricing mechanism of American legal services and much of professional services more broadly. It prices professional work by the unit of time expended rather than the value delivered, which creates a specific economic relationship with efficiency: if AI tools allow a lawyer to complete in two hours work that previously required twenty, the billable hour model means the firm earns ten times less revenue for the same outcome.</p>
+
+        <div class="two-col">
+            <div>
+                <p>Law firms have responded to this tension in predictably varied ways. Some have raised hourly rates aggressively, preserving revenue per matter by increasing the price of the diminished hours. This approach works as long as clients accept the rate increase and as long as the quality premium of the firm's specific expertise justifies the premium over AI-assisted alternatives. Some firms are experimenting with value-based pricing that charges for outcomes rather than time, which better aligns the firm's incentives with client outcomes but requires sophisticated pricing capability and client relationship depth that not all firms possess.</p>
+
+                <p>The most significant structural consequence of the billable hour's disruption is the pressure it places on the associate model's fundamental economics. If associate hours are the primary revenue source and AI is compressing those hours, the leverage ratio on which partnership economics depend changes structurally. Partners at highly profitable firms have maintained their income by raising rates and reducing associate class sizes while deploying AI tools to maintain throughput. Partners at less profitable firms face a more difficult equation: they cannot raise rates without losing clients who have fee alternatives, and they cannot absorb the productivity gain without cutting the headcount that generates their revenue.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Alternative Fee Arrangements and New Models</div>
+                <p>Corporate clients, particularly large companies with sophisticated in-house legal departments, have been pushing for alternative fee arrangements (AFAs) for more than a decade. Fixed fees, capped fees, blended rates, and success fees have grown as a share of outside counsel spend, reducing the pure billable hour relationship between law firm profitability and associate headcount. AI acceleration is making the client case for AFAs more compelling: if the firm can do the work in half the time, the client should pay for the value of the outcome rather than the time cost of achieving it.</p>
+                <p style="margin-top:12px">Several firms are experimenting with subscription-based models for routine legal work, AI-enabled fixed-fee transaction services, and outcome-linked fee structures for litigation. These models require different talent structures, different technology infrastructure, and different management capability than traditional billable hour practices. The transition is conceptually clear but practically complex, and the firms making it successfully are creating genuinely differentiated practices. The firms that cannot make it remain dependent on an hourly pricing model whose economics AI is systematically eroding.</p>
+                <p style="margin-top:12px">The Big Four accounting firms, already accustomed to fixed-fee and value-based pricing in their advisory practices, are in some ways better positioned to adapt to AI-enabled professional services delivery than traditional law firms. Their management consulting practices price outcomes rather than time, their scale allows investment in proprietary AI tools, and their multi-disciplinary workforce allows them to assemble AI-augmented teams that span legal, financial, and technology expertise. Several Big Four firms are expanding their legal services offerings in the United States in ways that will create direct competition with traditional law firms in exactly the practice areas most vulnerable to AI disruption.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 9: Future Prospects ── -->
+    <section class="section">
+        <h2 class="section-title">Future Prospects: 2025-2030</h2>
+
+        <div class="two-col">
+            <div class="chart-container">
+                <div class="chart-title">Employment Scenario Projections 2024-2030 (US Professional Services, thousands)</div>
+                <canvas id="scenarioChart"></canvas>
+            </div>
+
+            <div>
+                <p>The professional services employment trajectory over the next five years is among the most genuinely uncertain in this tool's analysis. The sector's high-skill, high-compensation character means that it attracts significant regulatory attention, that its workers have greater capacity to organise and respond to disruption than lower-wage workforces, and that the demand for its services may grow alongside AI adoption in ways that partially offset the efficiency-driven headcount compression.</p>
+
+                <p>A conservative scenario assumes that regulatory requirements around human professional oversight, the complexity of high-value advisory mandates, and deliberate firm investment in retraining preserve much of the current workforce while redeploying it toward higher-value activities. Under this scenario, net employment declines by 5-8% by 2030, concentrated in junior and staff-level roles, with meaningful growth in AI governance, technology advisory, and ESG specialist functions partially offsetting the reduction.</p>
+
+                <p>A base scenario, reflecting current adoption trajectories and competitive dynamics, suggests net decline of 12-18%, approximately 1.1 to 1.7 million positions across the US professional services sector. This scenario assumes continued compression of junior cohorts at BigLaw and consulting firms, progressive automation of Big Four audit and tax compliance work, and the entry of AI-native competitors into areas of the market currently served by traditional firms.</p>
+
+                <p>A disruptive scenario, in which AI legal and advisory tools reach a capability threshold that allows sophisticated corporate clients to substantially internalise previously outsourced professional services work, could see decline of 20-25% by 2030. This scenario is most plausible in the context of large corporate legal departments deploying AI tools that reduce their dependence on outside counsel, and large companies building internal advisory capabilities that reduce management consulting mandates. Several Fortune 500 legal departments are already on this trajectory.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 10: Policy Recommendations ── -->
+    <section class="section">
+        <h2 class="section-title">Policy Recommendations</h2>
+
+        <div class="policy-grid">
+            <div class="policy-card">
+                <h4>Law School Reform and Debt Relief</h4>
+                <p>The structural mismatch between law school graduate supply, the debt loads those graduates carry, and the narrowing employment market they enter requires policy intervention at the educational level. Law school curricula should be redesigned around AI-augmented practice, with technology literacy, legal operations, and AI tool management as core competencies rather than electives. State bars should update continuing education requirements to include AI competency standards. Federal loan forgiveness provisions for public interest legal careers should be significantly expanded to address the access to justice deficit that AI's displacement of human legal workers might paradoxically worsen.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Professional Licensing and AI Oversight</h4>
+                <p>State bars and professional licensing bodies should develop explicit frameworks for AI use in legal practice that require human professional accountability for AI-assisted work, establish disclosure requirements for clients when AI tools are used in their matters, and set minimum competency standards for practitioners deploying AI tools. The existing duty of competence under the Model Rules of Professional Conduct already creates obligations around understanding tools used in practice; bar associations should issue specific guidance making those obligations concrete in the AI context rather than leaving practitioners to navigate ambiguity that currently benefits larger firms with legal technology teams over solo and small firm practitioners.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Access to Justice Investment</h4>
+                <p>If AI tools genuinely reduce the cost of legal service delivery, the public benefit should flow to those currently unserved rather than exclusively to corporate clients and law firm profits. Federal and state investment in AI-enabled legal aid platforms, legal self-help tools that are genuinely accurate and accessible, and technology-supported court navigation systems would allow the productivity gains of AI in law to reduce the access to justice deficit. The Legal Services Corporation should receive funding to develop and deploy AI-enhanced service delivery at scale, rather than being subject to the funding constraints that have historically limited its reach.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Big Four Regulation and Competitive Dynamics</h4>
+                <p>The anticipated expansion of Big Four accounting firms into legal services in the United States, following the pattern established in other jurisdictions where multidisciplinary practice is permitted, raises genuine questions about market concentration and regulatory capture. Policymakers and bar associations should develop considered positions on whether and how to permit non-lawyer ownership of legal service entities before the expansion occurs rather than after it has created entrenched market positions. The regulatory framework governing who can provide professional services has significant implications for employment structure, access, and quality that deserve deliberate policy attention.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Diversity and Pipeline Preservation</h4>
+                <p>Law firms and consulting firms should be required to report publicly on the demographic composition of their hiring by level, including associate and analyst cohorts, with year-on-year trends. If AI-driven cohort compression is demonstrably reducing diversity, professional associations and corporate clients should apply pressure for explicit diversity-preserving measures in hiring decisions. Law schools and consulting firms should jointly fund pipeline programmes that maintain diverse talent access to the profession even as overall entry-level volumes decline, recognising that a smaller door is not a justification for a less diverse one.</p>
+            </div>
+            <div class="policy-card">
+                <h4>AI Transparency in Professional Advice</h4>
+                <p>Clients receiving professional services, whether legal, accounting, or advisory, deserve to know when AI tools have materially contributed to the advice they are paying for. Disclosure requirements, similar to those developing in medical AI contexts, should require professional service providers to indicate when AI-generated analysis forms a substantial component of deliverables, and to confirm that a qualified professional has reviewed and takes responsibility for the AI-assisted output. This transparency requirement preserves professional accountability while allowing the efficiency benefits of AI deployment to be passed to clients through competitive pricing.</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="page-footer">
+    <div class="footer-brand">
+        <span>AI Human Impact Index</span> | North America: Professional Services
+        <br>Andrew Phipps, PhD Candidate, University of Sussex | andrewphipps.ai
+    </div>
+    <div class="footer-note">
+        Employment figures drawn from BLS, ABA, AICPA, and industry sources.<br>
+        Data reflects best available information as of early 2025. Subject to ongoing revision.
+    </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════
+     CHART.JS SCRIPTS
+═══════════════════════════════════════════════════ -->
+<script>
+    Chart.defaults.color = '#7a9bbf';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+
+    /* Sub-sector horizontal bar */
+    new Chart(document.getElementById('subsectorChart'), {
+        type: 'bar',
+        data: {
+            labels: [
+                'Accounting and Tax Services',
+                'Management Consulting',
+                'Legal Services',
+                'Scientific and Technical',
+                'Architectural and Engineering',
+                'Advertising and PR',
+                'Market Research',
+                'Other Professional'
+            ],
+            datasets: [{
+                label: 'Employment (thousands)',
+                data: [1420, 1680, 1180, 1850, 1520, 480, 290, 980],
+                backgroundColor: [
+                    'rgba(66,165,245,0.7)',
+                    'rgba(239,83,80,0.7)',
+                    'rgba(171,71,188,0.7)',
+                    'rgba(102,187,106,0.7)',
+                    'rgba(255,152,0,0.7)',
+                    'rgba(38,198,218,0.7)',
+                    'rgba(255,235,59,0.7)',
+                    'rgba(120,120,140,0.6)'
+                ],
+                borderRadius: 5,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf', callback: v => v >= 1000 ? (v/1000).toFixed(1)+'M' : v+'K' } },
+                y: { ticks: { color: '#9fb8d8', font: { size: 10 } }, grid: { display: false } }
+            }
+        }
+    });
+
+    /* Employment Forecast */
+    new Chart(document.getElementById('forecastChart'), {
+        type: 'line',
+        data: {
+            labels: ['2022','2023','2024','2025','2026','2027','2028','2029','2030'],
+            datasets: [
+                {
+                    label: 'Junior Associates / Analysts / Staff',
+                    data: [3200, 3100, 2980, 2800, 2580, 2380, 2210, 2090, 2000],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.08)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Mid-level / Senior Practitioners',
+                    data: [4100, 4060, 4020, 3960, 3880, 3800, 3730, 3680, 3640],
+                    borderColor: '#42a5f5',
+                    backgroundColor: 'rgba(66,165,245,0.07)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Partner / Principal Level',
+                    data: [1650, 1660, 1670, 1660, 1640, 1620, 1600, 1590, 1580],
+                    borderColor: '#ff9800',
+                    backgroundColor: 'rgba(255,152,0,0.06)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'AI, Tech, ESG Specialist Roles',
+                    data: [120, 160, 220, 300, 390, 480, 570, 640, 700],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.08)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 9 }, padding: 8 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: { ticks: { color: '#7a9bbf', callback: v => (v/1000).toFixed(1)+'M' } }
+            }
+        }
+    });
+
+    /* Automation Exposure */
+    new Chart(document.getElementById('automationChart'), {
+        type: 'bar',
+        data: {
+            labels: [
+                'Legal Document Review',
+                'Legal Research',
+                'Contract Drafting (Standard)',
+                'Tax Compliance / Preparation',
+                'Audit Sampling and Testing',
+                'Management Consulting Analysis',
+                'Paralegal Support',
+                'Senior Advisory / Strategy',
+                'Client Relationship Management',
+                'AI Governance / Legal Tech'
+            ],
+            datasets: [{
+                label: 'Automation Exposure (%)',
+                data: [85, 78, 72, 70, 68, 62, 74, 14, 10, 5],
+                backgroundColor: ctx => {
+                    const v = ctx.dataset.data[ctx.dataIndex];
+                    if (v >= 60) return 'rgba(239,83,80,0.7)';
+                    if (v >= 30) return 'rgba(255,152,0,0.7)';
+                    return 'rgba(102,187,106,0.7)';
+                },
+                borderRadius: 4, borderWidth: 0
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: true,
+            scales: {
+                x: { max: 100, ticks: { color: '#7a9bbf', callback: v => v + '%' } },
+                y: { ticks: { color: '#9fb8d8', font: { size: 9 } }, grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    /* Investment Trend */
+    new Chart(document.getElementById('investmentChart'), {
+        type: 'bar',
+        data: {
+            labels: ['2019','2020','2021','2022','2023','2024'],
+            datasets: [
+                {
+                    label: 'LegalTech ($B)',
+                    data: [1.2, 1.0, 3.8, 2.4, 1.8, 2.2],
+                    backgroundColor: 'rgba(171,71,188,0.7)',
+                    borderRadius: 4, borderWidth: 0
+                },
+                {
+                    label: 'Professional AI Tools ($B)',
+                    data: [0.8, 1.1, 2.2, 4.6, 8.4, 12.8],
+                    backgroundColor: 'rgba(66,165,245,0.7)',
+                    borderRadius: 4, borderWidth: 0
+                },
+                {
+                    label: 'Accounting and Tax Tech ($B)',
+                    data: [1.4, 1.6, 3.1, 3.8, 5.2, 7.1],
+                    backgroundColor: 'rgba(102,187,106,0.7)',
+                    borderRadius: 4, borderWidth: 0
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 10 }, padding: 8 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { display: false } },
+                y: {
+                    stacked: false,
+                    ticks: { color: '#7a9bbf', callback: v => '$' + v + 'B' }
+                }
+            }
+        }
+    });
+
+    /* Scenario Projection */
+    new Chart(document.getElementById('scenarioChart'), {
+        type: 'line',
+        data: {
+            labels: ['2024','2025','2026','2027','2028','2029','2030'],
+            datasets: [
+                {
+                    label: 'Conservative Scenario',
+                    data: [9400, 9250, 9060, 8900, 8780, 8700, 8650],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.05)',
+                    borderDash: [6,3], tension: 0.3, borderWidth: 2, fill: true
+                },
+                {
+                    label: 'Base Scenario',
+                    data: [9400, 9100, 8680, 8260, 7900, 7640, 7490],
+                    borderColor: '#42a5f5',
+                    backgroundColor: 'rgba(66,165,245,0.07)',
+                    tension: 0.3, borderWidth: 2.5, fill: true
+                },
+                {
+                    label: 'Disruptive Scenario',
+                    data: [9400, 8950, 8280, 7580, 7020, 6740, 7050],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.06)',
+                    borderDash: [4,2], tension: 0.3, borderWidth: 2, fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 10 }, padding: 10 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: {
+                    ticks: { color: '#7a9bbf', callback: v => (v/1000).toFixed(1)+'M' },
+                    min: 6000, max: 10000
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

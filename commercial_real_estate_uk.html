@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commercial Real Estate Services (United Kingdom) | AI Human Impact Index</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0e1a;
+            color: #e0e6f0;
+            line-height: 1.7;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a2a4a 50%, #0d2035 100%);
+            border-bottom: 1px solid rgba(64, 180, 255, 0.2);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .back-nav { color: #64b5f6; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+        .back-nav:hover { color: #90caf9; }
+
+        .region-badge {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            border: 1px solid rgba(100,181,246,0.4);
+            color: #90caf9;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-main {
+            padding: 40px 40px 36px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 40px;
+            align-items: end;
+        }
+
+        .sector-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; color: #64b5f6; text-transform: uppercase; margin-bottom: 12px; }
+        .sector-title { font-size: 2.6rem; font-weight: 800; color: #ffffff; line-height: 1.15; margin-bottom: 14px; }
+        .sector-subtitle { font-size: 1.05rem; color: #9fb8d8; max-width: 680px; }
+
+        .header-stats { display: flex; flex-direction: column; gap: 14px; min-width: 280px; }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(100,181,246,0.15);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 1.9rem; font-weight: 800; color: #64b5f6; line-height: 1; }
+        .stat-value.warning  { color: #ff9800; }
+        .stat-value.danger   { color: #ef5350; }
+        .stat-value.positive { color: #66bb6a; }
+        .stat-label { font-size: 0.78rem; color: #7a9bbf; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .momentum-bar-section {
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 24px 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .momentum-label { font-size: 0.85rem; font-weight: 700; color: #7a9bbf; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .momentum-track { flex: 1; height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; }
+        .momentum-fill  { height: 100%; background: linear-gradient(90deg, #1565c0, #42a5f5, #ef5350); border-radius: 5px; }
+        .momentum-score { font-size: 1.5rem; font-weight: 800; color: #ef5350; white-space: nowrap; }
+        .momentum-descriptor { font-size: 0.82rem; color: #9fb8d8; white-space: nowrap; }
+
+        .content-wrapper { max-width: 1400px; margin: 0 auto; padding: 40px; }
+        .section { margin-bottom: 50px; }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(64,180,255,0.25);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 22px;
+            background: #42a5f5;
+            border-radius: 2px;
+        }
+
+        p { color: #c8d8ea; margin-bottom: 14px; font-size: 0.97rem; }
+
+        .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; }
+
+        .card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .card-title { font-size: 0.95rem; font-weight: 700; color: #90caf9; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .region-table { width: 100%; border-collapse: collapse; }
+
+        .region-table th {
+            background: rgba(21,101,192,0.3);
+            color: #90caf9;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid rgba(64,180,255,0.3);
+        }
+
+        .region-table td {
+            padding: 13px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+            color: #c8d8ea;
+            vertical-align: top;
+        }
+
+        .region-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+        .region-name { font-weight: 700; color: #ffffff; }
+        .region-hub  { font-size: 0.8rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-pill { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+        .impact-high   { background: rgba(239,83,80,0.2);  color: #ef9a9a; border: 1px solid rgba(239,83,80,0.3); }
+        .impact-medium { background: rgba(255,152,0,0.2);  color: #ffcc80; border: 1px solid rgba(255,152,0,0.3); }
+        .impact-low    { background: rgba(102,187,106,0.2);color: #a5d6a7; border: 1px solid rgba(102,187,106,0.3); }
+
+        .chart-container {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .chart-title { font-size: 0.9rem; font-weight: 700; color: #90caf9; margin-bottom: 18px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        canvas { max-height: 280px; }
+
+        .role-list { list-style: none; }
+
+        .role-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .role-item:last-child { border-bottom: none; }
+
+        .role-icon { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+        .role-icon.decline   { background: #ef5350; }
+        .role-icon.grow      { background: #66bb6a; }
+        .role-icon.transform { background: #ff9800; }
+
+        .role-name { font-weight: 700; color: #e0e6f0; font-size: 0.9rem; }
+        .role-desc { font-size: 0.82rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-box { background: rgba(255,152,0,0.06); border: 1px solid rgba(255,152,0,0.2); border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+        .impact-box h4 { color: #ffcc80; font-size: 0.95rem; margin-bottom: 8px; font-weight: 700; }
+        .impact-box p  { color: #c8d8ea; margin-bottom: 0; font-size: 0.9rem; }
+        .impact-box.blue  { background: rgba(66,165,245,0.06); border-color: rgba(66,165,245,0.2); }
+        .impact-box.blue h4 { color: #90caf9; }
+        .impact-box.red   { background: rgba(239,83,80,0.06); border-color: rgba(239,83,80,0.2); }
+        .impact-box.red h4  { color: #ef9a9a; }
+
+        ul { margin-left: 20px; color: #c8d8ea; }
+        li { margin-bottom: 10px; line-height: 1.6; }
+        strong { color: #90caf9; }
+
+        @media (max-width: 1200px) {
+            .header-main { grid-template-columns: 1fr; gap: 28px; }
+            .header-stats { flex-direction: row; min-width: auto; }
+            .stat-card { flex: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .header-top { flex-direction: column; gap: 12px; align-items: flex-start; }
+            .header-main { padding: 28px 24px; }
+            .sector-title { font-size: 2rem; }
+            .content-wrapper { padding: 24px; }
+            .momentum-bar-section { flex-direction: column; align-items: flex-start; }
+            .momentum-track { width: 100%; }
+            .two-col, .three-col { grid-template-columns: 1fr; }
+            .header-stats { flex-direction: column; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <div class="header-top">
+            <a href="index.html" class="back-nav">← Back to Index</a>
+            <div class="region-badge">UNITED KINGDOM</div>
+        </div>
+        <div class="header-main">
+            <div>
+                <div class="sector-label">UK Property Services Sector</div>
+                <h1 class="sector-title">Commercial Real Estate Services</h1>
+                <p class="sector-subtitle">The UK commercial real estate services sector faces structural transformation as AI reshapes traditional brokerage, valuation, and advisory roles while Brexit compounds market challenges.</p>
+            </div>
+            <div class="header-stats">
+                <div class="stat-card">
+                    <div class="stat-value warning">320,000</div>
+                    <div class="stat-label">Current Workforce</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value danger">-24,000</div>
+                    <div class="stat-label">Projected Change by 2028</div>
+                </div>
+            </div>
+        </div>
+        <div class="momentum-bar-section">
+            <div class="momentum-label">AI Momentum Score</div>
+            <div class="momentum-track">
+                <div class="momentum-fill" style="width: 72%;"></div>
+            </div>
+            <div class="momentum-score">72</div>
+            <div class="momentum-descriptor">High Disruption</div>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        <section class="section">
+            <h2 class="section-title">Sector Overview</h2>
+            <p>The UK commercial real estate services sector employs approximately 320,000 people across brokerage, property management, valuation, facilities management, and advisory services. This sector serves as intermediary between property owners, investors, occupiers, and developers, providing expertise in transactions, asset management, and strategic advisory.</p>
+            <p>The sector is concentrated in London, which accounts for roughly 45% of employment, with significant clusters in major regional cities (Manchester, Birmingham, Leeds, Edinburgh, Glasgow). The workforce skews toward mid-career professionals, with a relatively high proportion of qualified surveyors and chartered professionals.</p>
+            <p>AI adoption is accelerating across multiple functions. Automated valuation models (AVMs) are replacing routine appraisals, AI-powered property search tools are reducing broker intermediation for standard transactions, and machine learning algorithms are optimizing building operations. This technological shift coincides with Brexit-related market dislocation and structural changes in office demand, creating compound disruption.</p>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Regional Employment Analysis</h2>
+            
+            <div class="card">
+                <table class="region-table">
+                    <thead>
+                        <tr>
+                            <th>Region</th>
+                            <th>Employment</th>
+                            <th>AI Impact</th>
+                            <th>Key Characteristics</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="region-name">Greater London</div>
+                                <div class="region-hub">National hub for brokerage & advisory</div>
+                            </td>
+                            <td><strong>144,000</strong></td>
+                            <td><span class="impact-pill impact-high">High</span></td>
+                            <td>Dominant market with 45% of UK sector employment. Concentration of high-value transactions and international clients. Heavy exposure to office market decline and Brexit impacts. AI adoption most advanced here, driving efficiency gains but employment losses in back-office and junior roles.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="region-name">South East</div>
+                                <div class="region-hub">Reading, Oxford, Cambridge corridors</div>
+                            </td>
+                            <td><strong>48,000</strong></td>
+                            <td><span class="impact-pill impact-medium">Medium</span></td>
+                            <td>Serves Thames Valley tech corridor, Oxford-Cambridge Arc, and major logistics hubs. Growing demand for industrial/logistics services offsetting office decline. Property management and facilities management more resilient than brokerage.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="region-name">North West</div>
+                                <div class="region-hub">Manchester, Liverpool</div>
+                            </td>
+                            <td><strong>35,000</strong></td>
+                            <td><span class="impact-pill impact-medium">Medium</span></td>
+                            <td>Manchester's "northern powerhouse" positioning supports services demand. Regional brokerage less susceptible to AI disruption than London due to relationship-driven market. However, routine valuations and property management increasingly automated.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="region-name">West Midlands</div>
+                                <div class="region-hub">Birmingham, Coventry</div>
+                            </td>
+                            <td><strong>28,000</strong></td>
+                            <td><span class="impact-pill impact-medium">Medium</span></td>
+                            <td>Birmingham's growing profile as business hub supports services sector. HS2 infrastructure (despite recent scope reduction) drives development advisory demand. Industrial/logistics growth in Golden Triangle benefits sector.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="region-name">Yorkshire & Humber</div>
+                                <div class="region-hub">Leeds, Sheffield</div>
+                            </td>
+                            <td><strong>24,000</strong></td>
+                            <td><span class="impact-pill impact-medium">Medium</span></td>
+                            <td>Leeds as regional financial center supports professional services demand. Mix of office, retail, and industrial assets. Some exposure to retail property stress but diversification helps.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="region-name">Scotland</div>
+                                <div class="region-hub">Edinburgh, Glasgow</div>
+                            </td>
+                            <td><strong>22,000</strong></td>
+                            <td><span class="impact-pill impact-low">Low-Medium</span></td>
+                            <td>Edinburgh's financial services concentration and Glasgow's industrial/logistics activity support diverse services demand. Separate Scottish property law creates some insulation from direct London competition. Renewable energy infrastructure driving specialist advisory growth.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="region-name">South West</div>
+                                <div class="region-hub">Bristol, Bath</div>
+                            </td>
+                            <td><strong>14,000</strong></td>
+                            <td><span class="impact-pill impact-low">Low</span></td>
+                            <td>Bristol's tech sector growth and lifestyle appeal supports commercial property activity. Smaller scale means less AI investment but also less disruption. Property management and local advisory more stable.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="region-name">Other Regions</div>
+                                <div class="region-hub">East Anglia, Wales, Northern Ireland</div>
+                            </td>
+                            <td><strong>5,000</strong></td>
+                            <td><span class="impact-pill impact-low">Low</span></td>
+                            <td>Smaller markets with predominantly local property services. Limited AI adoption due to scale. Relationship-driven business model more resilient but limited growth prospects.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Employment Impact by Function</h2>
+            
+            <div class="chart-container">
+                <div class="chart-title">UK Commercial Real Estate Services Employment by Function</div>
+                <canvas id="employmentChart"></canvas>
+            </div>
+
+            <div class="two-col" style="margin-top: 28px;">
+                <div class="card">
+                    <div class="card-title">Declining Roles</div>
+                    <ul class="role-list">
+                        <li class="role-item">
+                            <div class="role-icon decline"></div>
+                            <div>
+                                <div class="role-name">Junior Analysts & Researchers</div>
+                                <div class="role-desc">AI tools automate property data gathering, market research, and preliminary analysis that once occupied graduate trainees</div>
+                            </div>
+                        </li>
+                        <li class="role-item">
+                            <div class="role-icon decline"></div>
+                            <div>
+                                <div class="role-name">Routine Valuers</div>
+                                <div class="role-desc">Automated valuation models handle standard residential and simple commercial appraisals with increasing accuracy</div>
+                            </div>
+                        </li>
+                        <li class="role-item">
+                            <div class="role-icon decline"></div>
+                            <div>
+                                <div class="role-name">Administrative & Coordination Staff</div>
+                                <div class="role-desc">Transaction management platforms, AI scheduling, and automated reporting eliminate many coordination roles</div>
+                            </div>
+                        </li>
+                        <li class="role-item">
+                            <div class="role-icon decline"></div>
+                            <div>
+                                <div class="role-name">Retail Property Specialists</div>
+                                <div class="role-desc">Sector-specific decline in retail property market reduces demand for specialized retail advisors</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Growing Roles</div>
+                    <ul class="role-list">
+                        <li class="role-item">
+                            <div class="role-icon grow"></div>
+                            <div>
+                                <div class="role-name">ESG & Sustainability Consultants</div>
+                                <div class="role-desc">Rising demand for net-zero strategies, EPC improvements, and sustainable building certification advisory</div>
+                            </div>
+                        </li>
+                        <li class="role-item">
+                            <div class="role-icon grow"></div>
+                            <div>
+                                <div class="role-name">Data & Analytics Specialists</div>
+                                <div class="role-desc">Interpreting AI-generated insights, building predictive models, and providing data-driven strategic advice</div>
+                            </div>
+                        </li>
+                        <li class="role-item">
+                            <div class="role-icon grow"></div>
+                            <div>
+                                <div class="role-name">Alternative Assets Specialists</div>
+                                <div class="role-desc">Expertise in data centers, life sciences facilities, student housing, and build-to-rent residential increasingly valuable</div>
+                            </div>
+                        </li>
+                        <li class="role-item">
+                            <div class="role-icon transform"></div>
+                            <div>
+                                <div class="role-name">Senior Relationship Managers</div>
+                                <div class="role-desc">High-touch client relationships and complex advisory becoming more valuable as routine tasks automate</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Key Disruption Factors</h2>
+            
+            <div class="impact-box red">
+                <h4>Brexit Market Fragmentation</h4>
+                <p>The UK's exit from the EU has permanently altered commercial real estate dynamics. London's loss of automatic EU financial services passporting reduced demand for prime City office space. Dublin, Amsterdam, Paris, and Frankfurt captured material market share in certain segments. For UK services firms, this means managing dual operations (UK and EU subsidiaries), navigating split regulatory regimes, and competing more aggressively for European business that once naturally flowed through London.</p>
+            </div>
+
+            <div class="impact-box">
+                <h4>Office Market Structural Decline</h4>
+                <p>Hybrid working patterns post-COVID have become permanent, reducing corporate office space requirements by 15-25% for many occupiers. This isn't a temporary blip but fundamental behavior change. Simultaneously, quality flight, where tenants consolidate into fewer, higher-specification buildings, is leaving mid-grade office stock stranded. This creates a divided market where some properties and submarkets thrive while others face permanent impairment, complicating advisory and brokerage work.</p>
+            </div>
+
+            <div class="impact-box blue">
+                <h4>Sector Rotation</h4>
+                <p>Services firms are pivoting resources from traditional office advisory to industrial/logistics (e-commerce driven), life sciences (Cambridge-Oxford corridor), and data centers (AI infrastructure). This requires different expertise and creates transition friction.</p>
+            </div>
+
+            <div class="impact-box">
+                <h4>Client Portfolio Shifts</h4>
+                <p>UK commercial real estate services firms are managing portfolios in flux. Traditional office-heavy institutional clients are diversifying into alternatives (student housing, build-to-rent residential, healthcare, data centers). This requires services firms to develop new capabilities while legacy office expertise becomes less valuable, creating both opportunity and disruption for employees.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Growth Dynamics</h2>
+            
+            <div class="card" style="margin-bottom: 28px;">
+                <div class="card-title">Market Trajectory</div>
+                <p>The UK commercial real estate services market is experiencing divergent dynamics. Total transaction volumes remain 15-20% below 2019 levels, constraining brokerage revenue. However, demand for specialized advisory (ESG, PropTech, portfolio optimization) is growing. The sector is moving from a transactional, volume-based model toward higher-value, recurring advisory relationships.</p>
+                <p><strong>Revenue Composition Shifts:</strong></p>
+                <ul>
+                    <li>Traditional brokerage fees declining as transaction volumes stay subdued</li>
+                    <li>Property management and facilities management growing (benefiting from outsourcing trends)</li>
+                    <li>Valuation work increasingly AI-augmented but fee pressure from automation</li>
+                    <li>ESG and sustainability advisory emerging as significant revenue stream</li>
+                    <li>Data and analytics services growing as clients seek AI-powered insights</li>
+                </ul>
+            </div>
+
+            <div class="card" style="margin-bottom: 28px;">
+                <div class="card-title">Competitive Landscape</div>
+                <p>The UK market remains dominated by global players (JLL, CBRE, Cushman & Wakefield, Savills, Knight Frank) alongside strong domestic specialists. However, PropTech challengers are eroding traditional service models. Platforms offering AI-powered property search, automated valuations, and digital transaction management are capturing market share, particularly for routine transactions.</p>
+                <p>Consolidation continues as mid-sized firms struggle to invest in AI capabilities while maintaining profitability. The "missing middle" phenomenon, where firms are either large enough to invest in technology or small/specialized enough to provide bespoke services not yet automated.</p>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">UK CRE Services Revenue Composition Shift</div>
+                <canvas id="growthChart"></canvas>
+            </div>
+
+            <div class="impact-box blue" style="margin-top: 28px;">
+                <h4>Brexit's Lasting Impact</h4>
+                <p>The UK's separation from the EU has permanently altered market dynamics. While London remains Europe's largest investment market, it has lost its automatic status as the pan-European hub. Dublin and Amsterdam have captured material market share in certain segments. For UK services firms, this means navigating split capabilities, managing EU presence through subsidiaries, and competing more aggressively for European business that once naturally flowed through London.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Future Prospects</h2>
+            
+            <div class="card" style="margin-bottom: 28px;">
+                <div class="card-title">2028 Outlook</div>
+                <p>By 2028, the UK commercial real estate services sector will be smaller in headcount but potentially more profitable per employee. The division between large, technology-enabled full-service firms and specialist boutiques will deepen. Mid-market generalists face continued pressure.</p>
+                <p>The sector's value proposition will shift from information asymmetry (AI eliminates much of this) toward judgment, relationship management, and complex problem-solving. Firms that successfully augment human expertise with AI tools will thrive; those that resist adaptation will shrink or exit.</p>
+            </div>
+
+            <div class="card" style="margin-bottom: 28px;">
+                <div class="card-title">Human Impact Considerations</div>
+                <p><strong>Career Pathway Disruption:</strong> Traditional progression from graduate trainee to junior analyst to specialist is breaking down. AI handles much of what junior roles once did, creating an "experience gap" where new entrants lack the developmental opportunities previous generations had. Firms must redesign career paths, likely requiring higher initial qualifications and different early-career experiences.</p>
+                <p><strong>Age and Adaptability:</strong> The sector's relatively mature workforce (median age 42 in UK) faces significant adaptation challenges. Senior professionals with deep client relationships but limited technical skills remain valuable, but mid-career generalists risk displacement. Retraining programs exist but participation is uneven.</p>
+                <p><strong>Geographic Mobility:</strong> Job losses are concentrated in London, but many affected workers have family and financial commitments preventing easy relocation to regions where opportunities exist. The mismatch between where jobs are lost and where new opportunities emerge creates real hardship beyond what employment statistics capture.</p>
+                <p><strong>Diversity Implications:</strong> Back-office and coordination roles being automated disproportionately employed women and people from diverse backgrounds. Without intentional effort, the shift toward higher-skilled advisory roles could reduce sector diversity if recruitment and progression systems aren't redesigned.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Policy and Industry Recommendations</div>
+                <ul>
+                    <li><strong>Reskilling Infrastructure:</strong> Industry-funded programs (potentially through RICS or British Property Federation) to help displaced workers transition to emerging specialist areas</li>
+                    <li><strong>Apprenticeship Redesign:</strong> Updated apprenticeship standards reflecting AI-augmented workflows, creating viable entry routes despite automation of traditional junior tasks</li>
+                    <li><strong>Regional Support:</strong> Targeted assistance for workers in affected London roles who cannot easily relocate, including support for career transitions outside the sector</li>
+                    <li><strong>Diversity Safeguards:</strong> Monitoring and active measures to ensure automation doesn't erode hard-won diversity progress</li>
+                    <li><strong>Client Education:</strong> Helping property owners and investors understand the value of human judgment alongside AI capabilities, preventing a race-to-the-bottom on fees that undermines service quality</li>
+                    <li><strong>Professional Standards:</strong> Updating professional qualifications and ethical guidelines for AI-augmented practice, ensuring quality and accountability</li>
+                </ul>
+            </div>
+
+            <div class="impact-box red" style="margin-top: 28px;">
+                <h4>Existential Questions</h4>
+                <p>The sector must confront fundamental questions about its future value proposition. If AI can provide accurate valuations, identify optimal properties, and manage transactions, what justifies human involvement and the associated fees? The answer lies in complex judgment, relationship trust, ethical oversight, and navigating ambiguity, but these are harder to price and scale than transactional services. The industry's ability to articulate and deliver on this higher-order value will determine not just profitability but survival.</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Employment Impact Chart
+        new Chart(document.getElementById('employmentChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Brokerage', 'Property Mgmt', 'Valuation', 'Facilities Mgmt', 'Advisory/Consulting', 'Back Office'],
+                datasets: [{
+                    label: '2024 Employment',
+                    data: [58000, 82000, 24000, 94000, 32000, 30000],
+                    backgroundColor: 'rgba(66,165,245,0.7)',
+                    borderRadius: 4,
+                    borderWidth: 0
+                }, {
+                    label: '2028 Projected',
+                    data: [48000, 89000, 19000, 88000, 44000, 8000],
+                    backgroundColor: 'rgba(239,83,80,0.7)',
+                    borderRadius: 4,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        labels: { color: '#9fb8d8', font: { size: 10 }, padding: 10 }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#7a9bbf' },
+                        grid: { color: 'rgba(255,255,255,0.04)' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#7a9bbf', callback: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v }
+                    }
+                }
+            }
+        });
+
+        // Revenue Growth Chart
+        new Chart(document.getElementById('growthChart'), {
+            type: 'line',
+            data: {
+                labels: ['2024', '2025', '2026', '2027', '2028'],
+                datasets: [{
+                    label: 'Traditional Services Revenue (£bn)',
+                    data: [12.4, 11.8, 11.2, 10.8, 10.5],
+                    borderColor: '#ff9800',
+                    backgroundColor: 'rgba(255,152,0,0.08)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 2
+                }, {
+                    label: 'Advisory & Tech-Enabled Services (£bn)',
+                    data: [3.2, 4.1, 5.3, 6.8, 8.6],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.08)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        labels: { color: '#9fb8d8', font: { size: 10 }, padding: 10 }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#7a9bbf' },
+                        grid: { color: 'rgba(255,255,255,0.04)' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#7a9bbf' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

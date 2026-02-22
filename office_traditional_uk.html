@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Traditional/Secondary (United Kingdom) | AI Human Impact Index</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0e1a;
+            color: #e0e6f0;
+            line-height: 1.7;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a2a4a 50%, #0d2035 100%);
+            border-bottom: 1px solid rgba(64, 180, 255, 0.2);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .back-nav { color: #64b5f6; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+        .back-nav:hover { color: #90caf9; }
+
+        .region-badge {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            border: 1px solid rgba(100,181,246,0.4);
+            color: #90caf9;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-main {
+            padding: 40px 40px 36px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 40px;
+            align-items: end;
+        }
+
+        .sector-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; color: #64b5f6; text-transform: uppercase; margin-bottom: 12px; }
+        .sector-title { font-size: 2.6rem; font-weight: 800; color: #ffffff; line-height: 1.15; margin-bottom: 14px; }
+        .sector-subtitle { font-size: 1.05rem; color: #9fb8d8; max-width: 680px; }
+
+        .header-stats { display: flex; flex-direction: column; gap: 14px; min-width: 280px; }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(100,181,246,0.15);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 1.9rem; font-weight: 800; color: #64b5f6; line-height: 1; }
+        .stat-value.warning  { color: #ff9800; }
+        .stat-value.danger   { color: #ef5350; }
+        .stat-value.positive { color: #66bb6a; }
+        .stat-label { font-size: 0.78rem; color: #7a9bbf; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .momentum-bar-section {
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 24px 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .momentum-label { font-size: 0.85rem; font-weight: 700; color: #7a9bbf; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .momentum-track { flex: 1; height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; }
+        .momentum-fill  { height: 100%; background: linear-gradient(90deg, #1565c0, #42a5f5, #ef5350); border-radius: 5px; }
+        .momentum-score { font-size: 1.5rem; font-weight: 800; color: #1565c0; white-space: nowrap; }
+        .momentum-descriptor { font-size: 0.82rem; color: #9fb8d8; white-space: nowrap; }
+
+        .content-wrapper { max-width: 1400px; margin: 0 auto; padding: 40px; }
+        .section { margin-bottom: 50px; }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(64,180,255,0.25);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 22px;
+            background: #42a5f5;
+            border-radius: 2px;
+        }
+
+        p { color: #c8d8ea; margin-bottom: 14px; font-size: 0.97rem; }
+
+        .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; }
+
+        .card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .card-title { font-size: 0.95rem; font-weight: 700; color: #90caf9; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .region-table { width: 100%; border-collapse: collapse; }
+
+        .region-table th {
+            background: rgba(21,101,192,0.3);
+            color: #90caf9;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid rgba(64,180,255,0.3);
+        }
+
+        .region-table td {
+            padding: 13px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+            color: #c8d8ea;
+            vertical-align: top;
+        }
+
+        .region-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+        .region-name { font-weight: 700; color: #ffffff; }
+        .region-hub  { font-size: 0.8rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-pill { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+        .impact-high   { background: rgba(239,83,80,0.2);  color: #ef9a9a; border: 1px solid rgba(239,83,80,0.3); }
+        .impact-medium { background: rgba(255,152,0,0.2);  color: #ffcc80; border: 1px solid rgba(255,152,0,0.3); }
+        .impact-low    { background: rgba(102,187,106,0.2);color: #a5d6a7; border: 1px solid rgba(102,187,106,0.3); }
+
+        .chart-container {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .chart-title { font-size: 0.9rem; font-weight: 700; color: #90caf9; margin-bottom: 18px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        canvas { max-height: 280px; }
+
+        .role-list { list-style: none; }
+
+        .role-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .role-item:last-child { border-bottom: none; }
+
+        .role-icon { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+        .role-icon.decline   { background: #ef5350; }
+        .role-icon.grow      { background: #66bb6a; }
+        .role-icon.transform { background: #ff9800; }
+
+        .role-name { font-weight: 700; color: #e0e6f0; font-size: 0.9rem; }
+        .role-desc { font-size: 0.82rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-box { background: rgba(255,152,0,0.06); border: 1px solid rgba(255,152,0,0.2); border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+        .impact-box h4 { color: #ffcc80; font-size: 0.95rem; margin-bottom: 8px; font-weight: 700; }
+        .impact-box p  { color: #c8d8ea; margin-bottom: 0; font-size: 0.9rem; }
+        .impact-box.blue  { background: rgba(66,165,245,0.06); border-color: rgba(66,165,245,0.2); }
+        .impact-box.blue h4 { color: #90caf9; }
+        .impact-box.red   { background: rgba(239,83,80,0.06); border-color: rgba(239,83,80,0.2); }
+        .impact-box.red h4  { color: #ef9a9a; }
+
+        ul { margin-left: 20px; color: #c8d8ea; }
+        li { margin-bottom: 10px; line-height: 1.6; }
+        strong { color: #90caf9; }
+
+        @media (max-width: 1200px) {
+            .header-main { grid-template-columns: 1fr; gap: 28px; }
+            .header-stats { flex-direction: row; min-width: auto; }
+            .stat-card { flex: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .header-top { flex-direction: column; gap: 12px; align-items: flex-start; }
+            .header-main { padding: 28px 24px; }
+            .sector-title { font-size: 2rem; }
+            .content-wrapper { padding: 24px; }
+            .momentum-bar-section { flex-direction: column; align-items: flex-start; }
+            .momentum-track { width: 100%; }
+            .two-col, .three-col { grid-template-columns: 1fr; }
+            .header-stats { flex-direction: column; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <div class="header-top">
+            <a href="index.html" class="back-nav">← Back to Index</a>
+            <div class="region-badge">UNITED KINGDOM</div>
+        </div>
+        <div class="header-main">
+            <div>
+                <div class="sector-label">UK Office Property Market</div>
+                <h1 class="sector-title">Office Traditional/Secondary</h1>
+                <p class="sector-subtitle">Secondary and traditional office markets face existential crisis as hybrid work, AI-driven space efficiency, and flight to quality converge, threatening massive employment losses and urban blight.</p>
+            </div>
+            <div class="header-stats">
+                <div class="stat-card">
+                    <div class="stat-value danger">8.5M</div>
+                    <div class="stat-label">Current Workforce</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value danger">-1.25M</div>
+                    <div class="stat-label">Projected Change by 2028</div>
+                </div>
+            </div>
+        </div>
+        <div class="momentum-bar-section">
+            <div class="momentum-label">AI Momentum Score</div>
+            <div class="momentum-track">
+                <div class="momentum-fill" style="width: 34%;"></div>
+            </div>
+            <div class="momentum-score">34</div>
+            <div class="momentum-descriptor">Significant Decline</div>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        <section class="section">
+            <h2 class="section-title">Sector Overview</h2>
+            <p>The UK secondary/traditional office market encompasses approximately 150 million sq ft of office space outside the prime and trophy categories. This includes suburban business parks, secondary town center offices, older multi-tenant buildings, and out-of-town office campuses. The market employs roughly 8.5 million people directly as office workers, plus another 1.5 million in supporting roles (building services, facilities management, ancillary retail/services).</p>
+            <p>This segment faces multiple simultaneous crises. Structural demand reduction from hybrid working has disproportionately impacted secondary space, where employers are consolidating into higher-quality accommodation at lower aggregate square footage. Brexit-related economic headwinds compound the problem, particularly in regional markets dependent on European business activity. Rising ESG requirements make older buildings increasingly obsolete without major capital investment that valuations cannot support.</p>
+            <p>The human impact extends far beyond direct office employment. Business parks and secondary office centers support entire local ecosystems: cafes, gyms, childcare facilities, public transport services, and retail clusters that depend on office worker footfall. As these centers empty, the broader community fabric unravels.</p>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Regional Employment Analysis</h2>
+            
+            <div class="card">
+                <table class="region-table">
+                    <thead>
+                        <tr>
+                            <th>Region</th>
+                            <th>Employment</th>
+                            <th>AI Impact</th>
+                            <th>Key Characteristics</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="region-name">Outer London Boroughs</div>
+                                <div class="region-hub">Croydon, Brentford, Hounslow</div>
+                            </td>
+                            <td><strong>980,000</strong></td>
+                            <td><span class="impact-pill impact-high">Severe</span></td>
+                            <td>Suburban business districts facing exodus as firms consolidate into central London or abandon London entirely. Transport costs and commute times make these locations uncompetitive for quality tenants. Many buildings from 1960s-1980s unsuitable for modern work or conversion.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="region-name">Thames Valley Corridor</div>
+                                <div class="region-hub">Reading, Slough, Bracknell, Maidenhead</div>
+                            </td>
+                            <td><strong>520,000</strong></td>
+                            <td><span class="impact-pill impact-high">High</span></td>
+                            <td>Once Europe's "Silicon Valley" for tech/telecoms, now struggling with occupier departures and consolidation. M4 corridor business parks showing severe stress. Some prime locations near stations holding value, but majority deteriorating.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="region-name">West Midlands Secondary</div>
+                                <div class="region-hub">Birmingham suburbs, Coventry, Wolverhampton</div>
+                            </td>
+                            <td><strong>610,000</strong></td>
+                            <td><span class="impact-pill impact-high">High</span></td>
+                            <td>Industrial heritage cities with aging office stock struggling to compete with Manchester and Leeds for quality occupiers. HS2 delays and cost overruns reduce anticipated regeneration benefits. Significant conversion potential constrained by flood risk and contaminated land legacy.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="region-name">Greater Manchester Secondary</div>
+                                <div class="region-hub">Salford, Trafford Park, outlying districts</div>
+                            </td>
+                            <td><strong>440,000</strong></td>
+                            <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                            <td>Flight to quality favoring Manchester city center leaves secondary locations vulnerable. However, relative affordability and transport connectivity provide some resilience. MediaCityUK success contrasts with struggling traditional business parks.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="region-name">Leeds & Yorkshire Secondary</div>
+                                <div class="region-hub">Leeds suburbs, Bradford, Wakefield</div>
+                            </td>
+                            <td><strong>390,000</strong></td>
+                            <td><span class="impact-pill impact-medium">Medium</span></td>
+                            <td>Leeds' strong regional position provides some insulation, but secondary space still vulnerable. Bradford and Wakefield particularly exposed with limited alternative employment. Some business parks benefiting from lower costs attracting back-office consolidation.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="region-name">Scotland Secondary Markets</div>
+                                <div class="region-hub">Glasgow suburbs, Edinburgh periphery, Aberdeen</div>
+                            </td>
+                            <td><strong>310,000</strong></td>
+                            <td><span class="impact-pill impact-medium">Medium</span></td>
+                            <td>Aberdeen's oil sector dependency creates acute vulnerability as energy companies downsize UK operations. Glasgow and Edinburgh secondary markets face flight to quality but less severe than English counterparts. Scottish government presence provides employment floor.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="region-name">South Coast & South West</div>
+                                <div class="region-hub">Southampton, Portsmouth, Bristol suburbs</div>
+                            </td>
+                            <td><strong>280,000</strong></td>
+                            <td><span class="impact-pill impact-medium">Medium</span></td>
+                            <td>Mixed picture with Bristol's strong economy supporting some secondary space while coastal towns struggle. Defense sector presence in Portsmouth/Southampton provides stability but limited growth. Affordability advantage offset by connectivity challenges.</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="region-name">Regional Towns</div>
+                                <div class="region-hub">Dispersed: Derby, Nottingham, Newcastle, Cardiff, etc.</div>
+                            </td>
+                            <td><strong>1,470,000</strong></td>
+                            <td><span class="impact-pill impact-high">High</span></td>
+                            <td>Hundreds of smaller markets each with limited employment but collectively massive. Town center offices losing anchor tenants while business parks become stranded assets. Limited conversion potential in many locations. Public sector cuts compound private sector retreat.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Employment Impact Analysis</h2>
+            
+            <div class="chart-container">
+                <div class="chart-title">UK Secondary Office Ecosystem Employment Impact</div>
+                <canvas id="employmentChart"></canvas>
+            </div>
+
+            <div class="card" style="margin-top: 28px;">
+                <div class="card-title">Multiplier Effects Beyond Direct Office Employment</div>
+                <p>For every 100 office jobs in secondary locations, approximately 18 supporting jobs exist in building services, facilities management, and local services. The projected loss of 1.1-1.5 million office-based roles translates to additional losses of 200,000-270,000 in the broader ecosystem, creating total employment reduction of 1.3-1.77 million positions by 2028.</p>
+                <p>These supporting roles are disproportionately held by workers with limited alternative employment options: older workers, those without advanced qualifications, people with caring responsibilities requiring local employment, and individuals in areas with few other job opportunities.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Key Disruption Factors</h2>
+            
+            <div class="impact-box red">
+                <h4>Hybrid Work as Permanent Reality</h4>
+                <p>Initial hopes that COVID-prompted hybrid working would prove temporary have evaporated. UK office occupancy remains 30-40% below 2019 levels on average days, with Tuesdays-Thursdays seeing 60-70% and Mondays/Fridays 20-40%. This pattern is now embedded in employment contracts, corporate cultures, and employee expectations. Employers are responding not by mandating returns but by reducing space, with average space per employee falling from 150-180 sq ft to 100-120 sq ft for those still providing dedicated desks.</p>
+            </div>
+
+            <div class="impact-box">
+                <h4>Flight to Quality Acceleration</h4>
+                <p>As firms reduce overall space requirements, they're consolidating into higher-quality, better-located buildings with superior amenities. The COVID experience demonstrated that office attendance requires compelling reason: modern space, good transport links, amenity-rich locations. Secondary buildings in peripheral locations cannot compete. This creates a bifurcated market where prime space holds or appreciates while secondary space hemorrhages value and occupancy.</p>
+            </div>
+
+            <div class="impact-box">
+                <h4>ESG Compliance Unaffordability</h4>
+                <p>UK regulatory pressure for net-zero buildings and minimum EPC ratings is intensifying. By 2030, commercial properties must achieve EPC B or face rental restrictions. Many secondary buildings cannot economically reach this standard. Retrofit costs of £200-400 per sq ft cannot be justified by rents of £15-25 per sq ft, creating "brown discount" where non-compliant buildings become effectively un-lettable and therefore valueless.</p>
+            </div>
+
+            <div class="impact-box blue">
+                <h4>Conversion Challenges</h4>
+                <p>Converting obsolete offices to residential use offers theoretical solution, but practical barriers are severe. Many buildings have floor plates too deep for viable residential conversion, lack adequate natural light, or sit in locations poorly suited for housing (near motorways, industrial areas, lacking schools/amenities). Planning permission, building code compliance, and infrastructure costs often make conversion uneconomic even with vacant possession. Where conversion works, it's typically high-end residential, not affordable housing, limiting social benefit.</p>
+            </div>
+
+            <div class="impact-box red">
+                <h4>Stranded Assets Reality</h4>
+                <p>A significant portion of UK secondary office stock (perhaps 15-20% by value) may become effectively stranded: too expensive to retrofit, unsuitable for conversion, unable to attract tenants at rents that justify continued operation. These buildings will be "zombies", maintained minimally by owners who cannot afford to lose the asset but cannot profitably use it. This creates urban blight, safety concerns, and community impacts beyond the immediate employment losses.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Market Dynamics</h2>
+            
+            <div class="card" style="margin-bottom: 28px;">
+                <div class="card-title">Market Trajectory</div>
+                <p>The UK secondary office market is in managed decline. Total occupied stock is projected to contract by 20-30% by 2030, with the steepest falls in suburban business parks and secondary town center locations. Investment capital has largely abandoned the segment, focusing on either prime trophy assets or alternative property types.</p>
+                <p><strong>Valuation Collapse:</strong> Secondary office values in many UK markets have fallen 30-50% from 2019 peaks, and further decline is likely. This creates negative equity situations for many landlords, especially those who bought at market peak or have high loan-to-value ratios.</p>
+            </div>
+
+            <div class="card" style="margin-bottom: 28px;">
+                <div class="card-title">Investor Retreat and Lender Caution</div>
+                <p>UK banks and institutional investors are systematically de-risking secondary office exposure. Some are taking write-downs and exiting positions entirely rather than attempting turnarounds. This credit contraction compounds the crisis, as even willing buyers struggle to secure financing for secondary office acquisitions.</p>
+                <p>Foreign investors, who historically provided liquidity to UK commercial property markets, have largely retreated from secondary offices. Brexit uncertainty, UK-specific regulatory challenges, and availability of better risk-adjusted returns elsewhere reduce appetite.</p>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">UK Office Market Bifurcation: Capital Value Trends</div>
+                <canvas id="valuationChart"></canvas>
+            </div>
+
+            <div class="impact-box" style="margin-top: 28px;">
+                <h4>The Doom Loop</h4>
+                <p>Secondary offices are trapped in a vicious cycle. Falling demand leads to rising vacancy, reducing rents and capital values. Lower values make retrofits uneconomic while higher vacancy reduces incentive to maintain buildings. Declining maintenance and amenity drives remaining tenants to better quality space, accelerating the flight to quality and further reducing secondary building performance. Breaking this cycle requires either dramatic cost reductions (hard given UK regulatory requirements) or alternative use conversions (limited by building and location constraints).</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Future Prospects</h2>
+            
+            <div class="card" style="margin-bottom: 28px;">
+                <div class="card-title">2028 Outlook</div>
+                <p>By 2028, the UK secondary office market will have undergone brutal rationalization. Perhaps 15-20% of 2020 stock will have been demolished, converted to alternative uses, or effectively abandoned. Remaining secondary space will serve primarily cost-conscious back-office operations, public sector functions, and businesses without strong recruitment or amenity requirements.</p>
+                <p>The market will be characterized by stark bifurcation: a small segment of relatively modern, well-located secondary space that competes on value will survive; the rest faces obsolescence. There will be little middle ground.</p>
+            </div>
+
+            <div class="card" style="margin-bottom: 28px;">
+                <div class="card-title">Human Impact Considerations</div>
+                <p><strong>Job Losses and Community Decline:</strong> Employment losses of 1.1-1.5 million people nationally will be concentrated in specific locations, creating acute local distress. Business parks that employed thousands will have skeleton occupancy; town centers will lose anchor employers that sustained local retail and services. These are not just statistics but community disintegration.</p>
+                <p><strong>Career Disruption:</strong> Many affected workers are in roles (building services, administrative support, facilities management) that don't easily translate to other sectors. Age profiles skew older (median 45+), reducing both geographic mobility and retraining feasibility. The "just transition" rhetoric around AI transformation doesn't match the reality these workers will face.</p>
+                <p><strong>Regional Inequality:</strong> London and major cities have alternative employment opportunities; smaller towns and business park locations often don't. Someone losing an office job in Slough might find another; someone in a Barnsley business park has far fewer options. This exacerbates the UK's already severe regional inequality.</p>
+                <p><strong>Landlord Distress:</strong> Beyond direct employment, secondary office landlords (including pension funds with significant allocations) will experience major losses. This creates ripple effects through financial markets and potentially pension adequacy for millions of UK workers whose retirement savings include secondary office exposure.</p>
+                <p><strong>Public Sector Spillover:</strong> As commercial rate revenues collapse and buildings become eyesores, local authorities face fiscal pressure while needing to address blight. Many councils already in dire financial straits cannot absorb this shock, potentially triggering service cuts that compound local distress.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Policy Imperatives</div>
+                <ul>
+                    <li><strong>Targeted Transition Support:</strong> Major reskilling and income support programs for workers in collapsing secondary office locations, recognizing that generic unemployment programs won't address the scale and concentration of job losses</li>
+                    <li><strong>Alternative Use Facilitation:</strong> More sophisticated planning frameworks that enable and incentivize adaptive reuse while maintaining quality standards, including infrastructure investment to make conversion-suitable locations viable for residential</li>
+                    <li><strong>Orderly Wind-Down Framework:</strong> Legal and financial mechanisms to manage building obsolescence without creating hazardous dereliction, possibly including compulsory purchase powers and demolition subsidies for truly stranded assets</li>
+                    <li><strong>Local Authority Support:</strong> Direct central government assistance to councils facing collapsing commercial rate bases, preventing service cuts that would compound community distress</li>
+                    <li><strong>Investor Loss Recognition:</strong> Prudential frameworks that allow financial institutions to recognize and provision for secondary office losses without triggering broader financial stability concerns</li>
+                    <li><strong>Regional Development Strategy:</strong> Active industrial policy to create alternative employment in affected areas, not just manage decline but build new economic foundations</li>
+                </ul>
+            </div>
+
+            <div class="impact-box red" style="margin-top: 28px;">
+                <h4>Uncomfortable Truths</h4>
+                <p>No amount of policy ingenuity will prevent significant pain from secondary office market decline. The combination of hybrid work, AI-driven space efficiency, and flight to quality is irreversible. Some locations will not recover their former employment or vitality. The humane response is not to pretend otherwise but to acknowledge the loss, support affected people and communities through transition, and invest in creating new foundations for prosperity. This requires political courage to speak honestly about managed decline in some areas while investing aggressively in their future rather than their past.</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Employment Impact Chart
+        new Chart(document.getElementById('employmentChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Office Occupiers', 'Building Services', 'Facilities Mgmt', 'Ancillary Retail/Services', 'Property Services'],
+                datasets: [{
+                    label: '2024 Employment',
+                    data: [6800000, 780000, 320000, 420000, 180000],
+                    backgroundColor: 'rgba(66,165,245,0.7)',
+                    borderRadius: 4,
+                    borderWidth: 0
+                }, {
+                    label: '2028 Projected',
+                    data: [5900000, 630000, 260000, 310000, 150000],
+                    backgroundColor: 'rgba(239,83,80,0.7)',
+                    borderRadius: 4,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        labels: { color: '#9fb8d8', font: { size: 10 }, padding: 10 }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#7a9bbf' },
+                        grid: { color: 'rgba(255,255,255,0.04)' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#7a9bbf', callback: v => v >= 1000000 ? (v/1000000).toFixed(1)+'M' : (v/1000).toFixed(0)+'K' }
+                    }
+                }
+            }
+        });
+
+        // Valuation Trend Chart
+        new Chart(document.getElementById('valuationChart'), {
+            type: 'line',
+            data: {
+                labels: ['2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028'],
+                datasets: [{
+                    label: 'Secondary Office Capital Values',
+                    data: [100, 88, 82, 72, 63, 58, 53, 48, 45, 42],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.08)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 2
+                }, {
+                    label: 'Prime Office Capital Values',
+                    data: [100, 93, 96, 94, 97, 101, 105, 108, 110, 112],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.08)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        labels: { color: '#9fb8d8', font: { size: 10 }, padding: 10 }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#7a9bbf' },
+                        grid: { color: 'rgba(255,255,255,0.04)' }
+                    },
+                    y: {
+                        beginAtZero: false,
+                        ticks: { color: '#7a9bbf' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

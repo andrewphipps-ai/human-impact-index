@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retail (North America) | AI Human Impact Index</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0e1a;
+            color: #e0e6f0;
+            line-height: 1.7;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a2a4a 50%, #0d2035 100%);
+            border-bottom: 1px solid rgba(64, 180, 255, 0.2);
+            padding: 0;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .back-nav {
+            color: #64b5f6;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .back-nav:hover { color: #90caf9; }
+
+        .region-badge {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            border: 1px solid rgba(100,181,246,0.4);
+            color: #90caf9;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-main {
+            padding: 40px 40px 36px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 40px;
+            align-items: end;
+        }
+
+        .sector-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #64b5f6;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .sector-title {
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.15;
+            margin-bottom: 14px;
+        }
+
+        .sector-subtitle {
+            font-size: 1.05rem;
+            color: #9fb8d8;
+            max-width: 680px;
+        }
+
+        .header-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-width: 280px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(100,181,246,0.15);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 1.9rem; font-weight: 800; color: #64b5f6; line-height: 1; }
+        .stat-value.warning  { color: #ff9800; }
+        .stat-value.danger   { color: #ef5350; }
+        .stat-value.positive { color: #66bb6a; }
+        .stat-label { font-size: 0.78rem; color: #7a9bbf; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .momentum-bar-section {
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 24px 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .momentum-label { font-size: 0.85rem; font-weight: 700; color: #7a9bbf; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .momentum-track { flex: 1; height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; }
+        .momentum-fill  { height: 100%; background: linear-gradient(90deg, #1565c0, #42a5f5, #ff9800); border-radius: 5px; }
+        .momentum-score { font-size: 1.5rem; font-weight: 800; color: #ff9800; white-space: nowrap; }
+        .momentum-descriptor { font-size: 0.82rem; color: #9fb8d8; white-space: nowrap; }
+
+        .content-wrapper { max-width: 1400px; margin: 0 auto; padding: 40px; }
+
+        .section { margin-bottom: 50px; }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(64,180,255,0.25);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 22px;
+            background: #42a5f5;
+            border-radius: 2px;
+        }
+
+        p { color: #c8d8ea; margin-bottom: 14px; font-size: 0.97rem; }
+
+        .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; }
+
+        .card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .card-title { font-size: 0.95rem; font-weight: 700; color: #90caf9; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .region-table { width: 100%; border-collapse: collapse; }
+
+        .region-table th {
+            background: rgba(21,101,192,0.3);
+            color: #90caf9;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid rgba(64,180,255,0.3);
+        }
+
+        .region-table td {
+            padding: 13px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+            color: #c8d8ea;
+            vertical-align: top;
+        }
+
+        .region-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+        .region-name { font-weight: 700; color: #ffffff; }
+        .region-hub  { font-size: 0.8rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-pill { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+        .impact-high     { background: rgba(239,83,80,0.2);  color: #ef9a9a; border: 1px solid rgba(239,83,80,0.3); }
+        .impact-medium   { background: rgba(255,152,0,0.2);  color: #ffcc80; border: 1px solid rgba(255,152,0,0.3); }
+        .impact-low      { background: rgba(102,187,106,0.2);color: #a5d6a7; border: 1px solid rgba(102,187,106,0.3); }
+
+        .chart-container {
+            position: relative;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .chart-title { font-size: 0.9rem; font-weight: 700; color: #90caf9; margin-bottom: 18px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        canvas { max-height: 280px; }
+
+        .role-list { list-style: none; }
+
+        .role-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .role-item:last-child { border-bottom: none; }
+
+        .role-icon { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+        .role-icon.decline   { background: #ef5350; }
+        .role-icon.grow      { background: #66bb6a; }
+        .role-icon.transform { background: #ff9800; }
+
+        .role-name { font-weight: 700; color: #e0e6f0; font-size: 0.9rem; }
+        .role-desc { font-size: 0.82rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-box { background: rgba(255,152,0,0.06); border: 1px solid rgba(255,152,0,0.2); border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+        .impact-box h4 { color: #ffcc80; font-size: 0.95rem; margin-bottom: 8px; font-weight: 700; }
+        .impact-box p  { color: #c8d8ea; margin-bottom: 0; font-size: 0.9rem; }
+
+        .impact-box.blue { background: rgba(66,165,245,0.06); border-color: rgba(66,165,245,0.2); }
+        .impact-box.blue h4 { color: #90caf9; }
+        .impact-box.red  { background: rgba(239,83,80,0.06); border-color: rgba(239,83,80,0.2); }
+        .impact-box.red  h4 { color: #ef9a9a; }
+        .impact-box.green { background: rgba(102,187,106,0.06); border-color: rgba(102,187,106,0.2); }
+        .impact-box.green h4 { color: #a5d6a7; }
+
+        .policy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .policy-card { background: rgba(21,101,192,0.08); border: 1px solid rgba(100,181,246,0.15); border-radius: 12px; padding: 20px; }
+        .policy-card h4 { font-size: 0.9rem; font-weight: 700; color: #64b5f6; margin-bottom: 8px; }
+        .policy-card p  { font-size: 0.87rem; margin-bottom: 0; }
+
+        .metrics-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 40px; }
+
+        .metric-tile { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 18px 14px; text-align: center; }
+        .metric-tile .value { font-size: 1.6rem; font-weight: 800; line-height: 1; }
+        .metric-tile .label { font-size: 0.75rem; color: #7a9bbf; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+        .metric-tile .sub   { font-size: 0.72rem; color: #5a7a9b; margin-top: 3px; }
+
+        .callout { background: rgba(21,101,192,0.1); border-left: 4px solid #42a5f5; border-radius: 0 10px 10px 0; padding: 16px 20px; margin: 20px 0; }
+        .callout p { color: #b0ccec; font-size: 0.92rem; margin-bottom: 0; }
+        .callout.warning { background: rgba(255,152,0,0.08); border-left-color: #ff9800; }
+        .callout.warning p { color: #ffe0b2; }
+        .callout.danger { background: rgba(239,83,80,0.08); border-left-color: #ef5350; }
+        .callout.danger p { color: #ffcdd2; }
+
+        .format-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+
+        .format-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .format-card .format-icon { font-size: 1.8rem; margin-bottom: 8px; }
+        .format-card h4 { font-size: 0.85rem; font-weight: 700; color: #90caf9; margin-bottom: 6px; }
+        .format-card p  { font-size: 0.8rem; color: #7a9bbf; margin-bottom: 8px; }
+
+        .format-momentum {
+            font-size: 0.9rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .fm-high   { background: rgba(239,83,80,0.2); color: #ef9a9a; }
+        .fm-medium { background: rgba(255,152,0,0.2); color: #ffcc80; }
+        .fm-low    { background: rgba(102,187,106,0.2); color: #a5d6a7; }
+
+        .page-footer {
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 28px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .footer-brand { font-size: 0.85rem; color: #5a7a9b; }
+        .footer-brand span { color: #64b5f6; font-weight: 700; }
+        .footer-note { font-size: 0.78rem; color: #3a5a7b; text-align: right; }
+
+        @media (max-width: 1024px) {
+            .two-col, .three-col, .policy-grid, .format-grid { grid-template-columns: 1fr; }
+            .metrics-strip { grid-template-columns: repeat(3, 1fr); }
+            .header-main  { grid-template-columns: 1fr; }
+            .header-stats { flex-direction: row; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE HEADER
+═══════════════════════════════════════════════════ -->
+<header class="page-header">
+    <div class="header-top">
+        <a href="index.html" class="back-nav">&#8592; AI Human Impact Index</a>
+        <div class="region-badge">&#127482;&#127480; North America</div>
+    </div>
+
+    <div class="header-main">
+        <div class="header-text">
+            <div class="sector-label">Sector Analysis</div>
+            <h1 class="sector-title">Retail</h1>
+            <p class="sector-subtitle">How e-commerce dominance, automation, AI-driven logistics, and the systematic closure of physical retail are reshaping the lives of the 15.7 million Americans employed in the sector, with particular attention to the geographic and demographic concentration of disruption across the heartland, Rust Belt, and rural communities.</p>
+        </div>
+
+        <div class="header-stats">
+            <div class="stat-card">
+                <div class="stat-value warning">~15.7M</div>
+                <div class="stat-label">US Retail Employment</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value danger">29%</div>
+                <div class="stat-label">Roles at High Automation Risk</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value positive">$7.1T</div>
+                <div class="stat-label">US Annual Retail Sales</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="momentum-bar-section">
+        <span class="momentum-label">Disruption Momentum</span>
+        <div class="momentum-track">
+            <div class="momentum-fill" style="width: 74%"></div>
+        </div>
+        <span class="momentum-score">74 / 100</span>
+        <span class="momentum-descriptor">High Disruption</span>
+    </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════ -->
+<main class="content-wrapper">
+
+    <!-- Key Metrics Strip -->
+    <div class="metrics-strip">
+        <div class="metric-tile">
+            <div class="value" style="color:#ff9800">74</div>
+            <div class="label">Momentum Score</div>
+            <div class="sub">vs. 69 UK equivalent</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ef5350">~2.1M</div>
+            <div class="label">Jobs at Risk 2025-30</div>
+            <div class="sub">Automation and closures</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ff9800">1,400+</div>
+            <div class="label">Mall Stores Closed</div>
+            <div class="sub">Major chains 2020-2024</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#66bb6a">~22%</div>
+            <div class="label">US e-Commerce Share</div>
+            <div class="sub">Of total retail 2024</div>
+        </div>
+        <div class="metric-tile">
+            <div class="value" style="color:#ab47bc">$1.6T</div>
+            <div class="label">Amazon US Revenue</div>
+            <div class="sub">2024 estimate incl. AWS</div>
+        </div>
+    </div>
+
+    <!-- ── Section 1: Current Landscape ── -->
+    <section class="section">
+        <h2 class="section-title">Current Landscape</h2>
+
+        <p>US retail employs approximately 15.7 million people, making it the single largest private sector employer in the country, and the sector most visible in the daily experience of American communities. It spans supermarkets and convenience stores, department stores and boutiques, big-box home improvement and consumer electronics, automotive parts and fuel, and a rapidly expanding digital commerce infrastructure that is simultaneously the most dynamic growth engine in retail and the primary structural threat to the physical store employment base that sustains millions of households.</p>
+
+        <p>The disruption narrative in US retail is not a single story. It is several intersecting ones: the Amazon effect, which has structurally shifted consumer expectations around price, convenience, and delivery speed in ways that no physical-only retailer can match without fundamental reinvention; the mall apocalypse, the systematic closure of enclosed shopping centres that served as retail employment anchors for suburban America for five decades; the Walmart and big-box consolidation, which absorbed market share from independent and regional retailers while simultaneously reducing the labour intensity of each dollar of sales; and the automation of the store floor itself, through self-checkout, autonomous inventory management, AI-driven demand forecasting, and now, nascent autonomous fulfilment.</p>
+
+        <p>The human consequence is not distributed evenly. The workers most exposed to retail disruption are disproportionately female, disproportionately members of racial minority groups, concentrated in the lower half of the income distribution, and employed in communities, particularly in the Midwest, rural South, and post-industrial Northeast, where retail has historically provided a significant share of stable, accessible employment. The closure of a Sears anchor store in a Midwest mall is not simply a retail transaction statistic; it is a community employment event with consequences that extend well beyond the store itself.</p>
+
+        <div class="callout danger">
+            <p>The United States has lost an estimated 7,500 major retail chain store locations since 2017, with department store closures alone removing anchor tenants from more than 300 enclosed malls. The communities most affected are not the wealthy suburban corridors where upscale retail has partially replaced mid-market department stores. They are the smaller cities and rural markets where the local mall or Walmart supercenter represents a substantial fraction of accessible retail employment within reasonable commuting distance.</p>
+        </div>
+    </section>
+
+    <!-- ── Section 2: Retail Format Disruption Overview ── -->
+    <section class="section">
+        <h2 class="section-title">Retail Format Disruption Overview</h2>
+
+        <div class="format-grid">
+            <div class="format-card">
+                <div class="format-icon">&#127978;</div>
+                <h4>Department Stores</h4>
+                <p>Macy's, Kohl's, JCPenney closures accelerating. Remaining stores smaller with reduced headcount per location.</p>
+                <span class="format-momentum fm-high">Score: 88</span>
+            </div>
+            <div class="format-card">
+                <div class="format-icon">&#128722;</div>
+                <h4>Big Box / Mass Market</h4>
+                <p>Walmart and Target deploying self-checkout and inventory automation. Net employment declining per store.</p>
+                <span class="format-momentum fm-high">Score: 76</span>
+            </div>
+            <div class="format-card">
+                <div class="format-icon">&#127757;</div>
+                <h4>e-Commerce / Fulfilment</h4>
+                <p>Amazon warehouse automation reducing labour per unit shipped. Robotics deployment accelerating at all major DCs.</p>
+                <span class="format-momentum fm-high">Score: 82</span>
+            </div>
+            <div class="format-card">
+                <div class="format-icon">&#127820;</div>
+                <h4>Grocery / Supermarket</h4>
+                <p>Self-checkout ubiquitous. Automated fulfilment centres replacing manual picking. Last-mile delivery reshaping demand.</p>
+                <span class="format-momentum fm-high">Score: 71</span>
+            </div>
+            <div class="format-card">
+                <div class="format-icon">&#128241;</div>
+                <h4>Consumer Electronics</h4>
+                <p>Best Buy store count declining. AI-assisted product advisory partially replacing sales floor staff roles.</p>
+                <span class="format-momentum fm-medium">Score: 68</span>
+            </div>
+            <div class="format-card">
+                <div class="format-icon">&#128295;</div>
+                <h4>Home Improvement</h4>
+                <p>Home Depot and Lowe's relatively resilient; self-checkout and AI ordering partially reducing floor staff needs.</p>
+                <span class="format-momentum fm-medium">Score: 58</span>
+            </div>
+            <div class="format-card">
+                <div class="format-icon">&#128083;</div>
+                <h4>Specialty / Boutique</h4>
+                <p>Coastal boutiques relatively resilient; experiential differentiation preserving some human service premium.</p>
+                <span class="format-momentum fm-medium">Score: 52</span>
+            </div>
+            <div class="format-card">
+                <div class="format-icon">&#9981;</div>
+                <h4>Auto Parts / Fuel</h4>
+                <p>AutoZone, O'Reilly relatively stable near term; EV transition poses longer-term structural question for fuel retail.</p>
+                <span class="format-momentum fm-low">Score: 44</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 3: Regional Employment Analysis ── -->
+    <section class="section">
+        <h2 class="section-title">Regional Employment Analysis</h2>
+
+        <p>Retail employment is geographically distributed more evenly than most sectors, reflecting its role as a community-level service. However, the nature and resilience of retail employment varies enormously by region, with the Sunbelt experiencing stronger underlying consumer demand while the Rust Belt, rural Midwest, and parts of Appalachia face retail contraction layered on top of broader economic vulnerability.</p>
+
+        <table class="region-table">
+            <thead>
+                <tr>
+                    <th>Region</th>
+                    <th>Est. Employment</th>
+                    <th>Key Dynamics</th>
+                    <th>Major Employers</th>
+                    <th>Disruption Exposure</th>
+                    <th>Structural Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="region-name">Heartland / Rural Midwest</div>
+                        <div class="region-hub">Iowa, Kansas, Nebraska, Missouri, North Dakota, South Dakota</div>
+                    </td>
+                    <td>~820,000</td>
+                    <td>Walmart dominance, rural retail deserts forming, farm community purchasing power volatile</td>
+                    <td>Walmart, Dollar General, Family Dollar, local co-ops, Casey's General Stores</td>
+                    <td><span class="impact-pill impact-high">Very High</span></td>
+                    <td>Dollar store expansion filling some gaps left by department store closures but at dramatically lower wages and fewer hours per employee; rural communities in Iowa and Nebraska where the Walmart supercenter is the primary retail employer of scale face acute vulnerability when automation reduces per-store headcount; redeployment options extremely limited</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Rust Belt</div>
+                        <div class="region-hub">Ohio, Michigan, Indiana, Pennsylvania, Western New York</div>
+                    </td>
+                    <td>~1,480,000</td>
+                    <td>Mall anchor closures, department store retreat, manufacturing decline reducing consumer purchasing power</td>
+                    <td>Macy's (shrinking), Walmart, Target, Kroger, Giant Eagle, Meijer</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Layered vulnerability: retail disruption occurring simultaneously with manufacturing automation; Youngstown, Flint, Gary, Akron all experiencing retail contraction in markets where alternatives are limited; enclosed mall closures leaving physical vacancies and employment voids in communities with limited redevelopment capacity; Meijer and Kroger automation of checkout and ordering reducing store-level headcount</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Southeast / Sunbelt</div>
+                        <div class="region-hub">Texas, Florida, Georgia, North Carolina, Tennessee, Arizona</div>
+                    </td>
+                    <td>~3,200,000</td>
+                    <td>Population growth sustaining demand; Walmart and HEB dominance; strong outlet and open-air retail development</td>
+                    <td>Walmart, HEB (Texas), Publix (FL/SE), Target, Home Depot (HQ Atlanta), Lowe's (HQ Charlotte)</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Population growth moderating but not eliminating automation impact; HEB's Texas dominance and strong local loyalty providing relatively stable employment base; Florida tourist economy sustaining some specialty retail; Home Depot and Lowe's North Carolina headquarters concentrate corporate and logistics employment in region; Dallas-Fort Worth becoming major logistics and e-commerce fulfilment hub</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">California</div>
+                        <div class="region-hub">Los Angeles, San Francisco Bay Area, San Diego, Central Valley</div>
+                    </td>
+                    <td>~1,750,000</td>
+                    <td>High cost of living driving automation investment; strong e-commerce adoption; coastal vs. inland divergence</td>
+                    <td>Walmart, Amazon, Costco, Target, Ross Stores (HQ Dublin CA), Gap (HQ San Francisco)</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>California minimum wage increases ($16+ statewide in 2024) accelerating automation investment economics; Central Valley warehouse and fulfilment automation displacing significant warehouse and logistics labour; coastal retail more resilient through experiential and luxury differentiation; AB5 and gig worker classification debates intersecting with retail labour model; Amazon's California logistics network among its most automated</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">New York Metro and Northeast</div>
+                        <div class="region-hub">New York City, New Jersey, Connecticut, Massachusetts, Philadelphia</div>
+                    </td>
+                    <td>~1,620,000</td>
+                    <td>High-density urban retail partly resilient; luxury and experiential differentiation; significant lower-income retail workforce concentrated in outer boroughs</td>
+                    <td>Walmart (limited NYC presence), Target, Macy's (HQ NYC), Amazon, Trader Joe's, Whole Foods</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>New York City's unique density creates some resilience for physical retail that does not exist in lower-density markets; but outer borough and New Jersey suburban retail faces same structural pressures as national peers; Macy's Herald Square flagship retained while hundreds of other locations close; strong union presence (UFCW) in supermarket sector providing some wage and employment floor; luxury Fifth Avenue corridor relatively insulated</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Pacific Northwest</div>
+                        <div class="region-hub">Seattle, Portland, Vancouver BC</div>
+                    </td>
+                    <td>~420,000</td>
+                    <td>Amazon's home market; high e-commerce adoption; REI and outdoor specialty retail relatively strong; urban core retail challenged</td>
+                    <td>Amazon, Costco (HQ Issaquah WA), REI (HQ Seattle), Nordstrom (HQ Seattle)</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Living in Amazon's backyard means both employment opportunity in tech and logistics and the most advanced e-commerce adoption rates in the country; Nordstrom, headquartered in Seattle, has been restructuring and investing in AI-driven personalisation while reducing store footprint nationally; Costco's membership model and strong employee compensation philosophy providing relative employment stability; Portland urban retail impacted by downtown safety concerns reducing foot traffic</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Appalachia and Rural South</div>
+                        <div class="region-hub">West Virginia, Kentucky, eastern Tennessee, rural Mississippi, Alabama</div>
+                    </td>
+                    <td>~580,000</td>
+                    <td>Dollar store proliferation replacing closed retailers; limited alternatives; broadband gaps limiting e-commerce substitution for consumers</td>
+                    <td>Dollar General, Dollar Tree/Family Dollar, Walmart, Food City, local independents</td>
+                    <td><span class="impact-pill impact-high">Very High</span></td>
+                    <td>Dollar General's 19,000+ store network is the dominant retail employer in many Appalachian and rural Southern markets; dollar store employment is lower-wage, fewer-hours, and less benefit-rich than the department store and grocery employment it has replaced; communities where Dollar General is effectively the only accessible employer for retail workers face stark constraints; broadband limitations mean e-commerce cannot substitute consumer needs, keeping physical retail demand but not sustaining employment at prior levels</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Canada (Toronto, Montreal, Vancouver, Calgary)</div>
+                        <div class="region-hub">GTA, Greater Montreal, Metro Vancouver, Calgary metro</div>
+                    </td>
+                    <td>~2,100,000</td>
+                    <td>Loblaw and Dollarama dominance; stronger union presence in food retail; Amazon Canada growing; Hudson's Bay Company collapse in 2024-25</td>
+                    <td>Loblaw, Dollarama, Canadian Tire, Sobeys, Walmart Canada, Amazon Canada</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Hudson's Bay Company's 2024-25 creditor protection filing and closure of most stores represents the most significant single retail employment event in Canadian history, affecting approximately 9,000 workers directly plus mall anchor vacancies affecting co-tenants; Loblaw's automation investment in distribution and checkout moderating but not preventing headcount pressure; UFCW Canada stronger than US counterpart providing some employment floor in unionised grocery; Dollarama's expansion absorbing some displaced retail workers at lower wage points</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- ── Section 4: Charts ── -->
+    <section class="section">
+        <h2 class="section-title">Employment and Disruption Visualisations</h2>
+
+        <div class="two-col">
+            <div class="chart-container">
+                <div class="chart-title">US Retail Employment by Format (2024, thousands)</div>
+                <canvas id="formatChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Role Category Employment Forecast 2024-2030 (US, thousands)</div>
+                <canvas id="forecastChart"></canvas>
+            </div>
+        </div>
+
+        <div class="two-col" style="margin-top: 28px">
+            <div class="chart-container">
+                <div class="chart-title">e-Commerce Share of Total US Retail Sales (%)</div>
+                <canvas id="ecommerceChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Automation Exposure by Role Type</div>
+                <canvas id="automationChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 5: The Amazon Effect ── -->
+    <section class="section">
+        <h2 class="section-title">The Amazon Effect: Structural Transformation at Scale</h2>
+
+        <p>Amazon is the most consequential single actor in the restructuring of US retail employment, both as a direct employer and as the competitive force that has reshaped consumer expectations and thereby destabilised the business models of physical retail across the country. Understanding the Amazon effect requires holding two truths simultaneously: Amazon employs approximately 1.5 million people in the United States, making it the second-largest private employer in the country after Walmart, and Amazon's business model is destroying the employment base of the physical retail sector at a pace and scale that its own hiring cannot offset.</p>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">Amazon's Warehouse Automation Trajectory</div>
+                <p>Amazon operates more than 1,000 fulfilment, sortation, and delivery facilities in the United States and has been deploying robotics at an accelerating pace since its 2012 acquisition of Kiva Systems. Its Sparrow robotic arm system, Proteus autonomous mobile robot, and Cardinal AI-powered sorting system represent successive generations of automation that reduce the human labour required to move each unit through its network.</p>
+                <p style="margin-top: 12px">Amazon has publicly stated an ambition to develop fully autonomous picking and packing capability within the decade. Its own researchers have estimated that its current automation roadmap could affect approximately 70% of existing warehouse job tasks within five to ten years. Amazon currently employs approximately 750,000 warehouse workers in the US; even a partial realisation of its automation ambitions represents a displacement of workers in the hundreds of thousands.</p>
+                <p style="margin-top: 12px">The workers most exposed are concentrated in specific communities: the Inland Empire of Southern California, the I-78/I-287 corridor in New Jersey, Lehigh Valley Pennsylvania, the Columbus and Cincinnati areas of Ohio, and suburban Dallas and Indianapolis. These are not incidentally low-income communities; they are places where Amazon has specifically located its facilities to access available labour, affordable land, and transportation infrastructure, and where its employment has become a significant share of local job creation in recent years.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">The Competitive Displacement Effect</div>
+                <p>Beyond its direct employment practices, Amazon's competitive effect on the physical retail sector is the larger employment story. McKinsey has estimated that each Amazon warehouse worker represents the effective displacement of approximately three to four retail jobs at physical stores through demand substitution. This ratio is contested and contextually dependent, but the directional reality is clear: the growth of e-commerce has reduced total employment per dollar of retail sales, and Amazon has been the primary driver of that shift.</p>
+                <p style="margin-top: 12px">The closure of Sears, once the largest private employer in the United States with 350,000 workers, is the most dramatic illustration of this dynamic. Sears's decline was multi-causal but the competitive pressure from Amazon, which undercut its electronics, appliance, and tools categories, was a central factor. The 350,000 Sears jobs of the peak era were replaced not by equivalent Amazon fulfilment roles but by a combination of lower-wage e-commerce warehouse work, partial absorption into surviving retailers, and in many cases, exit from the retail workforce entirely.</p>
+                <p style="margin-top: 12px">Amazon's pricing algorithms, Prime membership lock-in, and logistics network have created a competitive moat that requires physical retailers to either specialise in categories where Amazon's advantage is limited, invest in experiential differentiation that commands a service premium, or compete on price in a battle they will structurally lose. Many have not succeeded in any of these strategies.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 6: Mall Apocalypse ── -->
+    <section class="section">
+        <h2 class="section-title">The Mall Apocalypse: Community Anchors in Collapse</h2>
+
+        <p>The enclosed shopping mall was for five decades the architectural and economic centre of American suburban life. At peak, the United States had approximately 1,500 enclosed malls, anchored by department stores and sustained by the foot traffic they generated for thousands of smaller specialty retailers and food court operators. That model is in structural collapse, and its human consequences reach well beyond the retail industry.</p>
+
+        <div class="two-col">
+            <div>
+                <p>Macy's has announced the closure of approximately 150 stores by 2026, a reduction of roughly 30% of its fleet, as it concentrates investment in higher-performing locations and a smaller luxury format. Kohl's has closed dozens of underperforming stores. JCPenney emerged from bankruptcy with a dramatically smaller footprint. Bed Bath and Beyond closed entirely. Together, these closures have removed anchor tenants from hundreds of enclosed malls across the country, triggering the co-tenancy clause cascade that follows: when an anchor closes, specialty tenants are typically permitted to reduce rent or exit their leases, accelerating the death spiral of smaller malls that cannot attract replacement anchors.</p>
+
+                <p>The communities most affected are not affluent suburbs with multiple retail alternatives. They are the secondary cities and smaller markets where the local mall was the dominant retail employment location and where its closure leaves a physical void that is genuinely difficult to fill. Repurposing proposals abound, from mixed-use redevelopment to distribution centres to community colleges and healthcare facilities. Some succeed. Many do not, and the timeline from closure to viable alternative use is measured in years while the employment consequences are immediate.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">The Walmart Heartland Paradox</div>
+                <p>Walmart's relationship with the US heartland is the defining retail employment story of the last three decades. Walmart's expansion into small-town and rural America, accelerating through the 1980s and 1990s, simultaneously destroyed thousands of independent retailers and main street businesses while providing accessible retail employment to communities that had limited alternatives. The net employment effect of Walmart's expansion was negative in most markets it entered, but the individual jobs it created were, for many workers, superior to the fragmented part-time positions at independent retailers they replaced.</p>
+                <p style="margin-top:12px">Walmart now operates approximately 4,700 US stores and employs roughly 1.6 million US associates, making it the largest private employer in the country. It is also the most aggressive major retailer in deploying automated checkout, shelf-scanning robots, AI-driven inventory management, and distribution centre automation. Each efficiency gain at Walmart, at the scale of its operation, represents a significant total employment consequence across its network.</p>
+                <p style="margin-top:12px">In the communities that depend most on Walmart employment, typically small cities in the South, Midwest, and rural West, there is often no alternative employer of comparable scale within accessible commuting distance. When Walmart reduces headcount per store through automation, the economic consequence for these communities is not absorbed by a diversified local labour market; it falls directly on households with limited alternatives. The Walmart paradox is that the company simultaneously sustains communities and renders them vulnerable.</p>
+            </div>
+        </div>
+
+        <div class="callout warning">
+            <p>Dollar General now operates more than 19,700 stores in the United States, making it the most numerous retail chain in the country by store count. Its expansion strategy deliberately targets communities underserved by larger-format retail, including many communities abandoned by Walmart when its supercenter model made smaller Walmart discount stores uneconomic. Dollar General's employment model, typically 8-12 employees per store, lower wages than comparable Walmart or grocery positions, and limited benefits, is not an adequate replacement for the department store or grocery employment it follows into communities. It is, however, often the only accessible employer.</p>
+        </div>
+    </section>
+
+    <!-- ── Section 7: Automation on the Store Floor ── -->
+    <section class="section">
+        <h2 class="section-title">Automation on the Store Floor</h2>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">Self-Checkout and Cashierless Technology</div>
+                <p>Self-checkout has become ubiquitous in American grocery and mass-market retail over the past decade, and its deployment has materially reduced the cashier headcount required per store. Walmart has deployed self-checkout across virtually its entire fleet. Target, Kroger, and most major grocery chains have self-checkout as a standard offering. The result is a significant reduction in the number of cashier positions that a given store volume requires, and the cashier role, which was the entry-level position for millions of retail workers, has become substantially less available as a consequence.</p>
+                <p style="margin-top:12px">Amazon Go's cashierless technology, which uses computer vision and sensor fusion to enable checkout-free shopping, has not yet deployed at the scale Amazon originally projected. The economics of the technology at smaller store formats have proven more challenging than anticipated, and Amazon has closed some Go locations while pivoting the technology toward Whole Foods integration. However, the technology exists and will eventually reach broader deployment as costs decline; the question is timing rather than direction.</p>
+                <p style="margin-top:12px">Several major retailers including Walmart and Kroger have, paradoxically, partially rolled back self-checkout in some formats after discovering that the theft and shrink consequences of unsupervised checkout exceeded the labour savings. This creates a temporary floor beneath cashier employment but does not reverse the long-run trend.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Inventory and Shelf Management Automation</div>
+                <p>Simbe Robotics' Tally robots, deployed by retailers including BJ's Wholesale Club, have demonstrated that autonomous shelf-scanning can identify out-of-stocks, price discrepancies, and misplaced items at a fraction of the cost of manual auditing. Walmart has experimented with its own shelf-scanning robots and with autonomous floor-cleaning machines that simultaneously gather inventory data. The functions of stock counting, planogram compliance, and inventory location tracking, previously requiring significant labour hours, are progressively moving to autonomous systems.</p>
+                <p style="margin-top:12px">AI-driven demand forecasting and automated replenishment ordering are reducing the human judgment required in buying and merchandising at the store level. Centralised AI systems at the corporate level can predict demand by SKU and location with greater accuracy than store-level managers using historical experience, reducing the human expertise premium for these functions and centralising decision-making in ways that reduce store-level staffing requirements.</p>
+                <p style="margin-top:12px">The grocery sector is deploying automated micro-fulfilment centres within or adjacent to existing stores, enabling click-and-collect and delivery order picking at higher speed and lower labour cost than manual picking. Kroger's partnership with Ocado, and Walmart's own automated fulfilment investments, represent committed capital to a model that will materially reduce the number of people required to fulfil each order.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 8: Job Transformation Dynamics ── -->
+    <section class="section">
+        <h2 class="section-title">Job Transformation Dynamics</h2>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title" style="color:#ef9a9a">Roles Under Significant Pressure</div>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Cashiers and Checkout Associates</div>
+                            <div class="role-desc">The largest occupational category in US retail with approximately 3.4 million workers. Self-checkout deployment has already reduced the cashier-to-volume ratio significantly, and the trend will continue. BLS projects approximately 10% decline in cashier employment by 2032, which understates the structural shift when adjusted for retail sales volume growth over the same period. The role has been the primary entry point to retail careers and its decline narrows accessible pathways into the sector.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Stock Clerks and Order Fillers</div>
+                            <div class="role-desc">Automated receiving, shelf-scanning robots, and AI-driven inventory management are reducing the human labour required for stock management functions. Estimated 15-20% reduction in dedicated stock clerk positions by 2030, partially offset by growth in e-commerce picking roles, which themselves face automation pressure in the medium term.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Retail Managers (Store and Department Level)</div>
+                            <div class="role-desc">As AI-driven scheduling, inventory management, and performance analytics centralise decision-making, the scope of human management judgment at the store and department level narrows. Several major retailers have reduced their management layers, widening the span of control for remaining managers while reducing total management headcount. Middle management in retail has been under sustained pressure since 2019.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Travel Agents and Retail Booking Specialists</div>
+                            <div class="role-desc">The physical travel agency, once a fixture of retail high streets and shopping centres, has been almost entirely eliminated by online booking platforms. This category of retail employment has experienced near-complete automation-driven displacement over twenty years, a preview of what broader retail automation will deliver over a shorter timeframe.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Warehouse Pickers and Packers</div>
+                            <div class="role-desc">The growth of e-commerce has created substantial warehouse employment but the same technological trajectory is now automating those roles. Amazon's robotics deployment, Ocado's fully automated warehouse model, and the broader deployment of autonomous mobile robots in fulfilment centres are progressively reducing the human labour required per unit shipped. The e-commerce warehouse job created to replace the retail floor job is itself now subject to automation pressure.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon decline"></div>
+                        <div>
+                            <div class="role-name">Customer Service Representatives</div>
+                            <div class="role-desc">AI chatbots, virtual assistants, and automated returns processing are reducing the human labour required to handle routine customer service interactions. Major retailers have significantly reduced call centre headcount as AI systems handle the majority of order status, return initiation, and standard complaint resolution without human involvement. Complex or escalated cases preserve some human role, but the volume requiring human handling has declined materially.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="color:#a5d6a7">Emerging Roles and Growing Opportunities</div>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">E-Commerce and Digital Merchandising Specialists</div>
+                            <div class="role-desc">Managing online product listings, digital shelf positioning, SEO optimisation for product search, and performance analytics for digital channels requires skills that traditional retail careers did not develop. Retailers investing in omnichannel capability need professionals who understand both retail fundamentals and digital marketing. Estimated 180,000 net new roles by 2030, concentrated in retailer headquarters and technology functions.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Last-Mile Delivery and Fulfilment Coordinators</div>
+                            <div class="role-desc">The growth of home delivery and click-and-collect requires coordination roles managing the interface between automated fulfilment systems and the final delivery or customer collection event. While autonomous delivery vehicles and drones represent longer-term automation pressure, the near-term growth in delivery volume is sustaining demand for human coordination and quality assurance in the last mile.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Retail Technology Implementation and Support</div>
+                            <div class="role-desc">Deploying and maintaining self-checkout systems, shelf-scanning robots, automated inventory platforms, and AI-driven demand forecasting tools requires technical support staff with retail operational knowledge. This is not a one-for-one replacement for displaced cashiers and stock clerks, but it represents genuine new employment that did not exist a decade ago. The credential requirements are higher, creating a transition challenge.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Experiential Retail and Personal Shopping</div>
+                            <div class="role-desc">The retailers succeeding in physical formats are those offering genuine human service value: expert staff in specialist outdoor retail such as REI and specialty outdoor stores, personal stylists in luxury and premium fashion, knowledgeable associates in specialty food and beverage. These roles are growing in the surviving segments of physical retail but the total number is modest relative to the scale of displacement occurring in mass-market formats.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon grow"></div>
+                        <div>
+                            <div class="role-name">Supply Chain and Demand Analytics</div>
+                            <div class="role-desc">AI-driven supply chain optimisation, real-time inventory visibility, and demand sensing require analysts who can interpret algorithmic outputs, identify anomalies, and translate data into merchandising and procurement decisions. Major retailers are building significant analytics capabilities at their headquarters functions, though these roles require substantially different credentials than the store-floor employment they are effectively partially replacing.</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <div class="role-icon transform"></div>
+                        <div>
+                            <div class="role-name">Store Associates in Surviving Formats (Transforming)</div>
+                            <div class="role-desc">The store associate role is not disappearing uniformly, but it is being redefined in the formats that survive. Associates in successful physical retail are increasingly expected to handle customer advisory, mobile checkout, click-and-collect fulfilment, and experiential event support alongside traditional floor duties. The breadth of skill required is increasing while the compensation typically offered is not rising proportionally. The transformation is real and the mismatch between what is required and what is rewarded is a significant human impact concern.</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 9: Human Impact Considerations ── -->
+    <section class="section">
+        <h2 class="section-title">Human Impact Considerations</h2>
+
+        <div class="impact-box red">
+            <h4>The Demographic Profile of Retail Displacement</h4>
+            <p>Retail employment in the United States is disproportionately female (approximately 51% of retail workers are women, rising to around 70% in food and grocery retail), disproportionately composed of workers without four-year degrees (approximately 65%), and includes a significantly higher proportion of Black, Hispanic, and Asian American workers relative to their share of the overall workforce. The automation and closures driving retail employment decline are therefore not demographically neutral events. They concentrate adverse consequences on the groups that already face the most structural barriers in the labour market and have the fewest alternatives when their current roles disappear.</p>
+        </div>
+
+        <div class="impact-box">
+            <h4>Retail as a First Employment and Re-Entry Pathway</h4>
+            <p>Retail has historically served as the employment sector most accessible to workers entering the labour market for the first time, re-entering after career breaks, transitioning from other sectors, or returning from incarceration. Its relatively low credential requirements, flexible scheduling, and geographic ubiquity made it a uniquely accessible sector. As automation reduces entry-level positions and closures eliminate stores in communities with limited alternatives, the loss of retail as an accessible employment pathway is a structural consequence that affects not just current retail workers but the future workers who would have used it as a starting point. The narrowing of this pathway has consequences that extend far beyond the sector itself.</p>
+        </div>
+
+        <div class="impact-box blue">
+            <h4>Rural Retail Deserts: Access and Employment Simultaneously</h4>
+            <p>In rural communities across the Midwest, South, and Appalachia, the closure of physical retail creates simultaneous consequences for employment and consumer access. When the only full-service grocery within twenty miles closes or reduces to a smaller format, community members lose both a source of employment and a source of food access. These dual consequences, where the retail workers losing their jobs are also the community members losing their access to goods and services, are particularly acute in communities with limited broadband access that cannot substitute e-commerce for physical retail. The Federal Reserve has identified food access deserts growing in correlation with retail closures in rural markets, representing a public health consequence alongside the employment one.</p>
+        </div>
+
+        <div class="impact-box">
+            <h4>The Wage Floor and Benefits Access</h4>
+            <p>The majority of US retail employment, despite being the largest private sector employer, operates at or near minimum wage with limited benefits. Walmart's average hourly wage of approximately $17.50 and Target's $15 minimum represent genuine improvements from a decade ago, driven partly by minimum wage legislation and partly by competitive labour markets in the pandemic period. However, the part-time and variable scheduling practices common in retail mean that hourly wage rates significantly overstate actual weekly and annual earnings for many workers. When automation reduces hours per worker and closures eliminate positions entirely, the household income consequences are immediate and severe because the financial buffer that higher-wage workers can draw on does not exist.</p>
+        </div>
+
+        <div class="impact-box blue">
+            <h4>The Scheduling Precarity Problem</h4>
+            <p>Algorithmic scheduling tools deployed by major retailers including Walmart, Target, and Gap have created significant improvement in the retailers' labour cost efficiency and significant deterioration in the predictability and planning capacity of their workers' lives. Just-in-time scheduling, in which workers receive their schedules with as little as 24-48 hours' notice, makes it effectively impossible to manage childcare arrangements, hold a second job, attend scheduled education programmes, or plan household finances with any reliability. Several cities including San Francisco, Seattle, and New York City have passed fair scheduling ordinances requiring advance notice; most jurisdictions have not. AI-driven scheduling optimisation is making the unpredictability problem worse rather than better for the millions of workers subject to it.</p>
+        </div>
+    </section>
+
+    <!-- ── Section 10: Coastal vs. Heartland Divergence ── -->
+    <section class="section">
+        <h2 class="section-title">Coastal Boutiques vs. Heartland Reality: The Diverging Retail Economy</h2>
+
+        <p>One of the most significant structural dynamics in US retail disruption is the widening divergence between retail formats and markets that are finding viable paths through the transformation, and those that are not. This divergence maps, with uncomfortable clarity, onto existing geographic and income inequalities in the United States.</p>
+
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">Where Physical Retail Is Surviving</div>
+                <p>Specialty outdoor and recreational retail (REI, Arc'teryx, Patagonia stores) is sustaining itself through expert staffing, community programming, and product categories where tactile experience and expert advice retain genuine value. Luxury and premium fashion in gateway city locations maintains physical retail through service quality, exclusivity, and the social dimensions of high-end shopping that are not replicable online. Specialty food, wine, and artisan retail sustains itself through sensory and social experience. Home improvement retains physical presence through the complexity of project planning and the impracticality of shipping large materials.</p>
+                <p style="margin-top:12px">What these surviving categories share is that they serve customers with the income to pay a premium for human expertise and physical experience, and they operate in markets with the population density and income distribution to sustain that premium format. They represent a meaningful but numerically modest segment of total retail employment relative to the mass-market formats experiencing structural decline.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Where Physical Retail Is Not Surviving</div>
+                <p>The formats and markets struggling most are those serving middle-income and lower-income consumers in mid-density and lower-density markets with formats that have no compelling reason for physical presence over digital alternatives. A mid-tier clothing retailer in a regional mall in Youngstown, Ohio has no structural advantage over online alternatives and faces the full force of the competitive environment without the income distribution or population density to sustain a premium physical experience.</p>
+                <p style="margin-top:12px">The retail that is failing in these markets is not failing because of management failures or poor strategy; it is failing because the structural conditions that sustained it have changed. The competitive environment created by e-commerce, the shift in consumer spending patterns toward experiences and services rather than goods, and the inability of physical retail economics to match digital pricing without either premium differentiation or massive scale have created a structural disadvantage that individual retailers cannot strategy their way out of in declining markets.</p>
+                <p style="margin-top:12px">The workers in these failing formats are not the people who made strategic errors. They are the people whose jobs were located at the losing end of a structural economic shift over which they had no control and for which the existing safety net provides limited support.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 11: Future Prospects ── -->
+    <section class="section">
+        <h2 class="section-title">Future Prospects: 2025-2030</h2>
+
+        <div class="two-col">
+            <div class="chart-container">
+                <div class="chart-title">Employment Scenario Projections 2024-2030 (US Retail, thousands)</div>
+                <canvas id="scenarioChart"></canvas>
+            </div>
+            <div>
+                <p>The trajectory of US retail employment will be shaped by the acceleration of e-commerce adoption, the pace of in-store automation deployment, the resilience of physical retail formats, and the scale of anchor store and mall closures. All four vectors point in the same direction, but the pace is uncertain.</p>
+
+                <p>A conservative scenario assumes continued e-commerce growth moderating as it reaches saturation in certain categories, regulatory constraints on algorithmic scheduling and automation, and a stable physical retail environment in which some formats consolidate rather than collapse. Under this scenario, net retail employment declines by approximately 8-12% by 2030, weighted toward cashier, stock clerk, and administrative roles, with some offsetting growth in digital, logistics coordination, and specialist advisory positions.</p>
+
+                <p>A base scenario, reflecting current trends without significant new protective intervention, suggests net decline of 12-18% by 2030, approximately 1.9 to 2.8 million positions. This scenario reflects continued major chain closures, progressive self-checkout adoption reaching near-universal deployment in mass market formats, and Amazon warehouse automation reaching its next technological threshold. The concentration of this decline in lower-income, less-educated, and minority worker demographics makes the distributional consequence substantially more severe than the aggregate statistic implies.</p>
+
+                <p>A disruptive scenario, which assumes Amazon Go technology achieves broader deployment economics, autonomous delivery reaches commercial scale, and a further major chain failure beyond the scale of recent closures occurs, could see decline of 20-25% or more by 2030. This scenario may be pessimistic for the five-year horizon but represents a plausible trajectory by the early 2030s even if not fully realised by 2030.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Section 12: Policy Recommendations ── -->
+    <section class="section">
+        <h2 class="section-title">Policy Recommendations</h2>
+
+        <div class="policy-grid">
+            <div class="policy-card">
+                <h4>Nationwide Fair Scheduling Legislation</h4>
+                <p>Federal fair scheduling legislation, extending the protections currently available only in a handful of cities to all workers subject to algorithmic scheduling, would materially improve the lives of millions of retail workers without eliminating the operational flexibility employers need. Requiring two weeks' advance schedule notice, predictability pay for last-minute changes, and right to decline hours below a defined weekly minimum would reduce the precarity that AI-driven scheduling has amplified. The political will has been absent at the federal level; building it should be a priority for worker advocates and progressive policymakers.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Retail Anchor Transition Support</h4>
+                <p>When major retail anchor closures create mall employment voids in communities with limited alternatives, federal and state economic development resources should be deployed proactively rather than reactively. A standing programme analogous to Trade Adjustment Assistance, covering retail workers displaced by structural change rather than just import competition, would provide income support, retraining access, and relocation assistance for workers in communities where the local retail employment base has collapsed. The current Trade Adjustment Assistance programme explicitly excludes retail displacement, a gap that should be addressed.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Rural Retail Access Guarantees</h4>
+                <p>In communities where retail closure creates genuine food access or essential goods access deserts, federal and state programmes should consider whether some form of retail access guarantee is appropriate, analogous to universal service obligations in telecommunications. Options include subsidised cooperative retail development, postal service retail integration (building on the USPS's existing rural presence), and broadband investment that enables e-commerce substitution as a genuine alternative rather than a theoretical one. Rural communities should not bear the access consequences of structural market failures without policy response.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Automation Disclosure and Impact Assessment</h4>
+                <p>Major retailers deploying automation technologies that materially affect headcount should be required to disclose the employment consequences of those deployments in their annual reporting and to conduct community impact assessments before implementing changes in markets where their employment represents a significant share of local jobs. This is not a prohibition on automation; it is a transparency and planning requirement that would allow communities and workers to anticipate and prepare for changes rather than experiencing them without notice. The WARN Act framework could be extended to cover automation-driven headcount reduction above defined thresholds.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Retail Workforce Reskilling Infrastructure</h4>
+                <p>Community colleges in retail-employment-heavy markets should receive dedicated federal support for developing curricula bridging retail experience to adjacent growth fields including supply chain analytics, e-commerce operations, logistics coordination, and customer experience design. The workers being displaced from retail have genuine skills, including customer service, inventory management, team coordination, and operational execution, that are transferable with appropriate reskilling. The pathway from retail to digital commerce operations or logistics management is plausible for many displaced workers; the infrastructure to support that transition at scale is currently inadequate.</p>
+            </div>
+            <div class="policy-card">
+                <h4>Minimum Wage and Benefits Floor Alignment</h4>
+                <p>The federal minimum wage of $7.25 per hour, unchanged since 2009, leaves millions of retail workers in states that have not enacted their own higher minimums at a real wage significantly below the level at which a previous generation of retail employment sustained households. Federal minimum wage legislation aligned with contemporary costs of living, combined with provisions extending healthcare access to part-time workers at major retailers above a defined revenue threshold, would materially reduce the human cost of a retail employment landscape that is simultaneously paying workers less than it has historically and offering fewer hours than workers need. Several states have demonstrated that higher minimum wages do not produce the employment collapse predicted by their opponents.</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="page-footer">
+    <div class="footer-brand">
+        <span>AI Human Impact Index</span> | North America: Retail
+        <br>Andrew Phipps, PhD Candidate, University of Sussex | andrewphipps.ai
+    </div>
+    <div class="footer-note">
+        Employment figures drawn from BLS, US Census Bureau, NRF, and industry sources.<br>
+        Data reflects best available information as of early 2025. Subject to ongoing revision.
+    </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════
+     CHART.JS SCRIPTS
+═══════════════════════════════════════════════════ -->
+<script>
+    Chart.defaults.color = '#7a9bbf';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+
+    /* Format Employment Bar */
+    new Chart(document.getElementById('formatChart'), {
+        type: 'bar',
+        data: {
+            labels: [
+                'Food & Grocery',
+                'General Merchandise',
+                'Health & Personal Care',
+                'Motor Vehicle & Parts',
+                'Clothing & Accessories',
+                'Building Materials',
+                'Electronics',
+                'e-Commerce Fulfilment',
+                'Other Retail'
+            ],
+            datasets: [{
+                label: 'Employment (thousands)',
+                data: [3100, 2980, 1820, 1640, 1290, 1180, 580, 1410, 1700],
+                backgroundColor: [
+                    'rgba(66,165,245,0.7)',
+                    'rgba(239,83,80,0.7)',
+                    'rgba(102,187,106,0.7)',
+                    'rgba(255,152,0,0.7)',
+                    'rgba(171,71,188,0.7)',
+                    'rgba(38,198,218,0.7)',
+                    'rgba(255,235,59,0.7)',
+                    'rgba(239,83,80,0.5)',
+                    'rgba(120,120,140,0.6)'
+                ],
+                borderColor: 'rgba(255,255,255,0.1)',
+                borderWidth: 1,
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf', font: { size: 9 } }, grid: { display: false } },
+                y: { ticks: { color: '#7a9bbf', callback: v => v >= 1000 ? (v/1000).toFixed(1)+'M' : v+'K' } }
+            }
+        }
+    });
+
+    /* Employment Forecast Line */
+    new Chart(document.getElementById('forecastChart'), {
+        type: 'line',
+        data: {
+            labels: ['2022','2023','2024','2025','2026','2027','2028','2029','2030'],
+            datasets: [
+                {
+                    label: 'Cashiers / Checkout',
+                    data: [3550, 3420, 3320, 3150, 2960, 2800, 2660, 2560, 2480],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.07)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Store Associates / Management',
+                    data: [6200, 6050, 5900, 5720, 5510, 5340, 5200, 5100, 5020],
+                    borderColor: '#ff9800',
+                    backgroundColor: 'rgba(255,152,0,0.06)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Warehouse / Fulfilment',
+                    data: [1650, 1730, 1760, 1740, 1680, 1580, 1460, 1360, 1280],
+                    borderColor: '#ab47bc',
+                    backgroundColor: 'rgba(171,71,188,0.06)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Digital / Analytics / Tech',
+                    data: [210, 260, 320, 390, 470, 550, 620, 680, 730],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.07)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 9 }, padding: 8 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: { ticks: { color: '#7a9bbf', callback: v => (v/1000).toFixed(1)+'M' } }
+            }
+        }
+    });
+
+    /* e-Commerce Share */
+    new Chart(document.getElementById('ecommerceChart'), {
+        type: 'line',
+        data: {
+            labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'],
+            datasets: [{
+                label: 'e-Commerce % of Total US Retail Sales',
+                data: [7.3, 8.0, 8.9, 9.7, 11.0, 16.1, 18.3, 19.6, 21.0, 22.3],
+                borderColor: '#42a5f5',
+                backgroundColor: 'rgba(66,165,245,0.12)',
+                tension: 0.4, fill: true, borderWidth: 2.5,
+                pointBackgroundColor: '#42a5f5',
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: {
+                    ticks: { color: '#7a9bbf', callback: v => v + '%' },
+                    min: 0, max: 30
+                }
+            }
+        }
+    });
+
+    /* Automation Exposure Horizontal Bar */
+    new Chart(document.getElementById('automationChart'), {
+        type: 'bar',
+        data: {
+            labels: [
+                'Cashiers / Checkout',
+                'Warehouse Pickers',
+                'Customer Service (Routine)',
+                'Stock Clerks',
+                'Store Admin / Data Entry',
+                'Dept / Store Managers',
+                'Personal Shoppers / Stylists',
+                'Specialist Retail Advisors',
+                'Supply Chain Analysts'
+            ],
+            datasets: [{
+                label: 'Automation Exposure (%)',
+                data: [83, 77, 72, 68, 64, 38, 18, 14, 22],
+                backgroundColor: ctx => {
+                    const v = ctx.dataset.data[ctx.dataIndex];
+                    if (v >= 60) return 'rgba(239,83,80,0.7)';
+                    if (v >= 30) return 'rgba(255,152,0,0.7)';
+                    return 'rgba(102,187,106,0.7)';
+                },
+                borderRadius: 4, borderWidth: 0
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: true,
+            scales: {
+                x: { max: 100, ticks: { color: '#7a9bbf', callback: v => v + '%' } },
+                y: { ticks: { color: '#9fb8d8', font: { size: 10 } }, grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    /* Scenario Projection */
+    new Chart(document.getElementById('scenarioChart'), {
+        type: 'line',
+        data: {
+            labels: ['2024','2025','2026','2027','2028','2029','2030'],
+            datasets: [
+                {
+                    label: 'Conservative Scenario',
+                    data: [15700, 15350, 14960, 14620, 14360, 14140, 13980],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.05)',
+                    borderDash: [6,3], tension: 0.3, borderWidth: 2, fill: true
+                },
+                {
+                    label: 'Base Scenario',
+                    data: [15700, 15200, 14580, 13990, 13480, 13060, 12780],
+                    borderColor: '#42a5f5',
+                    backgroundColor: 'rgba(66,165,245,0.07)',
+                    tension: 0.3, borderWidth: 2.5, fill: true
+                },
+                {
+                    label: 'Disruptive Scenario',
+                    data: [15700, 15000, 14100, 13100, 12300, 11800, 12050],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.06)',
+                    borderDash: [4,2], tension: 0.3, borderWidth: 2, fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 10 }, padding: 10 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: {
+                    ticks: { color: '#7a9bbf', callback: v => (v/1000).toFixed(1)+'M' },
+                    min: 10000, max: 16500
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

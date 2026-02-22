@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Impact Index | AI Workforce Transformation Analysis</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f3a 100%);
+            color: #e0e6f0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a2a4a 50%, #0d2035 100%);
+            border-bottom: 2px solid rgba(64, 180, 255, 0.3);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2.8em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .page-header .subtitle {
+            font-size: 1.2em;
+            color: #90caf9;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .page-header .description {
+            font-size: 1em;
+            color: #b0bec5;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .region-selector {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .region-tab {
+            padding: 14px 28px;
+            background: rgba(30, 40, 60, 0.6);
+            border: 2px solid rgba(64, 180, 255, 0.3);
+            border-radius: 8px;
+            color: #90caf9;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .region-tab:hover {
+            background: rgba(64, 180, 255, 0.15);
+            border-color: #64b5f6;
+            transform: translateY(-2px);
+        }
+
+        .region-tab.active {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            border-color: #64b5f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
+        }
+
+        .region-tab.coming-soon {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .region-content {
+            display: none;
+        }
+
+        .region-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .region-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .region-header h2 {
+            font-size: 2.2em;
+            color: #64b5f6;
+            margin-bottom: 12px;
+        }
+
+        .region-header p {
+            font-size: 1.1em;
+            color: #b0bec5;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .sector-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .sector-card {
+            background: linear-gradient(135deg, rgba(30, 40, 60, 0.8) 0%, rgba(20, 30, 50, 0.8) 100%);
+            border: 2px solid rgba(64, 180, 255, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sector-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1976d2, #64b5f6);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .sector-card:hover {
+            transform: translateY(-4px);
+            border-color: #64b5f6;
+            box-shadow: 0 8px 24px rgba(25, 118, 210, 0.3);
+        }
+
+        .sector-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .sector-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #e3f2fd;
+            margin-bottom: 16px;
+            line-height: 1.3;
+            min-height: 2.6em;
+        }
+
+        .momentum-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .momentum-score {
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .momentum-label {
+            font-size: 0.85em;
+            color: #90caf9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .momentum-bar {
+            height: 8px;
+            background: rgba(30, 40, 60, 0.6);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .momentum-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1976d2, #64b5f6);
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+
+        .sector-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            font-size: 0.9em;
+        }
+
+        .meta-item {
+            background: rgba(20, 30, 50, 0.5);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #1976d2;
+        }
+
+        .meta-label {
+            color: #90caf9;
+            font-size: 0.85em;
+            margin-bottom: 4px;
+        }
+
+        .meta-value {
+            color: #e3f2fd;
+            font-weight: 600;
+        }
+
+        .momentum-extreme .momentum-fill { background: linear-gradient(90deg, #d32f2f, #f44336); }
+        .momentum-extreme .momentum-score { background: linear-gradient(135deg, #f44336 0%, #e57373 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        .momentum-very-high .momentum-fill { background: linear-gradient(90deg, #f57c00, #ff9800); }
+        .momentum-very-high .momentum-score { background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        .momentum-high .momentum-fill { background: linear-gradient(90deg, #fbc02d, #ffeb3b); }
+        .momentum-high .momentum-score { background: linear-gradient(135deg, #ffeb3b 0%, #fff176 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        .momentum-moderate .momentum-fill { background: linear-gradient(90deg, #1976d2, #64b5f6); }
+        .momentum-moderate .momentum-score { background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        .coming-soon-message {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(30, 40, 60, 0.4);
+            border-radius: 12px;
+            border: 2px dashed rgba(64, 180, 255, 0.3);
+        }
+
+        .coming-soon-message h3 {
+            font-size: 1.8em;
+            color: #64b5f6;
+            margin-bottom: 16px;
+        }
+
+        .coming-soon-message p {
+            font-size: 1.1em;
+            color: #90caf9;
+            margin-bottom: 12px;
+        }
+
+        .coming-soon-message .timeline {
+            font-size: 0.95em;
+            color: #b0bec5;
+            font-style: italic;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 2px solid rgba(64, 180, 255, 0.2);
+            margin-top: 60px;
+        }
+
+        .footer p {
+            color: #90caf9;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+        }
+
+        .footer .author {
+            color: #64b5f6;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 2em; }
+            .page-header .subtitle { font-size: 1em; }
+            .region-selector { gap: 8px; }
+            .region-tab { padding: 10px 16px; font-size: 0.85em; }
+            .sector-grid { grid-template-columns: 1fr; gap: 20px; }
+            .sector-name { font-size: 1.2em; min-height: auto; }
+            .momentum-score { font-size: 2em; }
+        }
+
+        @media (max-width: 480px) {
+            .page-header h1 { font-size: 1.6em; }
+            .sector-meta { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>Human Impact Index</h1>
+        <p class="subtitle">AI Workforce Transformation Analysis</p>
+        <p class="description">A comprehensive analysis of artificial intelligence's impact on employment, skills, and human welfare across major economic sectors</p>
+    </div>
+
+    <div class="container">
+        <div class="region-selector">
+            <button class="region-tab active" onclick="switchRegion('uk')">United Kingdom</button>
+            <button class="region-tab" onclick="switchRegion('na')">North America</button>
+            <button class="region-tab coming-soon" onclick="switchRegion('europe')">Europe<br><small style="font-size:0.7em;opacity:0.7">Q2 2026</small></button>
+            <button class="region-tab coming-soon" onclick="switchRegion('apac')">APAC<br><small style="font-size:0.7em;opacity:0.7">Q2 2026</small></button>
+            <button class="region-tab" onclick="switchRegion('methodology')">Methodology</button>
+        </div>
+
+        <!-- UK Content -->
+        <div id="uk-content" class="region-content active">
+            <div class="region-header">
+                <h2>United Kingdom Analysis</h2>
+                <p>Comprehensive sector-by-sector assessment of AI's impact on UK employment, incorporating Brexit considerations and regional variations</p>
+            </div>
+
+            <div class="sector-grid">
+                <a href="data_centers_uk.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-extreme">
+                        <div class="sector-name">Data Centers</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">92</div>
+                            <div class="momentum-label">Extreme</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 92%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">28,000</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-35% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="logistics_warehousing_uk.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-very-high">
+                        <div class="sector-name">Logistics & Warehousing</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">71</div>
+                            <div class="momentum-label">Very High</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 71%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">1.8M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-22% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="commercial_real_estate_uk.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-very-high">
+                        <div class="sector-name">Commercial Real Estate Services</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">72</div>
+                            <div class="momentum-label">Very High</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 72%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">580,000</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-11% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="financial_services_uk.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-high">
+                        <div class="sector-name">Financial Services</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">69</div>
+                            <div class="momentum-label">High</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 69%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">1.1M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-20% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="retail_uk.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-high">
+                        <div class="sector-name">Retail</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">67</div>
+                            <div class="momentum-label">High</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 67%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">3.0M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-12% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="professional_services_uk.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-high">
+                        <div class="sector-name">Professional Services</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">64</div>
+                            <div class="momentum-label">High</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 64%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">3.2M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-15% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="manufacturing_uk.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-moderate">
+                        <div class="sector-name">Manufacturing</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">61</div>
+                            <div class="momentum-label">Moderate-High</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 61%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">2.6M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-14% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="office_tech_creative_uk.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-moderate">
+                        <div class="sector-name">Office Tech & Creative</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">58</div>
+                            <div class="momentum-label">Moderate</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 58%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">890,000</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-18% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="healthcare_life_sciences_uk.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-moderate">
+                        <div class="sector-name">Healthcare & Life Sciences</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">56</div>
+                            <div class="momentum-label">Moderate</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 56%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">1.8M NHS</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-8% admin</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="office_traditional_uk.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-moderate">
+                        <div class="sector-name">Office Traditional</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">34</div>
+                            <div class="momentum-label">Moderate</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 34%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">4.2M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-25% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- North America Content -->
+        <div id="na-content" class="region-content">
+            <div class="region-header">
+                <h2>North America Analysis</h2>
+                <p>Detailed assessment of AI's workforce impact across United States and Canadian markets with state-level analysis</p>
+            </div>
+
+            <div class="sector-grid">
+                <a href="data_centers_na.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-extreme">
+                        <div class="sector-name">Data Centers</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">91</div>
+                            <div class="momentum-label">Extreme</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 91%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">420K</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-31% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="office_tech_creative_na.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-extreme">
+                        <div class="sector-name">Office Tech & Creative</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">88</div>
+                            <div class="momentum-label">Extreme</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 88%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">8.4M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-20% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="logistics_warehousing_na.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-very-high">
+                        <div class="sector-name">Logistics & Warehousing</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">82</div>
+                            <div class="momentum-label">Very High</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 82%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">6.2M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-24% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="office_traditional_na.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-very-high">
+                        <div class="sector-name">Office Traditional</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">80</div>
+                            <div class="momentum-label">Very High</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 80%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">21.4M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-28% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="financial_services_na.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-very-high">
+                        <div class="sector-name">Financial Services</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">79</div>
+                            <div class="momentum-label">Very High</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 79%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">6.8M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-22% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="professional_services_na.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-high">
+                        <div class="sector-name">Professional Services</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">77</div>
+                            <div class="momentum-label">High</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 77%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">12.5M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-17% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="manufacturing_na.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-high">
+                        <div class="sector-name">Manufacturing</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">76</div>
+                            <div class="momentum-label">High</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 76%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">12.8M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-16% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="retail_na.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-high">
+                        <div class="sector-name">Retail</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">74</div>
+                            <div class="momentum-label">High</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 74%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">15.9M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-14% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="commercial_real_estate_na.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-high">
+                        <div class="sector-name">Commercial Real Estate Services</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">72</div>
+                            <div class="momentum-label">High</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 72%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">2.3M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-13% by 2030</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="healthcare_life_sciences_na.html" style="text-decoration: none;">
+                    <div class="sector-card momentum-moderate">
+                        <div class="sector-name">Healthcare & Life Sciences</div>
+                        <div class="momentum-display">
+                            <div class="momentum-score">65</div>
+                            <div class="momentum-label">Moderate-High</div>
+                        </div>
+                        <div class="momentum-bar">
+                            <div class="momentum-fill" style="width: 65%;"></div>
+                        </div>
+                        <div class="sector-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">Employment</div>
+                                <div class="meta-value">18.2M</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Impact</div>
+                                <div class="meta-value">-10% admin</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Europe Content (Coming Soon) -->
+        <div id="europe-content" class="region-content">
+            <div class="coming-soon-message">
+                <h3>Europe Regional Analysis</h3>
+                <p>Comprehensive assessment of AI's workforce impact across European markets including Germany, France, Netherlands, and Nordic countries</p>
+                <p class="timeline">Expected Launch: Q2 2026</p>
+            </div>
+        </div>
+
+        <!-- APAC Content (Coming Soon) -->
+        <div id="apac-content" class="region-content">
+            <div class="coming-soon-message">
+                <h3>Asia-Pacific Regional Analysis</h3>
+                <p>Detailed examination of AI transformation across APAC markets including Australia, Singapore, Japan, and emerging economies</p>
+                <p class="timeline">Expected Launch: Q2 2026</p>
+            </div>
+        </div>
+
+        <!-- Methodology Content -->
+        <div id="methodology-content" class="region-content">
+            <div class="region-header">
+                <h2>Methodology & Future Plans</h2>
+                <p>Framework, data sources, and strategic direction for the Human Impact Index</p>
+            </div>
+            
+            <div style="background: rgba(30, 40, 60, 0.6); border-radius: 12px; padding: 40px; max-width: 900px; margin: 0 auto;">
+                <h3 style="color: #64b5f6; font-size: 1.6em; margin-bottom: 20px;">Research Methodology</h3>
+                
+                <p style="color: #c8d8ea; line-height: 1.8; margin-bottom: 20px;">
+                    The Human Impact Index employs a multi-dimensional framework that prioritizes human welfare over purely economic metrics. Our momentum scores integrate quantitative employment data with qualitative assessments of skill transformation, regional concentration, and social impact.
+                </p>
+
+                <h4 style="color: #90caf9; font-size: 1.3em; margin: 30px 0 15px;">Core Data Sources</h4>
+                <ul style="color: #b0bec5; line-height: 1.8; margin-left: 20px;">
+                    <li>UK Office for National Statistics (ONS) Labour Force Survey</li>
+                    <li>US Bureau of Labor Statistics (BLS) Occupational Employment Statistics</li>
+                    <li>Industry-specific employment databases and trade association reports</li>
+                    <li>Academic research on automation susceptibility by occupation</li>
+                    <li>Regional economic development data and workforce statistics</li>
+                </ul>
+
+                <h4 style="color: #90caf9; font-size: 1.3em; margin: 30px 0 15px;">Momentum Score Components</h4>
+                <ul style="color: #b0bec5; line-height: 1.8; margin-left: 20px;">
+                    <li><strong>Automation Velocity:</strong> Speed of technology deployment and adoption</li>
+                    <li><strong>Employment Exposure:</strong> Percentage of roles susceptible to automation</li>
+                    <li><strong>Skills Disruption:</strong> Degree of required workforce reskilling</li>
+                    <li><strong>Geographic Concentration:</strong> Regional employment clustering effects</li>
+                    <li><strong>Transition Pathways:</strong> Availability of alternative career routes</li>
+                </ul>
+
+                <h4 style="color: #90caf9; font-size: 1.3em; margin: 30px 0 15px;">Future Development</h4>
+                <p style="color: #c8d8ea; line-height: 1.8; margin-bottom: 15px;">
+                    <strong>Q2 2026:</strong> Launch of Europe and Asia-Pacific regional analyses
+                </p>
+                <p style="color: #c8d8ea; line-height: 1.8; margin-bottom: 15px;">
+                    <strong>Q3 2026:</strong> Introduction of interactive scenario modeling tools
+                </p>
+                <p style="color: #c8d8ea; line-height: 1.8; margin-bottom: 15px;">
+                    <strong>Q4 2026:</strong> Quarterly update cycle with real-time employment tracking
+                </p>
+
+                <h4 style="color: #90caf9; font-size: 1.3em; margin: 30px 0 15px;">Research Philosophy</h4>
+                <p style="color: #c8d8ea; line-height: 1.8; margin-bottom: 20px;">
+                    This index distinguishes itself from existing AI impact tools by centering human consequences rather than corporate efficiency gains. We examine not just job displacement numbers, but the lived experience of workers facing automation, the communities dependent on threatened industries, and the systemic inequalities that AI transformation may amplify or ameliorate.
+                </p>
+
+                <div style="background: rgba(25, 118, 210, 0.15); border-left: 4px solid #42a5f5; padding: 20px; border-radius: 8px; margin-top: 30px;">
+                    <p style="color: #90caf9; font-style: italic; margin: 0;">
+                        "The question is not whether AI will transform work, but how we ensure that transformation serves human flourishing rather than merely economic optimization."
+                    </p>
+                    <p style="color: #64b5f6; margin-top: 10px; font-weight: 600;">
+                        — Andrew Phipps, PhD Candidate in Philosophy, University of Sussex
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>Human Impact Index</strong> | AI Workforce Transformation Analysis</p>
+        <p>Research and analysis by <span class="author">Andrew Phipps</span></p>
+        <p>PhD Candidate in Philosophy, University of Sussex</p>
+        <p style="margin-top: 16px; font-size: 0.85em; color: #78909c;">A human-centred alternative to purely economic AI impact metrics</p>
+    </div>
+
+    <script>
+        function switchRegion(region) {
+            const tabs = document.querySelectorAll('.region-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.getElementById('uk-content').classList.remove('active');
+            document.getElementById('na-content').classList.remove('active');
+            document.getElementById('europe-content').classList.remove('active');
+            document.getElementById('apac-content').classList.remove('active');
+            document.getElementById('methodology-content').classList.remove('active');
+            
+            if (region === 'uk') {
+                document.getElementById('uk-content').classList.add('active');
+            } else if (region === 'na') {
+                document.getElementById('na-content').classList.add('active');
+            } else if (region === 'europe') {
+                document.getElementById('europe-content').classList.add('active');
+            } else if (region === 'apac') {
+                document.getElementById('apac-content').classList.add('active');
+            } else if (region === 'methodology') {
+                document.getElementById('methodology-content').classList.add('active');
+            }
+        }
+
+        window.addEventListener('load', () => {
+            const fills = document.querySelectorAll('.momentum-fill');
+            fills.forEach(fill => {
+                const width = fill.style.width;
+                fill.style.width = '0%';
+                setTimeout(() => {
+                    fill.style.width = width;
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
