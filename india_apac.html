@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India | Human Impact Index</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --text: #e0e6f0;
+    --text-muted: #8899aa;
+    --blue: #64b5f6;
+    --green: #81c784;
+    --purple: #ce93d8;
+    --amber: #ffb74d;
+    --red: #ef5350;
+    --teal: #4db6ac;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .page-header { background: linear-gradient(135deg, #0d1525 0%, #131e35 50%, #0d1525 100%); border-bottom: 1px solid var(--border); padding: 2rem 0; }
+  .header-inner { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+  .back-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--purple); font-size: 0.85rem; margin-bottom: 1rem; }
+  .back-link:hover { color: var(--text); text-decoration: none; }
+  .country-title { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .country-flag { font-size: 2.5rem; }
+  .country-title h1 { font-size: 2.2rem; font-weight: 700; color: var(--text); }
+  .country-title .region-tag { background: var(--purple); color: #000; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem; max-width: 700px; }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+  .stat-card .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.3rem; }
+  .stat-card .value { font-size: 1.4rem; font-weight: 700; color: var(--purple); }
+  .stat-card .note { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+  .momentum-section { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem 1.5rem; }
+  .momentum-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.6rem; }
+  .momentum-bar-wrap { position: relative; height: 10px; background: var(--border); border-radius: 5px; margin-bottom: 0.5rem; }
+  .momentum-bar-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--purple), var(--blue)); }
+  .momentum-row { display: flex; justify-content: space-between; align-items: center; }
+  .momentum-score { font-size: 1.8rem; font-weight: 700; color: var(--purple); }
+  .momentum-desc { font-size: 0.8rem; color: var(--text-muted); max-width: 500px; }
+
+  .main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+  .tab-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+  .tab-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); padding: 0.45rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; transition: all 0.2s; }
+  .tab-btn:hover, .tab-btn.active { background: var(--purple); border-color: var(--purple); color: #000; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .sector-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+  .sector-icon { font-size: 2rem; }
+  .sector-header h2 { font-size: 1.5rem; font-weight: 700; }
+  .sector-momentum { margin-left: auto; text-align: right; }
+  .sector-momentum .score { font-size: 2rem; font-weight: 700; color: var(--purple); }
+  .sector-momentum .label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+  .snapshot-badge { display: inline-block; background: var(--amber); color: #000; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; text-transform: uppercase; margin-left: 0.6rem; vertical-align: middle; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+  .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; }
+  .info-card h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.8rem; }
+  .info-card ul { list-style: none; }
+  .info-card ul li { padding: 0.3rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .info-card ul li:last-child { border-bottom: none; }
+  .info-card ul li::before { content: "→ "; color: var(--purple); }
+  .at-risk::before { content: "▼ "; color: var(--red) !important; }
+  .emerging::before { content: "▲ "; color: var(--purple) !important; }
+
+  .impact-box { background: linear-gradient(135deg, #1a0d2e, #0d1a2e); border: 1px solid #3d2060; border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem; }
+  .impact-box h3 { color: var(--purple); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
+  .impact-box p { font-size: 0.9rem; color: var(--text); line-height: 1.7; }
+
+  .reg-box { background: linear-gradient(135deg, #0d1a2e, #0a1520); border: 1px solid #1e3a5f; border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem; }
+  .reg-box h3 { color: var(--blue); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
+  .reg-box p { font-size: 0.9rem; color: var(--text); line-height: 1.7; }
+
+  .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .chart-wrap h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 1rem; }
+  canvas { max-height: 280px; }
+
+  .section-title { font-size: 1.2rem; font-weight: 700; margin: 2rem 0 1rem; color: var(--text); border-left: 3px solid var(--purple); padding-left: 0.75rem; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { background: var(--surface); color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.06em; padding: 0.7rem 1rem; text-align: left; border-bottom: 2px solid var(--border); }
+  td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: rgba(206,147,216,0.04); }
+  .high { color: var(--red); font-weight: 600; }
+  .medium { color: var(--amber); font-weight: 600; }
+  .low { color: var(--purple); font-weight: 600; }
+
+  .policy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .policy-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--purple); border-radius: 8px; padding: 1.2rem; }
+  .policy-card h4 { font-size: 0.85rem; font-weight: 700; color: var(--purple); margin-bottom: 0.5rem; }
+  .policy-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+  .source-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; }
+  .source-box h3 { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.8rem; }
+  .source-box p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.8; }
+
+  footer { background: var(--surface); border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; font-size: 0.8rem; color: var(--text-muted); }
+  footer .brand { color: var(--purple); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="header-inner">
+    <a class="back-link" href="apac_overview.html">← Back to APAC Overview</a>
+    <div class="country-title">
+      <span class="country-flag">🇮🇳</span>
+      <div>
+        <h1>India <span class="region-tag">APAC</span></h1>
+      </div>
+    </div>
+    <p class="subtitle">Home to the world's largest IT services workforce, India faces a structural collision between AI-driven automation and a labour market that must generate tens of millions of jobs every year. The technology sector that built India's modern economy is being reshaped by the same tools it helped create.</p>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="label">Labour Force</div>
+        <div class="value">~600M</div>
+        <div class="note">Estimated active workforce, PLFS 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Unemployment Rate</div>
+        <div class="value">4.9%</div>
+        <div class="note">All-India, PLFS CWS 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">IT Sector Workers</div>
+        <div class="value">5.43M</div>
+        <div class="note">NASSCOM FY 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">IT Sector Revenue</div>
+        <div class="value">$254B</div>
+        <div class="note">FY 2024, NASSCOM</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Data Centre Capacity</div>
+        <div class="value">~1.2 GW</div>
+        <div class="note">Installed IT load, 2025 est.</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">IndiaAI Mission Budget</div>
+        <div class="value">$1.25B</div>
+        <div class="note">Five-year government commitment</div>
+      </div>
+    </div>
+
+    <div class="momentum-section">
+      <div class="momentum-label">AI Transformation Momentum Score</div>
+      <div class="momentum-bar-wrap">
+        <div class="momentum-bar-fill" style="width: 70%"></div>
+      </div>
+      <div class="momentum-row">
+        <div class="momentum-score">70 / 100</div>
+        <div class="momentum-desc">Rapid AI integration across IT, financial services and data infrastructure. Human impact concentrated in a sector historically central to national prosperity, with structural challenges in informal employment and graduate entry-level access.</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showTab('dc')">Data Centres</button>
+    <button class="tab-btn" onclick="showTab('log')">Logistics</button>
+    <button class="tab-btn" onclick="showTab('off')">Office Traditional</button>
+    <button class="tab-btn" onclick="showTab('tech')">Office Tech/Creative</button>
+    <button class="tab-btn" onclick="showTab('ret')">Retail</button>
+    <button class="tab-btn" onclick="showTab('cre')">CRE Services</button>
+    <button class="tab-btn" onclick="showTab('pro')">Professional Services</button>
+    <button class="tab-btn" onclick="showTab('mfg')">Manufacturing</button>
+    <button class="tab-btn" onclick="showTab('fin')">Financial Services</button>
+  </div>
+
+  <!-- DATA CENTRES -->
+  <div id="dc" class="tab-panel active">
+    <div class="sector-header">
+      <span class="sector-icon">🏢</span>
+      <h2>Data Centres</h2>
+      <div class="sector-momentum"><div class="score">78</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>India's data centre buildout is among the fastest-growing globally, with installed IT load capacity approaching 1.2 GW in 2025 and a projected tripling to ~4 GW by 2030. Mumbai dominates (around 41% of national capacity), followed by Chennai, Hyderabad, Bengaluru and Delhi-NCR. Reliance Industries announced a 3 GW campus at Jamnagar in January 2025 — a project that, if delivered, would alone triple India's current national capacity. TCS announced a 1 GW sovereign AI data centre buildout via its new Hypervault subsidiary, backed by $6–7 billion over five to seven years. Google, AWS and Microsoft have together pledged over $15 billion for expanded Indian infrastructure. This construction wave creates substantial employment in civil engineering, electrical work and facilities management during build phases. However, operational data centres are capital-intensive and relatively low in permanent headcount per MW. Workers bearing the construction burden — often contract labourers from rural areas — are rarely the same people who benefit from the technical operations roles created. Data localisation policies under the DPDP Act are driving investment, but also concentrating economic gains among hyperscalers and conglomerates rather than being distributed across the broader workforce.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Contract construction workers with limited post-project pathways</li>
+          <li class="at-risk">Low-skill facility maintenance roles at smaller enterprise data centres</li>
+          <li class="at-risk">Traditional IT infrastructure staff as hyperscalers consolidate</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">AI infrastructure engineers and GPU cluster managers</li>
+          <li class="emerging">Power systems and cooling engineers (liquid cooling specialists)</li>
+          <li class="emerging">Sustainability and renewable energy procurement roles</li>
+          <li class="emerging">Hyperscale network operations and security specialists</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>The Digital Personal Data Protection Act (DPDP Act, 2023) and its Rules notified in November 2025 are driving data localisation requirements that underpin the investment surge. MeitY's Data Centre Policy guidelines standardise infrastructure requirements for government cloud adoption. The IndiaAI Mission's deployment of 38,000 GPUs and 600 AI Data Labs creates direct demand for hyperscale capacity. No specific worker protection framework exists for the construction and operational workforce of data infrastructure projects.</p>
+    </div>
+    <div class="chart-wrap">
+      <h3>India Data Centre Capacity Growth (MW, Installed IT Load)</h3>
+      <canvas id="dcChart"></canvas>
+    </div>
+  </div>
+
+  <!-- LOGISTICS -->
+  <div id="log" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">🚚</span>
+      <h2>Logistics &amp; Warehousing</h2>
+      <div class="sector-momentum"><div class="score">65</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>India's logistics sector employs an estimated 22–28 million workers, a significant proportion of whom are informal or gig-classified — particularly last-mile delivery riders. The rapid expansion of e-commerce (Amazon, Flipkart, Meesho) and quick-commerce (Zomato, Blinkit, Swiggy Instamart) has created millions of gig economy delivery jobs, but these are algorithmically managed, lack guaranteed income and are excluded from formal social protections. Automated sorting and warehouse management systems are being deployed at scale by logistics players including Blue Dart, Delhivery and Ecom Express, reducing demand for manual picking and sorting workers. The IMF and World Future Global have estimated that by 2025, around 15% of routine physical logistics tasks in major Indian cities could be automated. Workers most at risk are those in urban warehouses and sorting centres who lack the formal education credentials to transition to AI-adjacent roles. India's 81% informal workforce share means that automation displacement often occurs without any safety net, severance or retraining support.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Manual pickers and packers in automated warehouses</li>
+          <li class="at-risk">Delivery riders under algorithmic gig management</li>
+          <li class="at-risk">Inventory reconciliation and paperwork processing staff</li>
+          <li class="at-risk">Small truck drivers as route optimisation reduces headcount</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">Warehouse automation systems technicians</li>
+          <li class="emerging">Supply chain data analysts</li>
+          <li class="emerging">Cold chain and specialised logistics managers</li>
+          <li class="emerging">Last-mile optimisation engineers</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>India lacks a consolidated gig worker protection framework equivalent to the EU's Platform Work Directive. The Code on Social Security (2020) included provisions for platform workers but implementation has been slow and patchy. Rajasthan and Karnataka have passed gig worker-specific legislation, but national-level protection remains absent. The National Logistics Policy (2022) focuses on efficiency and cost reduction without substantive worker transition provisions. Algorithmic management of gig workers has no regulatory standard for transparency, appeal or income floors.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TRADITIONAL -->
+  <div id="off" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">🏛️</span>
+      <h2>Office Traditional</h2>
+      <div class="sector-momentum"><div class="score">68</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>India's office-based administrative and back-office workforce faces significant AI exposure. The Business Process Outsourcing (BPO) and IT-enabled Services (ITeS) sector, which employs several million workers, is particularly affected: the roles that built this sector — data entry, document processing, rule-based customer service, routine coding — are precisely those most susceptible to AI automation. An IIM-Ahmedabad study of white-collar workers found that 68% fear their roles could be automated within five years, and 55% have already begun adopting AI tools. Graduate hiring has collapsed: major software exporters hired only 70,000–80,000 fresh engineers in 2024-25, the lowest intake in over two decades, despite India producing 1.5 million engineering graduates annually. TCS alone cut 12,200 jobs in July 2025. The structural consequence is that a generation of graduates is entering a labour market where the traditional entry points into formal employment are shrinking. Youth unemployment among educated young people — who expected a knowledge economy trajectory — is rising.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Junior software developers doing routine coding tasks</li>
+          <li class="at-risk">BPO and data entry processing agents</li>
+          <li class="at-risk">Document review and compliance processing staff</li>
+          <li class="at-risk">Mid-level IT services workers whose skills are not AI-adjacent</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">Prompt engineers and AI workflow designers</li>
+          <li class="emerging">AI quality assurance and output reviewers</li>
+          <li class="emerging">Complex problem-solving and client advisory roles</li>
+          <li class="emerging">AI governance and compliance specialists</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>India's AI Governance Guidelines (MeitY, November 2025) adopt a "lightweight" approach that prioritises innovation over binding worker protections. No mandatory disclosure requirement exists for AI-driven workforce reductions. The IT sector has historically operated with minimal union representation, meaning displaced workers have little collective bargaining recourse. The NASSCOM "workforce rationalisation" framing normalises headcount reduction without governmental counter-pressure for transition support.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TECH/CREATIVE -->
+  <div id="tech" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">💻</span>
+      <h2>Office Tech / Creative</h2>
+      <div class="sector-momentum"><div class="score">76</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>India's technology sector is experiencing deep polarisation driven by AI. Demand for AI/ML engineers, data scientists and cybersecurity specialists is accelerating strongly, while traditional software development and testing roles are contracting. India ranks second globally in AI skill penetration (Stanford AI Index 2025), and 96% of Indian professionals now report using AI or generative AI tools in their work. However, 94% simultaneously express concern that not mastering AI will harm their career prospects — reflecting acute anxiety beneath a surface of adoption. The AI talent market is widening internal salary gaps: engineers with AI skills earn a premium relative to general counterparts, but lower-skilled workers in the same firms face role elimination. Creative workers in advertising, content production and media are seeing AI tools absorb significant portions of output that previously required human labour. India's large media and entertainment sector employs millions in content and production roles with limited awareness of or access to AI transition support.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Routine content writers and copy editors</li>
+          <li class="at-risk">Junior graphic designers using non-AI-integrated workflows</li>
+          <li class="at-risk">Manual QA testers and repetitive code reviewers</li>
+          <li class="at-risk">Traditional market research analysts</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">AI/ML engineers and research scientists</li>
+          <li class="emerging">Large Language Model fine-tuning and RLHF specialists</li>
+          <li class="emerging">AI product managers and deployment strategists</li>
+          <li class="emerging">Data annotation and AI training pipeline managers</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>The IndiaAI Mission aims to deploy 38,000 GPUs and establish Centres of Excellence in healthcare, agriculture and sustainable cities. Government partnerships with Microsoft and Intel include AI skills training programmes. However, national-scale reskilling remains inadequate relative to the pace of displacement: WEF Future of Jobs 2025 estimates 63 in every 100 Indian workers will require training by 2030, with 12 per 100 unlikely to be able to upskill in time — representing over 70 million workers potentially unserved.</p>
+    </div>
+    <div class="chart-wrap">
+      <h3>India IT Sector: Fresh Graduate Hiring vs Graduates Produced (000s)</h3>
+      <canvas id="gradChart"></canvas>
+    </div>
+  </div>
+
+  <!-- RETAIL -->
+  <div id="ret" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">🛒</span>
+      <h2>Retail</h2>
+      <div class="sector-momentum"><div class="score">58</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>India's retail sector is structurally complex: a small number of large organised retailers (Reliance Retail, DMart, Trent, Amazon, Flipkart) are investing heavily in AI for demand forecasting, inventory management and customer personalisation, while a vast unorganised sector of kiranas (neighbourhood shops) and street traders employs the majority of retail workers. AI adoption in organised retail is automating back-office functions and beginning to introduce automated checkout in upmarket formats. However, the predominance of small-scale informal retail means AI displacement is more likely to come indirectly — through e-commerce and quick-commerce growth eating into kirana trade — than through direct automation of the traditional unorganised workforce. The quick-commerce model (10–30 minute delivery), now a major feature of Indian urban retail, has created a layer of algorithmically managed dark-store workers who face precarious conditions and no pathway to advancement. Workers most at risk are those in low-margin unorganised retail who face structural obsolescence as consumption shifts to platform-intermediated models.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Kirana and small-format shop workers displaced by e-commerce shift</li>
+          <li class="at-risk">Cashiers and billing staff at organised retail adopting self-checkout</li>
+          <li class="at-risk">Dark-store workers in algorithmically managed quick-commerce</li>
+          <li class="at-risk">Supply chain clerks and manual inventory staff</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">Retail data analysts and AI personalisation managers</li>
+          <li class="emerging">Omnichannel customer experience designers</li>
+          <li class="emerging">E-commerce category management specialists</li>
+          <li class="emerging">Sustainability and last-mile logistics optimisers</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>India's Consumer Protection Act (2019) and E-Commerce Rules (2020) provide some platform accountability but do not address worker conditions in platform retail. The unorganised retail sector has no sector-specific reskilling or transition provision. FDI restrictions on multi-brand retail have limited the direct entry of global retailers who might bring more structured workforce practices, while domestic conglomerates drive AI adoption without equivalent regulatory pressure on worker transition outcomes.</p>
+    </div>
+  </div>
+
+  <!-- CRE SERVICES -->
+  <div id="cre" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">🏗️</span>
+      <h2>CRE Services</h2>
+      <div class="sector-momentum"><div class="score">55</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>India's commercial real estate services sector is growing on the back of global capability centre (GCC) expansion, data centre construction and domestic corporate occupier activity. Major international firms — CBRE, JLL, Cushman &amp; Wakefield, Knight Frank — and large domestic players are integrating AI into valuations, lease analysis, property management and market intelligence. India has emerged as a major GCC hub, with over 1,700 GCCs employing more than 1.6 million workers in 2024. This drives significant demand for CRE services and transaction advisory, but also means GCC real estate decisions are increasingly made by AI-assisted analysis rather than junior research analysts. Entry-level CRE analyst roles, which have historically provided graduate entry points into professional services, are among the most AI-exposed positions. The relative smallness of India's formal CRE workforce means absolute displacement numbers are modest, but career pathway implications for young professionals are significant in a market with limited lateral entry options.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Junior research analysts and market data compilers</li>
+          <li class="at-risk">Property management administrators</li>
+          <li class="at-risk">Lease abstraction and documentation processing staff</li>
+          <li class="at-risk">Facilities management coordinators at smaller firms</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">GCC real estate strategy advisors</li>
+          <li class="emerging">Proptech and smart building specialists</li>
+          <li class="emerging">ESG and green certification advisors</li>
+          <li class="emerging">Data centre site selection and infrastructure consultants</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>The Real Estate (Regulation and Development) Act (RERA, 2016) governs residential transactions but has limited applicability to commercial real estate services. The CRE services workforce is a formal-sector professional group with better access to employer-sponsored training than many other Indian workforce segments. However, no sector-specific AI transition framework exists, and the profession's regulatory bodies have not developed AI governance standards comparable to those emerging in RICS (UK) or similar international bodies.</p>
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL SERVICES -->
+  <div id="pro" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">⚖️</span>
+      <h2>Professional Services</h2>
+      <div class="sector-momentum"><div class="score">72</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>India's professional services sector — encompassing law, accounting, consulting and tax advisory — is undergoing rapid AI integration, with significant consequences for junior and mid-level practitioners. The Big Four accounting firms and major law firms are deploying AI for contract analysis, due diligence, regulatory research, tax computation and audit analytics. AI-assisted legal research is compressing the time required for tasks that previously sustained large junior associate pools. India's legal profession is large and fragmented, with millions of advocates, many working in precarious or informal arrangements, who face displacement from routine legal documentation work without recourse to firm-sponsored reskilling. Management consulting firms are simultaneously building AI capability practices and reducing headcount in traditional research and analysis functions. The collapse in campus hiring by major professional services firms tracks with a broader finding that entry-level white-collar jobs are being eliminated faster than equivalents are created for non-AI-specialised graduates.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Junior lawyers doing routine document review and research</li>
+          <li class="at-risk">Graduate trainee accountants in process-heavy audit roles</li>
+          <li class="at-risk">Tax clerks and GST compliance administrators</li>
+          <li class="at-risk">Entry-level consultants in research and data compilation roles</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">AI ethics and compliance auditors</li>
+          <li class="emerging">Legal technology and LegalTech practitioners</li>
+          <li class="emerging">Senior advisory roles freed from routine processing</li>
+          <li class="emerging">AI governance consultants and risk advisors</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>The Bar Council of India and Institute of Chartered Accountants of India (ICAI) have not issued substantive AI governance frameworks for their respective professions. The DPDP Act creates data compliance obligations for professional firms using AI with client data. India's AI Governance Guidelines (2025) include a provision proposing an AI Safety Institute, but this has no specific mandate for professional services workforce protection. The professional services sector's relatively high education levels provide some capacity for self-directed upskilling, but without institutional direction, outcomes will be uneven.</p>
+    </div>
+  </div>
+
+  <!-- MANUFACTURING -->
+  <div id="mfg" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">🏭</span>
+      <h2>Manufacturing</h2>
+      <div class="sector-momentum"><div class="score">60</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>India's manufacturing sector employs an estimated 50–60 million workers in formal settings and many more in informal and household enterprise arrangements. Unlike China, India has not yet achieved high levels of industrial robotics penetration — robot density remains well below the global manufacturing average — but government policy is actively pushing in this direction through Production-Linked Incentive (PLI) schemes and the Make in India initiative. The automotive sector (Maruti Suzuki, Tata Motors, Mahindra, and the EV supply chain) is increasing automation investment. Pharmaceutical and electronics manufacturing, growing rapidly as global supply chains diversify from China, is attracting investment with a strong preference for automated production. The human impact risk is concentrated among workers in labour-intensive assembly processes, many of whom are young, low-educated and from rural backgrounds with limited ability to transition to AI-adjacent roles. PLI-driven growth creates jobs in absolute terms, but the jobs created per unit of investment are declining as automation intensity rises. India needs to create 7.85 million non-agricultural jobs annually to maintain employment levels, making each automation decision carry significant social weight.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Assembly line workers in automotive and electronics</li>
+          <li class="at-risk">Quality inspection workers replaced by machine vision systems</li>
+          <li class="at-risk">Routine packaging and material handling operatives</li>
+          <li class="at-risk">Small workshop and MSME workers facing large-firm competition</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">Industrial robotics technicians and maintenance engineers</li>
+          <li class="emerging">Smart factory process optimisation specialists</li>
+          <li class="emerging">EV battery and semiconductor manufacturing technologists</li>
+          <li class="emerging">Predictive maintenance and IoT systems operators</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>India's four Labour Codes (Code on Wages, Industrial Relations, Social Security and Occupational Safety) consolidated 44 central laws but implementation remains incomplete. The Skill India Mission and Pradhan Mantri Kaushal Vikas Yojana (PMKVY) offer training in manufacturing-relevant AI and robotics skills, but scheme reach relative to the scale of potential displacement is limited. PLI schemes do not include mandatory technology transition provisions for workers in affected sub-sectors. The MSME sector (40.68 million registered enterprises, second-largest employment sector after agriculture) receives limited specific support for AI adaptation.</p>
+    </div>
+  </div>
+
+  <!-- FINANCIAL SERVICES -->
+  <div id="fin" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">💳</span>
+      <h2>Financial Services</h2>
+      <div class="sector-momentum"><div class="score">74</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>India's financial services sector — spanning public sector banks, private banks, NBFCs, insurance and fintech — is among the most aggressively AI-adopting in the economy. The Unified Payments Interface (UPI), which processed over 172 billion transactions in FY2024, has made AI-enabled fraud detection and real-time risk assessment standard infrastructure. HDFC Bank, ICICI Bank, Axis Bank and the State Bank of India have all deployed significant AI capability in credit scoring, customer service automation, document processing and branch rationalisation. RBI's FREE-AI Committee report (August 2025) established seven guiding principles for AI in financial services, acknowledging AI's transformative potential while proposing human oversight safeguards. Bank branch networks are contracting: between 2020 and 2024, net branch openings slowed significantly as digital channels absorbed routine transactions. This directly reduces employment for bank tellers, relationship managers for routine products, and back-office processing staff. Workers in rural and semi-urban branches, where customers tend to be older, less digitally literate and more dependent on face-to-face interaction, are particularly exposed. PwC estimates that up to 20% of traditional banking jobs could be automated by 2025, with disproportionate impact on entry-level roles.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Bank tellers and branch transaction processors</li>
+          <li class="at-risk">Loan processing and underwriting clerks</li>
+          <li class="at-risk">Insurance claims handlers and document verification staff</li>
+          <li class="at-risk">Contact centre agents for routine product queries</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">AI risk and model governance specialists</li>
+          <li class="emerging">Fintech product managers and UX designers</li>
+          <li class="emerging">Cybersecurity and digital fraud investigators</li>
+          <li class="emerging">Complex relationship managers for non-routine advisory</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>The Reserve Bank of India's FREE-AI Framework (August 2025) is the most substantive sector-specific AI governance document in India, establishing principles including transparency, fairness, explainability and human oversight for AI in financial services. SEBI has issued AI-related guidance for securities market participants. Insurance Regulatory and Development Authority (IRDAI) is developing AI governance standards for the insurance sector. However, none of these frameworks include mandatory provisions for workforce transition support, retraining obligations or AI displacement reporting. The DPDP Act applies to financial services data processing, with full enforcement from May 2027.</p>
+    </div>
+  </div>
+
+  <!-- REGIONAL TABLE -->
+  <h2 class="section-title">Regional Employment Snapshot</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Sector</th>
+          <th>Est. Workers</th>
+          <th>AI Exposure</th>
+          <th>Automation Risk</th>
+          <th>Transition Capacity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Data Centres</td>
+          <td>200K–300K (ops + construction pipeline)</td>
+          <td>Medium</td>
+          <td class="medium">Medium</td>
+          <td>Moderate — technical roles available for skilled workers</td>
+        </tr>
+        <tr>
+          <td>Logistics &amp; Warehousing</td>
+          <td>22M–28M (est., mostly informal)</td>
+          <td>High</td>
+          <td class="high">High</td>
+          <td>Low — informal workforce with limited reskilling access</td>
+        </tr>
+        <tr>
+          <td>Office Traditional (BPO/ITeS)</td>
+          <td>~5.4M (NASSCOM)</td>
+          <td>Very High</td>
+          <td class="high">High</td>
+          <td>Low-Moderate — large educated workforce but skills mismatch</td>
+        </tr>
+        <tr>
+          <td>Office Tech / Creative</td>
+          <td>~5.4M IT + creative sector est.</td>
+          <td>High</td>
+          <td class="medium">Medium</td>
+          <td>High for AI-adjacent workers; Low for displaced juniors</td>
+        </tr>
+        <tr>
+          <td>Retail</td>
+          <td>45M–60M (est., includes informal)</td>
+          <td>Medium</td>
+          <td class="medium">Medium</td>
+          <td>Very Low — unorganised sector workers have minimal support</td>
+        </tr>
+        <tr>
+          <td>CRE Services</td>
+          <td>500K–800K (est., formal sector)</td>
+          <td>Medium-High</td>
+          <td class="medium">Medium</td>
+          <td>Moderate — professional workforce with upskilling capacity</td>
+        </tr>
+        <tr>
+          <td>Professional Services</td>
+          <td>~8M (law, CA, consulting est.)</td>
+          <td>High</td>
+          <td class="high">High (junior roles)</td>
+          <td>Moderate — high education but limited institutional guidance</td>
+        </tr>
+        <tr>
+          <td>Manufacturing</td>
+          <td>50M–60M (formal; many more informal)</td>
+          <td>Medium</td>
+          <td class="medium">Medium-High</td>
+          <td>Low — PLI growth offset by automation intensity</td>
+        </tr>
+        <tr>
+          <td>Financial Services</td>
+          <td>~5M–6M (est., banking + insurance + fintech)</td>
+          <td>High</td>
+          <td class="high">High (operational roles)</td>
+          <td>Low-Moderate — RBI framework exists but no transition mandate</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:0.75rem; color: var(--text-muted); margin-top: 0.75rem; margin-bottom: 2rem;">Note: India does not publish granular sector-by-sector employment data in English at the sub-sector level used in this tool. Total workforce estimates above are derived from PLFS 2024 (MoSPI), NASSCOM sector reports, ILO country estimates, and World Bank sectoral employment shares. Figures marked "est." are informed approximations and should be treated as such.</p>
+
+  <!-- POLICY GAPS -->
+  <h2 class="section-title">Key Policy Gaps</h2>
+  <div class="policy-grid">
+    <div class="policy-card">
+      <h4>No National AI Worker Transition Framework</h4>
+      <p>India's AI Governance Guidelines (November 2025) adopt a "lightweight," innovation-first approach that carries no binding obligations for employers displacing workers through AI. No mandatory retraining support, advance notification or transition fund exists at the national level, despite the scale of potential displacement across the world's most populous country.</p>
+    </div>
+    <div class="policy-card">
+      <h4>81% Informal Workforce Structurally Excluded</h4>
+      <p>The vast majority of India's working population is in informal employment: self-employed, casual labour or gig-classified workers outside formal social protection. AI-driven displacement of these workers — particularly in logistics, retail and manufacturing — occurs without any safety net, severance or retraining entitlement. The Labour Codes have not been fully implemented, and the Code on Social Security's platform worker provisions remain unenforced.</p>
+    </div>
+    <div class="policy-card">
+      <h4>Graduate Employment Crisis Unaddressed</h4>
+      <p>India produces 1.5 million engineering graduates annually. Major IT firms hired only 70,000–80,000 in 2024-25 — the lowest in two decades — as AI replaces entry-level technical roles. This structural mismatch between education supply and market demand is not addressed by either NASSCOM frameworks or government skills programmes operating at the required scale. Fewer than 1 in 10 engineering graduates is likely to land an IT sector job in 2025.</p>
+    </div>
+    <div class="policy-card">
+      <h4>Reskilling Scale Mismatch</h4>
+      <p>WEF Future of Jobs 2025 estimates 63 in 100 Indian workers will need training by 2030, with 12 per 100 (over 70 million workers) unable to upskill in time. Government schemes — Skill India, PMKVY — operate at insufficient scale and with curricula that lag market demand. Private sector upskilling initiatives (Microsoft, Intel, Google) are significant but skew toward already-employed formal workers rather than those most at risk.</p>
+    </div>
+    <div class="policy-card">
+      <h4>Gig Worker Algorithmic Management Without Rights</h4>
+      <p>Millions of Indian gig workers — delivery riders, warehouse operatives, domestic service platform workers — are managed by algorithms with no right to explanation, appeal or income floor. Two states (Rajasthan and Karnataka) have passed gig worker legislation, but national frameworks are absent. Algorithmic management practices that determine income, work allocation and termination operate in a regulatory vacuum.</p>
+    </div>
+    <div class="policy-card">
+      <h4>Gender Dimension Underaddressed</h4>
+      <p>Female labour force participation in India remains among the lowest globally (urban female LFPR ~25.8%, PLFS 2024), and the roles most at risk from AI — data entry, administrative processing, contact centre — disproportionately employ women in the formal sector. The collapse of BPO and ITeS entry-level roles is likely to widen gender employment gaps without targeted intervention. India's AI Governance Guidelines contain no gender-specific analysis of transition risk.</p>
+    </div>
+  </div>
+
+  <!-- SOURCE NOTE -->
+  <div class="source-box">
+    <h3>Source Note</h3>
+    <p>
+      <strong>Employment data:</strong> Ministry of Statistics and Programme Implementation (MoSPI), Periodic Labour Force Survey (PLFS) Annual Report 2023-24 (July 2023–June 2024) and Key Employment Unemployment Indicators for 2024 (January–December 2024), released April 2025. All-India unemployment rate 4.9% (CWS), LFPR 56.2% are confirmed MoSPI figures. Sector-level employment estimates are derived from PLFS industry distribution data, World Bank sectoral employment shares and NASSCOM industry figures. Sub-sector figures are estimates and are labelled as such throughout.
+      <br><br>
+      <strong>IT sector:</strong> NASSCOM, India IT-BPM Industry Report FY2024 (5.43 million professionals, $254B revenue). NASSCOM-BCG 2024 analysis (hiring slowdown). PMC/NCBI study — "Psychological impacts of AI-induced job displacement among Indian IT professionals" (Emeritus 2025 survey; IIM-Ahmedabad Chakrabarti et al. data; 96% AI tool use; 68% job security concern). TCS layoff data: CNBC report, August 2025. Graduate hiring figures: CS Monitor / Entrepreneurloop AI Impact Summit India 2026 reporting, February 2026.
+      <br><br>
+      <strong>AI adoption and strategy:</strong> WEF Future of Jobs Report 2025 (India employer data; reskilling estimates — 63/100 workers needing training, 70M+ likely unserved). Stanford AI Index 2025 (India second globally in AI skill penetration). MeitY/IndiaAI Mission AI Governance Guidelines, November 2025. IAPP Global AI Governance Law and Policy: India (IndiaAI Mission budget $1.25B; 18,000 GPU deployment). AI Laws and Regulations in India as of 2026 (DPDP Act Rules notified November 2025, enforcement May 2027). Saikrishna and Associates analysis of AI Governance Guidelines, November 2025.
+      <br><br>
+      <strong>Data centres:</strong> Wikipedia Data Centre Industry in India (installed capacity, city shares, regulatory drivers). Mordor Intelligence India Data Center Market 2025-2030 (4.48 GW projected by 2025 under one measure; 22.72% CAGR). Astute Analytica / PR Newswire September 2025 (3,983 MW IT load by 2025 estimate). Blackridge Research India Data Center Companies 2025 (STT GDC 400 MW, CtrlS 250 MW, NTT 268 MW, Nxtra 200 MW operational). TCS/Hypervault announcement October 2025 ($6–7B, 1 GW). Reliance Jamnagar 3 GW announcement January 2025.
+      <br><br>
+      <strong>Financial services:</strong> RBI FREE-AI Committee Framework for Responsible and Ethical Enablement of AI in Financial Sector, August 2025. IISPPR research on AI automation and Indian job market (PwC 20% banking automation estimate; IMF 40% exposure estimate). UPI transaction data: National Payments Corporation of India.
+      <br><br>
+      <strong>Labour regulation:</strong> Code on Social Security 2020 (platform worker provisions). Rajasthan Platform Based Gig Workers (Registration and Welfare) Act 2023. Karnataka Gig Workers (Welfare and Registration) Act 2024. National Logistics Policy 2022. British Council Growth Sectors and Employment Opportunities in India (7.85M annual job creation target; Ministry of Finance Economic Survey 2024-25).
+      <br><br>
+      <strong>Data reliability note:</strong> India's granular sector-level employment data at the sub-sector precision required by this tool is published primarily in Hindi and in PLFS detailed tables not fully accessible in English. Estimates in the regional table are calibrated to available macro shares and should be treated as informed approximations, not precisely sourced official statistics. The informal sector's scale makes precise worker counts for logistics, retail and manufacturing particularly uncertain.
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  <span class="brand">Human Impact Index</span> — Authored by Andrew Phipps, PhD Candidate in Philosophy (AI Ethics), University of Sussex &amp; Former Global Leader, Cushman &amp; Wakefield. For research and educational purposes.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Data Centre Capacity Chart
+const dcCtx = document.getElementById('dcChart').getContext('2d');
+new Chart(dcCtx, {
+  type: 'bar',
+  data: {
+    labels: ['2021', '2022', '2023', '2024', '2025 (est.)', '2026 (proj.)', '2030 (proj.)'],
+    datasets: [{
+      label: 'India Data Centre Installed IT Load (MW)',
+      data: [500, 650, 900, 1050, 1200, 1800, 4000],
+      backgroundColor: ['rgba(206,147,216,0.5)', 'rgba(206,147,216,0.5)', 'rgba(206,147,216,0.5)', 'rgba(206,147,216,0.6)', 'rgba(206,147,216,0.7)', 'rgba(206,147,216,0.4)', 'rgba(206,147,216,0.3)'],
+      borderColor: '#ce93d8',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { color: '#e0e6f0' } },
+      tooltip: { callbacks: { label: ctx => `IT Load: ${ctx.parsed.y} MW` } }
+    },
+    scales: {
+      x: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' } },
+      y: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' }, title: { display: true, text: 'MW (IT Load)', color: '#8899aa' } }
+    }
+  }
+});
+
+// Graduate Hiring Chart
+const gradCtx = document.getElementById('gradChart').getContext('2d');
+new Chart(gradCtx, {
+  type: 'line',
+  data: {
+    labels: ['2019-20', '2020-21', '2021-22', '2022-23', '2023-24', '2024-25'],
+    datasets: [{
+      label: 'Engineering Graduates Produced (000s)',
+      data: [1500, 1500, 1500, 1500, 1500, 1500],
+      borderColor: '#64b5f6',
+      backgroundColor: 'rgba(100,181,246,0.08)',
+      borderDash: [6, 4],
+      tension: 0,
+      pointBackgroundColor: '#64b5f6'
+    }, {
+      label: 'IT Sector Fresh Graduate Hires (000s)',
+      data: [310, 120, 380, 420, 240, 80],
+      borderColor: '#ce93d8',
+      backgroundColor: 'rgba(206,147,216,0.12)',
+      tension: 0.3,
+      pointBackgroundColor: '#ce93d8',
+      fill: true
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { color: '#e0e6f0' } },
+      tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}K` } }
+    },
+    scales: {
+      x: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' } },
+      y: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' }, title: { display: true, text: 'Workers (000s)', color: '#8899aa' } }
+    }
+  }
+});
+</script>
+</body>
+</html>

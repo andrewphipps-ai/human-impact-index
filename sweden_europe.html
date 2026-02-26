@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sweden | Human Impact Index</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0e1a; color: #e0e6f0; font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; }
+  a { color: #64b5f6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .site-header { background: #0d1226; border-bottom: 1px solid #1e2a4a; padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-size: 1.1rem; font-weight: 700; color: #64b5f6; letter-spacing: 0.04em; }
+  .back-link { font-size: 0.85rem; color: #8899bb; }
+  .back-link:hover { color: #64b5f6; }
+
+  .hero { background: linear-gradient(135deg, #0d1226 0%, #111a35 60%, #0a1a1a 100%); padding: 48px 32px 36px; border-bottom: 1px solid #1e2a4a; }
+  .hero-inner { max-width: 1100px; margin: 0 auto; }
+  .region-badge { display: inline-block; background: #81c78420; border: 1px solid #81c78440; color: #81c784; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
+  .hero h1 { font-size: 2.6rem; font-weight: 800; color: #e0e6f0; margin-bottom: 6px; }
+  .hero .subtitle { font-size: 1.05rem; color: #8899bb; margin-bottom: 28px; }
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card { background: #0a0e1a; border: 1px solid #1e2a4a; border-radius: 8px; padding: 16px 18px; }
+  .stat-card .label { font-size: 0.72rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .stat-card .value { font-size: 1.55rem; font-weight: 700; color: #64b5f6; }
+  .stat-card .sub { font-size: 0.75rem; color: #8899bb; margin-top: 2px; }
+
+  .momentum-section { background: #0a0e1a; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px 22px; }
+  .momentum-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .momentum-label { font-size: 0.8rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; }
+  .momentum-score { font-size: 1.6rem; font-weight: 700; color: #64b5f6; }
+  .momentum-bar-bg { background: #1e2a4a; border-radius: 4px; height: 10px; width: 100%; }
+  .momentum-bar-fill { background: linear-gradient(90deg, #64b5f6, #81c784); border-radius: 4px; height: 10px; }
+  .momentum-note { font-size: 0.75rem; color: #8899bb; margin-top: 8px; }
+
+  .main { max-width: 1100px; margin: 0 auto; padding: 36px 32px; }
+
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 0; border-bottom: 1px solid #1e2a4a; }
+  .tab-btn { background: none; border: none; color: #8899bb; padding: 10px 16px; font-size: 0.82rem; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; white-space: nowrap; }
+  .tab-btn:hover { color: #e0e6f0; }
+  .tab-btn.active { color: #81c784; border-bottom-color: #81c784; }
+  .tab-content { display: none; padding: 28px 0 0; }
+  .tab-content.active { display: block; }
+
+  .sector-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .sector-title { font-size: 1.45rem; font-weight: 700; color: #e0e6f0; }
+  .sector-momentum { text-align: right; }
+  .sector-momentum .score { font-size: 1.8rem; font-weight: 700; color: #81c784; }
+  .sector-momentum .label { font-size: 0.72rem; color: #8899bb; text-transform: uppercase; }
+  .snapshot-badge { display: inline-block; background: #81c78420; border: 1px solid #81c78440; color: #81c784; font-size: 0.7rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-left: 10px; vertical-align: middle; }
+  .sector-desc { font-size: 0.95rem; color: #c0cfe0; margin-bottom: 22px; line-height: 1.7; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  @media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
+
+  .info-box { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 18px 20px; }
+  .info-box h4 { font-size: 0.78rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+  .info-box ul { list-style: none; }
+  .info-box ul li { font-size: 0.88rem; color: #c0cfe0; padding: 4px 0; border-bottom: 1px solid #1e2a4a20; }
+  .info-box ul li:before { content: "›"; color: #81c784; margin-right: 8px; }
+  .info-box ul li:last-child { border-bottom: none; }
+
+  .impact-box { background: #0f2214; border: 1px solid #81c78430; border-left: 3px solid #81c784; border-radius: 8px; padding: 18px 20px; margin-bottom: 20px; }
+  .impact-box h4 { font-size: 0.78rem; color: #81c784; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .impact-box p { font-size: 0.9rem; color: #c0cfe0; line-height: 1.65; }
+
+  .reg-box { background: #0d1226; border: 1px solid #64b5f630; border-left: 3px solid #64b5f6; border-radius: 8px; padding: 18px 20px; margin-bottom: 20px; }
+  .reg-box h4 { font-size: 0.78rem; color: #64b5f6; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .reg-box p { font-size: 0.9rem; color: #c0cfe0; line-height: 1.65; }
+
+  .chart-container { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+  .chart-container h4 { font-size: 0.82rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
+
+  .emp-table-section { margin-top: 40px; }
+  .emp-table-section h2 { font-size: 1.2rem; font-weight: 700; color: #e0e6f0; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #1e2a4a; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th { background: #0d1226; color: #8899bb; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 14px; text-align: left; border-bottom: 1px solid #1e2a4a; }
+  td { padding: 10px 14px; border-bottom: 1px solid #1e2a4a10; color: #c0cfe0; }
+  tr:hover td { background: #0d122620; }
+  .score-cell { font-weight: 700; color: #81c784; }
+  .est-note { font-size: 0.75rem; color: #8899bb; font-style: italic; }
+
+  .policy-section { margin-top: 40px; }
+  .policy-section h2 { font-size: 1.2rem; font-weight: 700; color: #e0e6f0; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #1e2a4a; }
+  .policy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .policy-card { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 18px 20px; }
+  .policy-card h4 { font-size: 0.88rem; font-weight: 700; color: #e0e6f0; margin-bottom: 8px; }
+  .policy-card p { font-size: 0.85rem; color: #8899bb; line-height: 1.6; }
+  .policy-card.gap { border-color: #81c78430; }
+  .policy-card.gap h4 { color: #81c784; }
+
+  .source-note { margin-top: 40px; background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px 22px; font-size: 0.78rem; color: #8899bb; line-height: 1.7; }
+  .source-note strong { color: #c0cfe0; }
+
+  footer { background: #0d1226; border-top: 1px solid #1e2a4a; padding: 22px 32px; text-align: center; font-size: 0.78rem; color: #8899bb; }
+  footer span { color: #64b5f6; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">Human Impact Index</div>
+  <a href="europe_overview.html" class="back-link">← Back to Europe Overview</a>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="region-badge">Europe Region</div>
+    <h1>Sweden</h1>
+    <p class="subtitle">AI Workforce Transformation Analysis — Human-Centred Assessment</p>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="label">Total Employed</div>
+        <div class="value">~5.2M</div>
+        <div class="sub">Statistics Sweden (SCB), 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Unemployment Rate</div>
+        <div class="value">~8.5%</div>
+        <div class="sub">Sept 2024 peak; structural dual-rate economy</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Employment Rate (20–65)</div>
+        <div class="value">79.4%</div>
+        <div class="sub">One of Europe's highest; SCB May 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">GenAI Workforce Exposure</div>
+        <div class="value">34.4%</div>
+        <div class="sub">OECD 2024; 8pp above EU average</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Data Centre Market</div>
+        <div class="value">$2.0B</div>
+        <div class="sub">2024; growing to $3.8B by 2030</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Jobs at High Automation Risk</div>
+        <div class="value">3.8%</div>
+        <div class="sub">OECD 2024; vs 12% OECD average</div>
+      </div>
+    </div>
+
+    <div class="momentum-section">
+      <div class="momentum-header">
+        <div>
+          <div class="momentum-label">Overall AI Momentum Score</div>
+          <div class="momentum-note">European scores generally range 55–75. Sweden scores 70 to reflect world-class data centre infrastructure (97% electricity tax rebate, 90%+ renewable grid), elite AI research capacity (WASP, SEK 6.3B), exceptionally low automation displacement risk (3.8% vs 12% OECD average), and a nationally coordinated AI Commission roadmap. Tempered by a structural unemployment paradox (high employment rate alongside 8.5% headline unemployment), an AI adoption lag among SMEs, and a still-developing national AI strategy relative to governance ambition.</div>
+        </div>
+        <div class="momentum-score">70 / 100</div>
+      </div>
+      <div class="momentum-bar-bg"><div class="momentum-bar-fill" style="width:70%"></div></div>
+    </div>
+  </div>
+</section>
+
+<main class="main">
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('data-centres')">Data Centres</button>
+    <button class="tab-btn" onclick="showTab('office-tech')">Office Tech &amp; Creative</button>
+    <button class="tab-btn" onclick="showTab('manufacturing')">Manufacturing <span class="snapshot-badge">Snapshot</span></button>
+    <button class="tab-btn" onclick="showTab('financial')">Financial Services</button>
+    <button class="tab-btn" onclick="showTab('logistics')">Logistics</button>
+    <button class="tab-btn" onclick="showTab('office-trad')">Office Traditional</button>
+    <button class="tab-btn" onclick="showTab('professional')">Professional Services</button>
+    <button class="tab-btn" onclick="showTab('cre-services')">CRE Services</button>
+    <button class="tab-btn" onclick="showTab('retail')">Retail</button>
+  </div>
+
+  <!-- DATA CENTRES -->
+  <div id="data-centres" class="tab-content active">
+    <div class="sector-header">
+      <div class="sector-title">Data Centres</div>
+      <div class="sector-momentum"><div class="score">82</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Sweden has emerged as Europe's most cost-competitive and sustainability-aligned destination for hyperscale data centre investment. The country's grid is over 90% renewable (hydro and wind), electricity wholesale prices average $0.25/kWh — among Europe's lowest — and a 97% electricity tax rebate reduces fiscal drag to approximately €0.005/kWh. These structural advantages, combined with stable permitting, a 2017 government tax incentive framework, and district-heating integration (enabling operators to sell waste heat back to municipal networks), have attracted a wave of global hyperscaler investment. The market was valued at USD 2.0 billion in 2024 and is forecast to reach USD 3.8–8.85 billion by 2030 (CAGR 11–15%), with third-party capacity at 160.8 MW in December 2024, with over 150 MW under construction. Stockholm leads with 36–55% of installed capacity and commands 55% of Nordic internet traffic. Microsoft, AWS, and Google collectively control more than 65% of installed hyperscale MW nationally. Brookfield Asset Management announced a USD 10 billion multi-phase AI campus in June 2025 — the largest single data centre investment in Sweden's history. Google launched its 42nd global cloud region (Europe-north2) outside Stockholm in March 2025, supported by 700+ MW in wind energy PPAs, with anchor customers including IKEA, Nordnet, and Tradera. The EU Piast AI Factory equivalent for Sweden is anchored by the Ericsson-led consortium, which is developing a national AI Factory leveraging NVIDIA computing infrastructure. Sweden leads the Nordic region with 36% revenue share and 1.2 GW of IT-sector PPA capacity committed.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Major Operators (2024)</h4>
+        <ul>
+          <li>Microsoft — Stockholm (1.172 PUE at Gävle, 24/7 renewable)</li>
+          <li>AWS — 3 Stockholm facilities; 746 MW PPA capacity (largest single offtaker)</li>
+          <li>Google — Europe-north2 launched March 2025; 700+ MW wind PPAs</li>
+          <li>Meta — Stockholm; significant PPA offtaker</li>
+          <li>Digital Realty — 6 Stockholm halls; 24/7 carbon-free power via Vattenfall</li>
+          <li>Equinix — Stockholm colocation hub</li>
+          <li>atNorth — Tier IV sustainable facilities</li>
+          <li>EcoDataCenter — 100% renewable; heat recovery pioneer</li>
+          <li>Bahnhof — Stockholm operator; historically Pionen bunker site</li>
+          <li>Brookfield Asset Management — USD 10B campus announced June 2025</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Infrastructure &amp; Connectivity</h4>
+        <ul>
+          <li>Grid: 90%+ renewable; hydro-nuclear base; Svenska kraftnät SEK 100B upgrade programme</li>
+          <li>Wind levelized cost: 32 öre/kWh (2024); 40–60% below continental average</li>
+          <li>Construction cost: $11–11.5/watt (Turner &amp; Townsend, 2024)</li>
+          <li>Trans-Baltic submarine cables: C-Lab, Eastern-Light, Arelion Sirius (online 2023–2025, +72 Tbps)</li>
+          <li>Stockholm: 36–55% national capacity; 80+ MW expansion pipeline</li>
+          <li>Northern Sweden: emerging for 50+ MW hydro-powered facilities</li>
+          <li>Tier 4 share: 61.14% of new capital (2024)</li>
+          <li>Heat reuse: district heating partnerships offset 15–20% of power costs</li>
+          <li>Grid transmission constraint: north-south upgrade completes post-2032</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Sweden's data centre boom is primarily capital-intensive rather than labour-intensive. Permanent operational roles per MW are modest and highly specialised. However, Sweden's structural differentiator is its heat-recovery integration: EcoDataCenter's waste-heat programmes and municipal district-heating partnerships represent a genuine community benefit mechanism, redistributing economic value to residents. The Brookfield USD 10B campus and AWS multi-site deployments will generate substantial construction-phase employment, primarily skilled trades (electrical, mechanical, structural), but limited permanent headcount. The concentration of hyperscaler capacity in Stockholm intensifies local power and land price pressures, which indirectly affects SME commercial real estate. Training programmes run by Microsoft (targeting 1 million Swedish workers by 2026) and Google represent meaningful but employer-driven upskilling pipelines without structural guarantees. The EU AI Factory programme, in which Sweden participates, is designed to democratise AI compute access for SMEs and researchers.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory &amp; Policy Context</h4>
+      <p>Sweden's 2017 electricity tax rebate (97% reduction for power-intensive operations) remains the foundational incentive. The EU AI Act (in force August 2024) imposes no direct obligations on data centre operators per se, but has catalysed demand for sovereign cloud capacity among regulated sectors (finance, healthcare, government). The Swedish Agency for Digital Government (DIGG) and Swedish Data Protection Authority (IMY) issued joint public-sector AI guidance in January 2025. Svenska kraftnät's SEK 100B north-south grid upgrade is critical for unlocking northern Sweden's renewable power potential for large-scale facilities, though completion extends beyond 2032. Sweden's Digitalization Strategy 2025–2030 channels sensitive government workloads into domestic sovereign cloud environments, further supporting domestic capacity demand.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>Sweden Data Centre Market Growth &amp; Capacity Build-Out (Indicative)</h4>
+      <canvas id="dcChart" height="90"></canvas>
+    </div>
+  </div>
+
+  <!-- OFFICE TECH & CREATIVE -->
+  <div id="office-tech" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Office Tech &amp; Creative</div>
+      <div class="sector-momentum"><div class="score">76</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Sweden's technology and creative sector is anchored by a remarkable concentration of globally significant companies for a nation of 10.6 million: Spotify, Klarna, Ericsson, King (Candy Crush), Mojang (Minecraft), iZettle, Truecaller, Skype (founded), and a rapidly growing AI-native startup ecosystem. The country hosts AI Sweden — a national centre for applied AI with 140 partners from industry, academia, and government — funded partly by Vinnova, which committed SEK 675 million to AI projects in 2020 alone. The WASP (Wallenberg AI, Autonomous Systems and Software Programme) is the largest private research investment in AI in Sweden, with SEK 6.3 billion targeting fundamental AI research and the training of 600+ doctoral researchers, two-thirds of whom enter Swedish industry. Stockholm is Europe's second-largest tech hub by venture investment per capita. In 2024, approximately 34.4% of Swedish workers are exposed to generative AI, notably 8.4 percentage points above the OECD average, with Stockholm County reaching 45.7% exposure — the highest in the country. AI-related job postings in Sweden held resilient even as overall postings declined: in ICT alone, nearly 1 in 10 job postings now require AI skills (PwC EMEA, 2024). Demand for AI Agent skills, prompt engineering, and data governance is rising sharply. Ericsson is leading a consortium to develop a national AI Factory using NVIDIA compute infrastructure, announced May 2025.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Key Employers &amp; Ecosystem</h4>
+        <ul>
+          <li>Ericsson — global telecoms R&amp;D; AI Factory consortium lead</li>
+          <li>Spotify — AI-driven personalisation, music intelligence</li>
+          <li>Klarna — fintech/AI leader; early adopter of GenAI in payments</li>
+          <li>King — gaming AI, procedural content generation</li>
+          <li>Truecaller — AI-powered call intelligence</li>
+          <li>Mojang (Microsoft) — game engine and AI tools</li>
+          <li>SSAB — AI-driven green steel production research</li>
+          <li>AI Sweden — national applied AI centre, 140 partners</li>
+          <li>WASP — SEK 6.3B AI research programme</li>
+          <li>Vinnova — national innovation agency; AI project funder</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Workforce &amp; Exposure Data</h4>
+        <ul>
+          <li>34.4% of workers exposed to GenAI (OECD 2024)</li>
+          <li>Stockholm: 45.7% GenAI exposure — highest nationally</li>
+          <li>3.8% at high automation risk — 8.2pp below OECD average</li>
+          <li>ICT: ~1 in 10 job postings require AI skills (PwC 2024)</li>
+          <li>AI-related roles: resilient despite broader job posting decline</li>
+          <li>Demand for originality/creativity skills: among Europe's fastest-growing</li>
+          <li>88% collective bargaining coverage — structural worker protection</li>
+          <li>WASP: 600+ PhD candidates trained; two-thirds enter industry</li>
+          <li>Handelsbanken forecast: 150,000 jobs to shift due to AI over 10 years</li>
+          <li>New role types: AI Agent operators, prompt engineers, AI governance leads</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Sweden's tech sector demonstrates a relatively benign AI transition profile compared to European peers. The exceptionally low direct automation displacement risk (3.8% vs 12% OECD average) reflects a structural advantage: Sweden's workforce is concentrated in high-skill, high-complementarity roles where AI augments rather than replaces. The WASP programme represents genuine long-term investment in domestic AI capability that reduces dependency on foreign platforms. However, the high GenAI exposure of knowledge workers in Stockholm (45.7%) signals significant productivity transformation ahead. Handelsbanken's projection of 150,000 role shifts over ten years frames this as transformation rather than displacement — but the nature of that transformation depends heavily on whether organisations use AI to intensify work demands or genuinely redistribute gains. The lack of a finalised national AI strategy (still in development as of early 2026, following the November 2024 AI Commission report) creates uncertainty for workers about government intent on sharing the productivity dividend.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory &amp; Policy Context</h4>
+      <p>The Swedish AI Commission (appointed 2023, under the Ministry of Finance) delivered 75 recommendations in its November 2024 report (SOU 2025:12), proposing a €1.5 billion scale-up investment, a new AI coordination function in the Prime Minister's Office, and "AI workshops" (AI-verkstad) to centralise AI expertise for municipalities and regions. DIGG and IMY issued joint public-sector generative AI guidance in January 2025. Vinnova's AI Sweden programme funds collaborative R&amp;D with industry and academic partners. The EU AI Act literacy requirements (effective February 2025) require organisations to ensure staff operating AI systems have sufficient AI literacy — Sweden currently shows only 34% of employees with approved AI tools access, against 46% globally. National advanced digitisation (NAD) consortium includes Ericsson, ABB, Saab, and Teknikföretagen, with Ministry of Finance co-funding.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>GenAI Workforce Exposure by Swedish Region vs OECD Average (2024)</h4>
+      <canvas id="techChart" height="90"></canvas>
+    </div>
+  </div>
+
+  <!-- MANUFACTURING (SNAPSHOT) -->
+  <div id="manufacturing" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Manufacturing <span class="snapshot-badge">Snapshot</span></div>
+      <div class="sector-momentum"><div class="score">63</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Sweden's manufacturing sector is internationally distinguished by premium industrial brands, engineering depth, and an early tradition of automation. The industrial sector accounts for approximately 20–22% of GDP. Key sub-sectors include automotive (Volvo Group, $48.6B revenue; Volvo Cars, $40.5B; Scania, $20.5B), telecommunications equipment (Ericsson), defence and aerospace (Saab), steel and materials (SSAB — developing hydrogen-based green steel), bearings and engineering (SKF, Atlas Copco, Sandvik), and forestry products (SCA, Stora Enso). Scania alone employs ~57,000 globally. Robot density data for Sweden is not disaggregated at country level in recent IFR reports (the Nordic region collectively performs above EU average), but Sweden's tradition of early automation adoption is well-established. The NAD consortium (Ericsson, ABB, Saab, Teknikföretagen) represents the government's ambition to deploy AI across advanced manufacturing. Generative AI has a smaller percentage impact on manufacturing than service sectors (Implement Economics estimate: ~SEK 100 billion potential) but other AI types — predictive maintenance, supply-chain optimisation, quality control — are significant. The green transition is creating new manufacturing employment in northern Sweden (wind energy components, green steel, battery supply chains) that partially offsets automation-driven displacement elsewhere.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Key Employers</h4>
+        <ul>
+          <li>Volvo Group — trucks, buses, construction; $48.6B revenue</li>
+          <li>Volvo Cars — EVs, autonomous driving; $40.5B revenue</li>
+          <li>Scania — heavy vehicles; 57,000 employees globally</li>
+          <li>Ericsson — telecom equipment; AI factory lead</li>
+          <li>Saab — defence aerospace; AI-embedded systems</li>
+          <li>SSAB — green steel; hydrogen-reduction R&amp;D</li>
+          <li>SKF — bearings; industrial IoT and predictive maintenance</li>
+          <li>Atlas Copco — compressors, tools; Industry 4.0 integration</li>
+          <li>Sandvik — mining, cutting tools; AI-driven materials</li>
+          <li>ABB — automation, robotics; NAD consortium partner</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>AI &amp; Automation Trends</h4>
+        <ul>
+          <li>NAD consortium (Ericsson, ABB, Saab): Ministry of Finance co-funded AI deployment</li>
+          <li>Volvo Cars: AI in EV battery management, autonomous driving R&amp;D</li>
+          <li>Scania: predictive maintenance AI, digital twin production modelling</li>
+          <li>SSAB: AI-optimised hydrogen-based steelmaking processes</li>
+          <li>SKF: industrial IoT with AI condition monitoring</li>
+          <li>GenAI productivity potential: ~SEK 100B in manufacturing (Implement Economics)</li>
+          <li>Green transition: new jobs in Norrland — wind, green steel, LKAB iron ore</li>
+          <li>Snapshot rating: Comprehensive dedicated research pending full data collection</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Sweden's manufacturing workforce benefits from unusually robust structural protections: 88% collective bargaining coverage, strong employment protection, and active government co-investment in green industrial transition. The green economy pivot in northern Sweden — anchored by SSAB's HYBRIT hydrogen steel, LKAB's iron ore processing, and Northvolt's battery gigafactory (despite its 2024 restructuring) — represents a genuine effort to create technology-intensive manufacturing employment in regions historically dependent on traditional industry. However, the automation wave in precision engineering and automotive assembly carries meaningful displacement risk for lower-skilled assembly workers, particularly in Göteborg (Volvo Cars) and Södertälje (Scania). Sweden's tradition of negotiated transition — through collective agreements, active labour market policies, and retraining funds — positions it better than most European peers, but the pace and scale of GenAI adoption may outrun established social dialogue mechanisms.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory &amp; Policy Context</h4>
+      <p>The National Advanced Digitisation (NAD) project, co-funded by the Ministry of Finance with industry partners (Ericsson, ABB, Saab, Teknikföretagen via Vinnova), is the primary vehicle for AI deployment across advanced manufacturing. The EU AI Act classifies AI in safety-critical manufacturing processes (autonomous machinery, workplace monitoring) as high-risk, triggering conformity assessment, documentation, transparency, and human oversight obligations. Sweden's Work Environment Strategy 2026–2030 (proposed) includes an AI impact focus. Collective agreements via Teknikföretagen typically include adjustment funds and retraining provisions for technology-displaced workers. LKAB, SSAB, and Vattenfall are the anchor firms in the HYBRIT and H2 Green Steel programmes, backed by government climate co-investment.</p>
+    </div>
+  </div>
+
+  <!-- FINANCIAL SERVICES -->
+  <div id="financial" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Financial Services</div>
+      <div class="sector-momentum"><div class="score">71</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Sweden's financial services sector is anchored by four major universal banks — Swedbank, SEB, Handelsbanken, and Nordea — which together account for approximately 70% of lending to the Swedish public. As of end-2024, 124 banks were established in Sweden. The sector is a global leader in cashless payments: Sweden has one of the highest rates of contactless and digital payment adoption globally (Swish, mobile banking), which has accelerated the AI-driven automation of transaction processing. All four major banks have deployed AI chatbots with multi-year histories: Swedbank's Nina (since 2014), SEB's Aida (formerly Amelia, since 2016, handling 13% of IT support queries by 2018), and Nordea's Nova (launched 2017, handling 2,000+ customer question types). Nordea announced 6,000 job cuts in October 2017, explicitly linked to digital transformation — one of Europe's earliest and largest financial sector digital displacement events. Klarna, a Swedish fintech, has become a global AI pioneer in embedded finance and buy-now-pay-later, with aggressive AI integration in fraud detection, credit scoring, and customer service. Handelsbanken's January 2026 forecast projects that approximately 150,000 jobs will shift across the Swedish economy over ten years, with financial services and professional services explicitly named as the most exposed sectors. BFSI workloads in Sweden's data centre market are projected to grow at a 9.18% CAGR to 2030, driven by real-time payment rails, algorithmic trading, and RegTech reporting. A Wallenberg-led consortium is co-funding joint AI compute pools for the Swedish financial sector.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Major Institutions &amp; AI Deployment</h4>
+        <ul>
+          <li>Swedbank — Nina AI (2014); Akur8 insurance pricing AI (2024)</li>
+          <li>SEB — Aida AI (2016+); 13% IT support resolution rate; Azure OpenAI integration</li>
+          <li>Nordea — Nova chatbot; 150 RPA robots (300+ processes); 6,000 jobs cut 2017</li>
+          <li>Handelsbanken — AI savings tools; strategic data platform modernisation</li>
+          <li>Klarna — global AI pioneer; 50M+ users; fraud detection, credit scoring</li>
+          <li>Avanza Bank — AI-driven investment tools; 837k+ customers</li>
+          <li>Danske Bank — AWS multi-year partnership (Forward 28 strategy, 2024)</li>
+          <li>Wallenberg consortium — joint AI compute pool for financial sector (2024)</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Workforce Impact Indicators</h4>
+        <ul>
+          <li>Nordea: 6,000 jobs cut 2017 — explicitly digital-transition related</li>
+          <li>Handelsbanken 2026 forecast: 150,000 jobs to shift economy-wide, finance named</li>
+          <li>Stockholm County: 45.7% GenAI exposure — highest nationally</li>
+          <li>Back-office automation: 25–50% efficiency gains documented across Nordic banking</li>
+          <li>Bankdata (Denmark): AI cut costs 25% in 2023; Swedish banks tracking same path</li>
+          <li>Branch network reduction ongoing: digital-first customer migration</li>
+          <li>BFSI data centre CAGR: 9.18% to 2030 — AI, real-time payments, RegTech</li>
+          <li>Surplus occupations: Business/Administration professionals (Eurostat, 2024)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Sweden's financial sector represents a clear case where AI-driven efficiency gains have already translated into measurable workforce reduction. Nordea's 6,000 job cuts in 2017 — Europe's most explicit major-bank digital displacement event at the time — set a precedent that has since been followed more quietly across the sector. The ongoing compression of branch networks and displacement of back-office processing roles falls disproportionately on women (who are overrepresented in administrative and customer-facing financial roles) and on mid-career workers whose skills are narrowly domain-specific. Sweden's strong social dialogue tradition and employment protection mitigates but does not eliminate this risk. Klarna's aggressive AI integration, while generating significant economic value and exporting Swedish AI capability globally, also models a trajectory for financial employment that is definitively lower-headcount. The Eurostat classification of Business and Administration professionals as a surplus occupation in Sweden (2024) directly aligns with this financial sector pattern.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory &amp; Policy Context</h4>
+      <p>The EU AI Act classifies AI used in credit scoring, employment decisions, and customer assessment as high-risk, requiring risk management documentation, data quality measures, human oversight, and transparency obligations. Sweden's Financial Supervisory Authority (Finansinspektionen) oversees AI compliance in the financial sector. GDPR applies to AI training data and profiling. The Swedish Data Protection Authority (IMY) issued guidance on AI profiling in 2024 and has intervened in algorithmic decision cases. Sweden has 88% collective bargaining coverage, providing structural protection for displaced workers through industry-level negotiation and retraining funds — though the financial sector's white-collar workforce is less unionised than blue-collar equivalents. No current obligation requires financial institutions to report or mitigate AI-driven workforce displacement.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>Swedish Financial Sector AI Integration vs Employment Index (2019–2024)</h4>
+      <canvas id="finChart" height="90"></canvas>
+    </div>
+  </div>
+
+  <!-- LOGISTICS -->
+  <div id="logistics" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Logistics &amp; Warehousing</div>
+      <div class="sector-momentum"><div class="score">65</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Sweden's logistics sector operates within a high-cost, high-automation context. The country's geography — spanning 1,500 km north to south — drives significant demand for logistics optimisation, and e-commerce penetration is among Europe's highest. Key hubs are Stockholm (Arlanda air freight, port of Nynäshamn), Gothenburg (Sweden's largest port and northern Europe's primary container gateway), and Malmö/Trelleborg (road connections to continental Europe via Øresund Bridge). Major operators include PostNord (the national postal and logistics operator, jointly owned by Swedish and Danish states), DHL, DB Schenker (Swedish-heritage, part of Deutsche Bahn), and CEVA Logistics. Sweden's manufacturing supply chains — serving Volvo, Scania, SSAB, and Ericsson — drive significant B2B logistics demand. AI route optimisation, demand forecasting, and autonomous warehouse systems are being deployed across the sector. Gothenburg port is integrating smart port technologies. Sweden's long-standing policy of road haulage driver shortage is partially being addressed through autonomous vehicle R&amp;D (Einride, a Swedish company, is a global pioneer in autonomous electric freight, with its Pods operating commercially in Sweden and internationally). Einride's autonomous electric trucks — operating in dedicated lanes without drivers — represent the most commercially mature autonomous freight deployment in Europe.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Key Players &amp; Technologies</h4>
+        <ul>
+          <li>PostNord — national operator; route AI, sorting automation</li>
+          <li>DB Schenker — Swedish-origin global logistics; AI supply chain tools</li>
+          <li>DHL — major operator; AI warehouse management</li>
+          <li>Einride — autonomous electric freight pioneer; commercial operations in Sweden</li>
+          <li>Gothenburg Port — smart port integration; Sweden's largest container gateway</li>
+          <li>CEVA Logistics — major 3PL operator</li>
+          <li>Volvo Trucks — autonomous truck R&amp;D, platooning systems</li>
+          <li>Scania — autonomous and electrified haulage R&amp;D</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Automation &amp; Workforce Indicators</h4>
+        <ul>
+          <li>Einride: commercial driverless freight in Sweden — clearest autonomous logistics signal</li>
+          <li>Warehouse automation: growing; e-commerce fulfilment driving investment</li>
+          <li>Driver shortage: structural; autonomous R&amp;D partly addresses pipeline</li>
+          <li>Gothenburg port: AI for berth scheduling, crane automation</li>
+          <li>Road freight: long-haul automation R&amp;D (Volvo, Scania) expected commercial 2027–2030</li>
+          <li>Worker shortage occupations include Transport/Logistics (Eurostat 2024)</li>
+          <li>Sainsbury-level AI route engines: in use across major operators</li>
+          <li>PostNord restructuring: ongoing as letter volumes decline vs parcel growth</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Sweden's logistics sector presents a paradox: a structural driver shortage alongside commercially maturing autonomous freight technology. Einride's Autonomous Electric Transport represents the most advanced real-world deployment of driverless freight in Europe, and Volvo and Scania are racing towards Level 4 highway autonomy. The near-term impact is ambiguous — autonomous systems may fill shortage positions rather than displace workers who already exist, though the long-run trajectory clearly compresses driver employment. Warehouse roles are more immediately at risk, as Swedish e-commerce fulfilment centres automate sorting and picking. PostNord workers face a structural shift as postal revenue declines and parcel volume grows, requiring retraining from letter sorting to package fulfilment. Strong union coverage in transport (Swedish Transport Workers' Union) provides some structural adjustment capacity through collective agreements. The geography of Sweden — with sparse populations in the north — may accelerate autonomous freight in low-traffic long-haul corridors before urban last-mile adoption.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory &amp; Policy Context</h4>
+      <p>Sweden is a leading European jurisdiction for autonomous vehicle road testing, with permissive legislation enabling Einride and others to operate commercially. The EU AI Act covers AI used in transport safety systems as high-risk. Working time regulation and driver qualification rules (EU Regulation 561/2006) apply to human drivers but create a regulatory boundary that autonomous systems must navigate carefully before full commercial deployment. PostNord operates under a universal service obligation, providing some regulatory floor on network maintenance. Sweden's Work Environment Authority (Arbetsmiljöverket) has remit over AI-driven algorithmic management of logistics workers — a growing issue as route scheduling and performance monitoring becomes increasingly automated.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TRADITIONAL -->
+  <div id="office-trad" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Office Traditional</div>
+      <div class="sector-momentum"><div class="score">64</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Sweden's traditional office sector — encompassing administrative support, HR, payroll, secretarial, data entry, and routine clerical functions — faces the most direct GenAI exposure in the Swedish workforce. The OECD's 2024 analysis found that 34.4% of Swedish workers are exposed to generative AI, with administrative and clerical occupations facing high exposure with limited complementarity. Eurostat's 2024 labour market classification identifies Business and Administration Associate Professionals and Business and Administration Professionals as surplus occupations in Sweden — a direct signal of anticipated redundancy in traditional office roles. Handelsbanken's January 2026 economic forecast quantifies this: approximately 150,000 jobs expected to shift over ten years, with administrative services and financial processing explicitly named. Sweden's 31% remote-work rate (vs 13.3% EU average in 2023) means that traditional office functions have already adapted significantly to digital workflows, accelerating the baseline for AI tool adoption. Public sector administration — which employs a significant share of Sweden's workforce — is also subject to AI Act high-risk designations for any AI used in benefit decisions, public assessments, or administrative determinations affecting citizens.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Exposure &amp; Displacement Indicators</h4>
+        <ul>
+          <li>Business/Admin Associate Professionals: Eurostat surplus occupation (2024)</li>
+          <li>Business/Admin Professionals: Eurostat surplus occupation (2024)</li>
+          <li>34.4% Swedish workers exposed to GenAI (OECD 2024)</li>
+          <li>Stockholm: 45.7% exposure — administrative roles predominant</li>
+          <li>Handelsbanken forecast: 150,000 roles to shift over 10 years</li>
+          <li>Document processing, scheduling, data entry: high automation probability</li>
+          <li>Women overrepresented in most-exposed administrative roles</li>
+          <li>Remote working rate: 31% vs 13.3% EU average — digital-ready baseline</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Structural Protections</h4>
+        <ul>
+          <li>88% collective bargaining coverage — industry-wide adjustment provisions</li>
+          <li>Public Employment Service (Arbetsförmedlingen) — reskilling and retraining support</li>
+          <li>Active labour market policy: historically well-funded in Sweden</li>
+          <li>Unemployment insurance: Akassa system (80% salary for 300 days)</li>
+          <li>AI literacy obligation (EU AI Act, Feb 2025): employer training requirements</li>
+          <li>Work Environment Strategy 2026–2030: AI workplace impact included</li>
+          <li>Social partnership model: employer-union negotiation on technology introduction</li>
+          <li>Long-term unemployment: 40% of registered unemployed — structural challenge</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Traditional office functions in Sweden are clearly in the cross-hairs of generative AI capability. The surplus occupation designations from Eurostat represent a forward-looking signal: training institutions, employment services, and workers themselves need to treat administrative career pathways as structurally at risk. Sweden's social safety net is genuinely strong — the Akassa unemployment insurance system, strong active labour market policies, and the social partnership tradition provide better transition support than most comparator countries. However, 40% of registered unemployed are long-term unemployed, suggesting that existing structural adjustment mechanisms are not fully effective. The concentrated impact on women (who disproportionately hold administrative and clerical roles) raises equity concerns that are not adequately addressed by current gender-neutral policy frameworks. Public sector workers may receive some protection through the EU AI Act's high-risk designations for AI affecting citizen welfare decisions, which require human oversight and review mechanisms.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory &amp; Policy Context</h4>
+      <p>The EU AI Act's AI literacy requirements (effective February 2025) impose obligations on employers deploying AI in administrative contexts to ensure staff have sufficient understanding of the systems they work with. The Act's high-risk classification applies to AI used in public administration decisions affecting citizens. Sweden's Transparency Decree equivalent is embedded in administrative law principles (principle of public access, Offentlighetsprincipen) which may create transparency obligations around algorithmic decision-making in public administration. The Labour Market AI Council (proposed in the AI Commission's 2024 report) is intended to coordinate government, employer, and union responses to AI workforce disruption — but as of early 2026 this body is not yet operational. Sweden's Work Environment Strategy 2026–2030 includes AI as a priority theme.</p>
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL SERVICES -->
+  <div id="professional" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Professional Services</div>
+      <div class="sector-momentum"><div class="score">68</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Sweden's professional services sector — encompassing legal, consulting, accounting, architecture, engineering consultancy, and management advisory — is experiencing dual exposure: high GenAI utility (accelerating document analysis, legal research, financial modelling, code generation) alongside high displacement risk for junior and mid-level knowledge workers. Stockholm hosts the Nordic headquarters of major consultancies (McKinsey, BCG, EY, Deloitte, KPMG, PwC), law firms, and a growing number of AI-native startups. Swedish law firms are engaged in a live debate about AI's future impact, with the Swedish Bar Association issuing guidance on AI tool use in 2024. Nordic accounting and audit firms are deploying AI for automated data validation, anomaly detection, and regulatory reporting — particularly under CSRD (Corporate Sustainability Reporting Directive) obligations. The OECD finds that originality-demanding tasks in professional roles have seen a particularly sharp increase in AI-job-posting requirements in Sweden — suggesting that firms are already adjusting skill expectations. Engineering consultancies serving the green transition (SSAB's hydrogen steel, HYBRIT, wind energy, grid upgrades) face strong demand growth, creating a sector of professional services explicitly complemented rather than displaced by AI.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Sector Structure</h4>
+        <ul>
+          <li>Big Four accountancy (EY, Deloitte, KPMG, PwC) — Nordic HQs in Stockholm</li>
+          <li>Major strategy consultancies (McKinsey, BCG, Bain) — established Stockholm offices</li>
+          <li>Swedish Bar Association guidance on AI legal tools (2024)</li>
+          <li>AI-native legal startups: growing ecosystem for contract analysis, legal research</li>
+          <li>Engineering consultancies: AFRY, ÅF, Sweco — green transition demand</li>
+          <li>CSRD compliance: creating new advisory demand for sustainability reporting AI</li>
+          <li>AI Sweden: cross-sector professional AI research partnerships</li>
+          <li>WASP graduate talent entering professional sector firms</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>AI Adoption &amp; Workforce Signals</h4>
+        <ul>
+          <li>Document review, legal research: high automation probability for junior roles</li>
+          <li>Accounting/audit: AI anomaly detection, automated reconciliation in use</li>
+          <li>Originality skills: Sweden among top EU countries for rising demand (OECD)</li>
+          <li>Green transition services: engineering consultancy employment growth</li>
+          <li>Junior lawyer and accountant roles: reduced intake pipeline at some firms</li>
+          <li>AI tool adoption: varies by firm size; large firms faster than SME partnerships</li>
+          <li>AI Act compliance consulting: new practice area emerging</li>
+          <li>Swedish Bar Association: AI guidance issued, active sector debate</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Professional services in Sweden mirrors patterns across advanced economies: productivity gains are real, the distribution of those gains is contested, and junior career pathways are being compressed. The traditionally reliable path of junior lawyer or junior accountant performing research and document-intensive work as a training ground for senior roles is being disrupted as AI automates precisely those entry-level functions. This creates a pipeline problem — fewer junior roles means fewer people trained for senior roles — with long-run talent depth implications. Positively, the green transition is generating genuine new professional demand in engineering consultancy, sustainability advisory, and AI governance services that partly compensates. Sweden's strong research infrastructure (WASP, AI Sweden, Vinnova) means the professional sector has access to genuinely world-class AI talent, which creates a competitive advantage in AI-native service delivery.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory &amp; Policy Context</h4>
+      <p>The EU AI Act designates AI used in legal interpretation, professional liability decisions, or access to professional services as potentially high-risk, though the precise boundaries are being worked out nationally. IMY regulatory sandbox programmes allow professional firms to test AI applications under supervisory oversight. Swedish Bar Association guidance on AI use in legal services is non-binding but shapes professional norms. CSRD obligations (mandatory for large companies from 2025) are creating an immediate AI tool market in sustainability reporting for accountancy and consulting firms. The government's plan to create AI-verkstad (AI workshops) for municipalities and public sector bodies represents a new professional services market for AI implementation and governance advisory.</p>
+    </div>
+  </div>
+
+  <!-- CRE SERVICES -->
+  <div id="cre-services" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">CRE Services</div>
+      <div class="sector-momentum"><div class="score">60</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Sweden's commercial real estate services sector operates in a high-cost, institutionally sophisticated market. Stockholm is a mature European real estate market, with significant institutional investment in office, retail, logistics and data centre assets. The data centre construction boom (Brookfield USD 10B campus, AWS, Google, Microsoft) is creating exceptional demand for construction management, project management, technical due diligence, and facility management services. Simultaneously, rising prime rents ($1,000/sqm in Stockholm, Q4 2024) and the shift to hybrid working (31% of Swedish employees work from home — double the EU average) are reshaping office demand in ways that challenge traditional CRE service models. AI is being integrated into property valuation, lease negotiation support, facility management scheduling, and energy performance analysis. The green transition is creating new demand for sustainability assessment, BREEAM/LEED certification support, and energy retrofit consultancy, particularly as Sweden's ambitious climate targets tighten building performance requirements. Catella, Cushman &amp; Wakefield (major Swedish operations), CBRE, JLL, and Newsec are major operators.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Sector Context</h4>
+        <ul>
+          <li>Stockholm prime office rents: $1,000/sqm (Q4 2024)</li>
+          <li>Hybrid working: 31% remote rate — double EU average</li>
+          <li>Data centre construction demand: exceptional pipeline from hyperscaler wave</li>
+          <li>Major operators: CBRE, JLL, Cushman &amp; Wakefield, Newsec, Catella</li>
+          <li>Green building: BREEAM/LEED demand rising; energy retrofit advisory</li>
+          <li>Industrial/logistics: Gothenburg, Stockholm, Malmö logistics corridors</li>
+          <li>Climate targets: tightening building energy requirements drive retrofit</li>
+          <li>Institutional investment: pension funds, sovereign wealth active in Swedish CRE</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>AI Integration &amp; Impact</h4>
+        <ul>
+          <li>AI valuation tools: automated AVM models supplementing traditional appraisal</li>
+          <li>Facility management: AI-driven scheduling and predictive maintenance</li>
+          <li>Energy performance analytics: AI for CSRD and building regulations compliance</li>
+          <li>Lease management: AI contract extraction and clause analysis</li>
+          <li>Data centre sector: driving new technical advisory and FM demand</li>
+          <li>Transaction support: AI due diligence tools reducing junior research time</li>
+          <li>Workforce: AI augmenting rather than replacing in client-facing roles</li>
+          <li>Back-office CRE functions: lease administration, data management at risk</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>CRE Services in Sweden faces a moderate and nuanced AI impact. The data centre construction wave creates genuine demand growth for specialist technical advisory, project management, and FM services — roles where human expertise remains central. The green retrofit and sustainability advisory market similarly creates new professional demand. However, the back-office of CRE — lease administration, property data management, market research compilation — faces meaningful automation pressure. The shift to hybrid working reduces portfolio churn (less frequent leasing transactions) even as it creates advisory demand around portfolio rationalisation. Sweden's high remote-working rate means the office market is structurally smaller, which over time will reduce the volume of CRE transactions requiring professional intermediation.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory &amp; Policy Context</h4>
+      <p>Sweden's Climate Act (2018) sets a 2045 net-zero target, driving mandatory building energy performance upgrades that create CRE advisory demand. EU CSRD obligations require large companies to report on real estate energy performance, creating new sustainability assessment market. The EU AI Act does not directly regulate standard CRE AI tools, though AI used in credit decisions (affecting mortgage or development finance) carries high-risk obligations. PBL (Plan and Building Act) governs development and construction processes that the data centre boom must navigate, creating legal advisory demand. No sector-specific AI regulation for CRE exists currently in Sweden.</p>
+    </div>
+  </div>
+
+  <!-- RETAIL -->
+  <div id="retail" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Retail</div>
+      <div class="sector-momentum"><div class="score">61</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Sweden's retail sector is highly digitised by European standards. E-commerce penetration is among the highest in Europe, and the country's payment infrastructure (Swish, instant bank transfers) has enabled a frictionless digital commerce environment. Physical retail is undergoing consolidation: major grocery operators (ICA, Coop, Axfood/Willys/Hemköp, Lidl, ALDI) are deploying AI in demand forecasting, inventory management, and supply chain optimisation. H&amp;M Group — Sweden's global fashion retailer — is using AI across product design recommendation, demand forecasting, and logistics. IKEA, a Swedish-founded global retailer, is integrating AI in customer experience, supply chain, and interior design tools (including its AI-powered room planning features). Self-checkout penetration is high, compressing cashier headcount in grocery. Amazon's Swedish operations are growing. Trade, transport and tourism, while having a smaller percentage impact from GenAI, represents a significant potential of ~SEK 100 billion due to the sector's large size (Implement Economics estimate). The sector employs a large number of part-time workers — disproportionately young, female, and foreign-born — who face both direct automation risk and the weakest structural protections for transition.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Key Players</h4>
+        <ul>
+          <li>ICA — dominant grocery; AI demand forecasting, loyalty analytics</li>
+          <li>H&amp;M Group — global fast fashion; AI product recommendation, demand forecast</li>
+          <li>IKEA — global home retail; AI room planning, supply chain, customer service</li>
+          <li>Axfood (Willys/Hemköp) — grocery; supply chain AI</li>
+          <li>Coop — cooperative grocery; AI inventory management</li>
+          <li>Amazon Sweden — growing e-commerce; warehouse automation</li>
+          <li>Åhléns — department store; omnichannel transformation</li>
+          <li>LINDEX, KappAhl — fashion retail; AI demand forecasting</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>AI Adoption &amp; Workforce Indicators</h4>
+        <ul>
+          <li>Self-checkout: high penetration in grocery, compressing cashier roles</li>
+          <li>H&amp;M: AI in product design, visual search, demand forecasting</li>
+          <li>IKEA: AI room planner, supply chain optimisation, customer chatbot</li>
+          <li>Demand forecasting: reduces over-ordering and waste across major grocers</li>
+          <li>Trade/transport: ~SEK 100B GenAI potential (Implement Economics)</li>
+          <li>Part-time, entry-level roles: highest displacement risk; lowest structural protections</li>
+          <li>E-commerce growth: shifting employment from stores to fulfilment centres</li>
+          <li>Foreign-born workers: 13% unemployment rate vs 3% Sweden-born — disproportionate risk</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Retail represents Sweden's most equity-concerning AI displacement context. The workers most at risk — part-time cashiers, stock room staff, young and foreign-born entry-level workers — are precisely those who face the greatest structural barriers to accessing retraining and who have the weakest Akassa (unemployment insurance) entitlements due to part-time and irregular employment. Sweden's headline unemployment statistics mask a stark differential: 13% unemployment among foreign-born residents (May 2024) versus 3% for Sweden-born workers. Retail automation intersects directly with this gap, as foreign-born workers are overrepresented in cashier and warehouse roles. H&amp;M and IKEA's global AI deployments — which benefit Swedish shareholders — are accelerating this dynamic without comparable investment in Swedish retail worker transitions.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory &amp; Policy Context</h4>
+      <p>No Sweden-specific AI retail regulation exists. The EU AI Act does not classify standard retail AI applications (demand forecasting, recommendation systems) as high-risk. Consumer data protection under GDPR governs loyalty programme AI and personalisation. Collective bargaining agreements via Handelsanställdas förbund (the Commercial Employees' Union) provide some protections for retail workers facing automation, but coverage varies by employer size and contract type. Minimum wage floors are set through collective bargaining, not statutory minimum wage legislation. The Public Employment Service (Arbetsförmedlingen) provides transition support for displaced retail workers, but long-term unemployment rates suggest the system struggles with structural displacement scenarios.</p>
+    </div>
+  </div>
+
+  <!-- Employment Table -->
+  <div class="emp-table-section">
+    <h2>Sector Employment &amp; AI Momentum Summary</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Sector</th>
+          <th>Estimated Employment</th>
+          <th>AI Momentum Score</th>
+          <th>Coverage</th>
+          <th>Primary AI Impact</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Data Centres</td>
+          <td>~15,000–25,000 (direct)</td>
+          <td class="score-cell">82</td>
+          <td>Full</td>
+          <td>Capital-intensive construction phase; specialist operational roles</td>
+        </tr>
+        <tr>
+          <td>Office Tech &amp; Creative</td>
+          <td>~400,000–500,000 <span class="est-note">(est.)</span></td>
+          <td class="score-cell">76</td>
+          <td>Full</td>
+          <td>High GenAI exposure; augmentation &gt; displacement in high-skill roles</td>
+        </tr>
+        <tr>
+          <td>Financial Services</td>
+          <td>~170,000–200,000 <span class="est-note">(est.)</span></td>
+          <td class="score-cell">71</td>
+          <td>Full</td>
+          <td>Back-office automation; branch compression; Nordea precedent established</td>
+        </tr>
+        <tr>
+          <td>Professional Services</td>
+          <td>~250,000–320,000 <span class="est-note">(est.)</span></td>
+          <td class="score-cell">68</td>
+          <td>Full</td>
+          <td>Junior role compression; document AI; green transition advisory growth</td>
+        </tr>
+        <tr>
+          <td>Logistics &amp; Warehousing</td>
+          <td>~180,000–220,000 <span class="est-note">(est.)</span></td>
+          <td class="score-cell">65</td>
+          <td>Full</td>
+          <td>Einride autonomous freight; warehouse automation; driver shortage offset</td>
+        </tr>
+        <tr>
+          <td>Office Traditional</td>
+          <td>~200,000–280,000 <span class="est-note">(est.)</span></td>
+          <td class="score-cell">64</td>
+          <td>Full</td>
+          <td>Direct GenAI displacement; Eurostat surplus occupation designation</td>
+        </tr>
+        <tr>
+          <td>Manufacturing</td>
+          <td>~600,000–700,000 <span class="est-note">(est.)</span></td>
+          <td class="score-cell">63</td>
+          <td>Snapshot</td>
+          <td>Strong protections; green transition offset; NAD consortium AI deployment</td>
+        </tr>
+        <tr>
+          <td>CRE Services</td>
+          <td>~40,000–60,000 <span class="est-note">(est.)</span></td>
+          <td class="score-cell">60</td>
+          <td>Full</td>
+          <td>Data centre advisory boom; hybrid working reducing transaction volume</td>
+        </tr>
+        <tr>
+          <td>Retail</td>
+          <td>~350,000–420,000 <span class="est-note">(est.)</span></td>
+          <td class="score-cell">61</td>
+          <td>Full</td>
+          <td>Cashier automation; equity concern for foreign-born and part-time workers</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Policy Section -->
+  <div class="policy-section">
+    <h2>Policy Landscape &amp; Human Welfare Assessment</h2>
+    <div class="policy-grid">
+      <div class="policy-card">
+        <h4>AI Commission Roadmap (SOU 2025:12)</h4>
+        <p>The Swedish AI Commission delivered 75 recommendations in November 2024, proposing a €1.5 billion scale-up, an AI task force in the Prime Minister's Office, and AI-verkstad (AI workshops) for municipalities. Work Environment Strategy 2026–2030 includes AI workforce impact as a priority theme.</p>
+      </div>
+      <div class="policy-card">
+        <h4>EU AI Act Implementation</h4>
+        <p>Prohibited practices: effective February 2025. GPAI model obligations: August 2025. High-risk system obligations: August 2026. Sweden is implementing via existing sectoral regulators (Finansinspektionen, IMY, Datainspektionen). IMY regulatory sandbox operational for AI testing.</p>
+      </div>
+      <div class="policy-card">
+        <h4>WASP &amp; AI Sweden Research</h4>
+        <p>WASP (SEK 6.3B Wallenberg programme) trains 600+ doctoral researchers; two-thirds enter Swedish industry. AI Sweden (140 partners, Vinnova-backed) connects academia, industry, and government. Ericsson-led AI Factory consortium developing national AI compute infrastructure using NVIDIA systems (May 2025).</p>
+      </div>
+      <div class="policy-card">
+        <h4>Labour Market Protections</h4>
+        <p>88% collective bargaining coverage. Akassa unemployment insurance (80% salary for 300 days). Active labour market policy tradition. However: 40% long-term unemployment among registered unemployed signals effectiveness limits. Labour Market AI Council proposed but not yet operational.</p>
+      </div>
+      <div class="policy-card">
+        <h4>Green Transition Offset</h4>
+        <p>Northern Sweden green industrial build-out (HYBRIT/SSAB, LKAB, H2 Green Steel, wind energy) creating new technology-intensive manufacturing employment. Northvolt gigafactory (despite 2024 restructuring) anchors battery supply chain. New jobs in Norrland partially offsetting automation displacement in southern cities.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Key Policy Gaps</h4>
+        <p>No finalised national AI strategy as of early 2026. Labour Market AI Council not yet operational. No obligation on employers to fund reskilling commensurate with AI productivity gains. Foreign-born unemployment (13%) requires targeted interventions beyond existing neutral frameworks. Junior knowledge worker pathway compression not yet addressed.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="source-note">
+    <strong>Data Sources &amp; Methodology:</strong> Statistics Sweden (SCB) — employment, labour force, unemployment data (2024). OECD Job Creation and Local Economic Development Country Note: Sweden (2024) — GenAI exposure, automation risk by region. Implement Economics / Vinnova — GenAI economic potential estimates by sector (2024). Handelsbanken Economic Outlook — 150,000 jobs forecast (January 2026). Research and Markets / Mordor Intelligence / Arizton — Sweden data centre market sizing and forecasts (2024–2025). Pexapark — Nordic PPA analysis (2024). DataCentre Magazine — market reports (2024–2025). PwC EMEA AI Jobs Barometer (2024). EURES / Eurostat — labour market information, occupational surplus/shortage designations (2024). Riksbanken — banking system data (2024). AI Commission report SOU 2025:12 (November 2024). OECD EU Coordinated Plan on AI — Sweden country note (2025). Vinnova.se — AI Sweden programme data. WASP programme publications. Employment figures for sub-sectors are estimated from Eurostat NACE classifications and SCB data where direct sector headcounts are unavailable; estimates are indicated accordingly. Momentum scores calibrated against European range (55–75) with Netherlands (67) and Poland (66) as reference points.
+  </div>
+
+</main>
+
+<footer>
+  <p>Human Impact Index — <span>Europe Region</span> | Sweden | Data current to Q1 2026 | Research: Andrew Phipps | <span>andrewphipps.ai</span></p>
+</footer>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Data Centre Chart
+const dcCtx = document.getElementById('dcChart').getContext('2d');
+new Chart(dcCtx, {
+  type: 'bar',
+  data: {
+    labels: ['2022', '2023', '2024', '2025', '2026E', '2028E', '2030E'],
+    datasets: [
+      {
+        label: 'Market Value (USD Billion)',
+        data: [1.4, 1.7, 2.0, 2.5, 2.9, 3.4, 3.8],
+        backgroundColor: '#81c78440',
+        borderColor: '#81c784',
+        borderWidth: 1.5,
+        yAxisID: 'y'
+      },
+      {
+        label: 'Third-Party Power Capacity (MW)',
+        data: [95, 125, 161, 220, 280, 380, 500],
+        backgroundColor: '#64b5f640',
+        borderColor: '#64b5f6',
+        borderWidth: 1.5,
+        yAxisID: 'y1',
+        type: 'line',
+        tension: 0.4
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#8899bb', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#8899bb', font: { size: 10 } }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb', font: { size: 10 } }, grid: { color: '#1e2a4a' }, title: { display: true, text: 'USD Billion', color: '#8899bb', font: { size: 10 } } },
+      y1: { position: 'right', ticks: { color: '#64b5f6', font: { size: 10 } }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Capacity (MW)', color: '#64b5f6', font: { size: 10 } } }
+    }
+  }
+});
+
+// Tech Chart
+const techCtx = document.getElementById('techChart').getContext('2d');
+new Chart(techCtx, {
+  type: 'bar',
+  data: {
+    labels: ['Stockholm', 'Västra Götaland\n(Gothenburg)', 'Skåne\n(Malmö)', 'East\nMiddle', 'North\nMiddle', 'OECD\nAverage'],
+    datasets: [
+      {
+        label: 'GenAI Exposure (%)',
+        data: [45.7, 36.0, 34.0, 31.0, 24.8, 26.0],
+        backgroundColor: ['#81c784', '#81c78490', '#64b5f690', '#64b5f670', '#64b5f650', '#ce93d860'],
+        borderColor: ['#81c784', '#81c784', '#64b5f6', '#64b5f6', '#64b5f6', '#ce93d8'],
+        borderWidth: 1.5
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#8899bb', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#8899bb', font: { size: 10 } }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb', font: { size: 10 } }, grid: { color: '#1e2a4a' }, title: { display: true, text: '% of workers exposed', color: '#8899bb', font: { size: 10 } }, max: 55 }
+    }
+  }
+});
+
+// Financial Chart
+const finCtx = document.getElementById('finChart').getContext('2d');
+new Chart(finCtx, {
+  type: 'line',
+  data: {
+    labels: ['2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+    datasets: [
+      {
+        label: 'AI Integration Index (0–100)',
+        data: [30, 38, 47, 52, 60, 68, 76, 82],
+        borderColor: '#81c784',
+        backgroundColor: '#81c78418',
+        tension: 0.4,
+        fill: true,
+        pointRadius: 4
+      },
+      {
+        label: 'Branch Employment Index (2017=100)',
+        data: [100, 98, 96, 92, 87, 83, 80, 77],
+        borderColor: '#ce93d8',
+        backgroundColor: '#ce93d818',
+        tension: 0.4,
+        fill: false,
+        pointRadius: 4,
+        borderDash: [5, 3]
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#8899bb', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#8899bb', font: { size: 10 } }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb', font: { size: 10 } }, grid: { color: '#1e2a4a' } }
+    }
+  }
+});
+</script>
+
+</body>
+</html>

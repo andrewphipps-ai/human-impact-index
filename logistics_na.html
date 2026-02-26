@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logistics & Warehousing (North America) | AI Human Impact Index</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0e1a;
+            color: #e0e6f0;
+            line-height: 1.7;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a2a4a 50%, #0d2035 100%);
+            border-bottom: 1px solid rgba(64, 180, 255, 0.2);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .back-nav { color: #64b5f6; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+        .back-nav:hover { color: #90caf9; }
+
+        .region-badge {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            border: 1px solid rgba(100,181,246,0.4);
+            color: #90caf9;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-main {
+            padding: 40px 40px 36px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 40px;
+            align-items: end;
+        }
+
+        .sector-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; color: #64b5f6; text-transform: uppercase; margin-bottom: 12px; }
+        .sector-title { font-size: 2.6rem; font-weight: 800; color: #ffffff; line-height: 1.15; margin-bottom: 14px; }
+        .sector-subtitle { font-size: 1.05rem; color: #9fb8d8; max-width: 680px; }
+
+        .header-stats { display: flex; flex-direction: column; gap: 14px; min-width: 280px; }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(100,181,246,0.15);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 1.9rem; font-weight: 800; color: #64b5f6; line-height: 1; }
+        .stat-value.warning  { color: #ff9800; }
+        .stat-value.danger   { color: #ef5350; }
+        .stat-value.positive { color: #66bb6a; }
+        .stat-label { font-size: 0.78rem; color: #7a9bbf; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .momentum-bar-section {
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 24px 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .momentum-label { font-size: 0.85rem; font-weight: 700; color: #7a9bbf; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .momentum-track { flex: 1; height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; }
+        .momentum-fill  { height: 100%; background: linear-gradient(90deg, #1565c0, #42a5f5, #ef5350); border-radius: 5px; }
+        .momentum-score { font-size: 1.5rem; font-weight: 800; color: #ef5350; white-space: nowrap; }
+        .momentum-descriptor { font-size: 0.82rem; color: #9fb8d8; white-space: nowrap; }
+
+        .content-wrapper { max-width: 1400px; margin: 0 auto; padding: 40px; }
+        .section { margin-bottom: 50px; }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(64,180,255,0.25);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 22px;
+            background: #42a5f5;
+            border-radius: 2px;
+        }
+
+        p { color: #c8d8ea; margin-bottom: 14px; font-size: 0.97rem; }
+
+        .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; }
+
+        .card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .card-title { font-size: 0.95rem; font-weight: 700; color: #90caf9; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .region-table { width: 100%; border-collapse: collapse; }
+
+        .region-table th {
+            background: rgba(21,101,192,0.3);
+            color: #90caf9;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid rgba(64,180,255,0.3);
+        }
+
+        .region-table td {
+            padding: 13px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+            color: #c8d8ea;
+            vertical-align: top;
+        }
+
+        .region-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+        .region-name { font-weight: 700; color: #ffffff; }
+        .region-hub  { font-size: 0.8rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-pill { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+        .impact-high   { background: rgba(239,83,80,0.2);  color: #ef9a9a; border: 1px solid rgba(239,83,80,0.3); }
+        .impact-medium { background: rgba(255,152,0,0.2);  color: #ffcc80; border: 1px solid rgba(255,152,0,0.3); }
+        .impact-low    { background: rgba(102,187,106,0.2);color: #a5d6a7; border: 1px solid rgba(102,187,106,0.3); }
+
+        .chart-container {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .chart-title { font-size: 0.9rem; font-weight: 700; color: #90caf9; margin-bottom: 18px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        canvas { max-height: 280px; }
+
+        .role-list { list-style: none; }
+
+        .role-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .role-item:last-child { border-bottom: none; }
+
+        .role-icon { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+        .role-icon.decline   { background: #ef5350; }
+        .role-icon.grow      { background: #66bb6a; }
+        .role-icon.transform { background: #ff9800; }
+
+        .role-name { font-weight: 700; color: #e0e6f0; font-size: 0.9rem; }
+        .role-desc { font-size: 0.82rem; color: #7a9bbf; margin-top: 2px; }
+
+        .impact-box { background: rgba(255,152,0,0.06); border: 1px solid rgba(255,152,0,0.2); border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+        .impact-box h4 { color: #ffcc80; font-size: 0.95rem; margin-bottom: 8px; font-weight: 700; }
+        .impact-box p  { color: #c8d8ea; margin-bottom: 0; font-size: 0.9rem; }
+        .impact-box.blue  { background: rgba(66,165,245,0.06); border-color: rgba(66,165,245,0.2); }
+        .impact-box.blue h4 { color: #90caf9; }
+        .impact-box.red   { background: rgba(239,83,80,0.06); border-color: rgba(239,83,80,0.2); }
+        .impact-box.red h4  { color: #ef9a9a; }
+
+        @media (max-width: 1200px) {
+            .header-main { grid-template-columns: 1fr; gap: 28px; }
+            .header-stats { flex-direction: row; min-width: auto; }
+            .two-col, .three-col { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .header-top, .header-main, .momentum-bar-section, .content-wrapper { padding-left: 20px; padding-right: 20px; }
+            .sector-title { font-size: 2rem; }
+            .header-stats { flex-direction: column; }
+            .momentum-bar-section { flex-direction: column; align-items: stretch; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="page-header">
+    <div class="header-top">
+        <a href="index.html" class="back-nav">← Back to Index</a>
+        <div class="region-badge">NORTH AMERICA</div>
+    </div>
+
+    <div class="header-main">
+        <div>
+            <div class="sector-label">Supply Chain & Distribution Sector</div>
+            <h1 class="sector-title">Logistics & Warehousing</h1>
+            <p class="sector-subtitle">
+                Transportation coordination, warehouse operations, inventory management, and distribution network roles experiencing rapid transformation through autonomous vehicles, robotic automation, and AI-powered optimisation systems
+            </p>
+        </div>
+        <div class="header-stats">
+            <div class="stat-card">
+                <div class="stat-value">6.8M</div>
+                <div class="stat-label">Current Employment</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value danger">-24%</div>
+                <div class="stat-label">Projected 2024-2030</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="momentum-bar-section">
+        <div class="momentum-label">AI Momentum</div>
+        <div class="momentum-track">
+            <div class="momentum-fill" style="width: 82%;"></div>
+        </div>
+        <div class="momentum-score">82</div>
+        <div class="momentum-descriptor">Very High Acceleration</div>
+    </div>
+</header>
+
+<main class="content-wrapper">
+
+    <!-- Overview -->
+    <section class="section">
+        <h2 class="section-title">Sector Overview</h2>
+        <p>
+            North America's logistics and warehousing sector employs approximately 6.8 million workers across transportation coordination, warehouse operations, inventory management, freight handling, and distribution network management. This sector forms the backbone of continental commerce, moving goods from manufacturers to retailers and consumers across vast distances. The convergence of autonomous vehicles, warehouse robotics, AI-powered route optimisation, and automated inventory systems creates unprecedented disruption potential across nearly every role category within the sector.
+        </p>
+        <p>
+            The sector's transformation differs from office-based automation in fundamental ways. Physical labour automation requires capital investment in robots, autonomous vehicles, and sensor networks, creating uneven adoption rates based on facility size, corporate resources, and operational complexity. Large fulfilment centres operated by Amazon, Walmart, and major logistics providers deploy cutting-edge automation rapidly, while small regional warehouses and independent trucking operations lag substantially. This technological divide creates a two-tier labour market: workers in automated facilities face displacement or role transformation, while those in legacy operations experience wage stagnation and precarious employment as their employers struggle to compete.
+        </p>
+        <p>
+            The human stakes are immense. Logistics and warehousing traditionally provided accessible employment for workers without advanced formal education, offering stable income, benefits, and clear advancement pathways. Warehouse work, truck driving, and logistics coordination represented economic security for millions of families, particularly in regions with limited alternative employment options. The sector's rapid automation threatens to eliminate these pathways without creating equivalent replacement opportunities. Unlike knowledge workers who can potentially retrain for emerging roles, displaced logistics workers face structural barriers: limited transferable skills, geographic immobility, and competition for a shrinking pool of non-automated positions.
+        </p>
+    </section>
+
+    <!-- Regional Analysis -->
+    <section class="section">
+        <h2 class="section-title">Regional Employment Analysis</h2>
+        <table class="region-table">
+            <thead>
+                <tr>
+                    <th>Region & Major Hubs</th>
+                    <th>Current Employment</th>
+                    <th>AI Impact Level</th>
+                    <th>Primary Sectors Affected</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="region-name">Midwest Distribution Belt</div>
+                        <div class="region-hub">Chicago, Indianapolis, Columbus, Kansas City, Memphis</div>
+                    </td>
+                    <td>1,640,000</td>
+                    <td><span class="impact-pill impact-high">Extreme</span></td>
+                    <td>Warehouse Operations, Freight Distribution, Intermodal Transport</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Southern Logistics Corridor</div>
+                        <div class="region-hub">Dallas, Houston, Atlanta, Charlotte, Nashville</div>
+                    </td>
+                    <td>1,420,000</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Trucking, E-commerce Fulfilment, Regional Distribution</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">California Supply Chain</div>
+                        <div class="region-hub">Los Angeles, Ontario, Oakland, San Diego</div>
+                    </td>
+                    <td>1,180,000</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Port Operations, Last-Mile Delivery, Cold Chain Logistics</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Northeast Corridor</div>
+                        <div class="region-hub">New York, Philadelphia, Newark, Boston</div>
+                    </td>
+                    <td>980,000</td>
+                    <td><span class="impact-pill impact-high">High</span></td>
+                    <td>Urban Distribution, E-commerce Hubs, Cross-docking Facilities</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Pacific Northwest & Mountain West</div>
+                        <div class="region-hub">Seattle, Portland, Phoenix, Denver, Salt Lake City</div>
+                    </td>
+                    <td>840,000</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Regional Warehousing, Truck Transport, Amazon Operations</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="region-name">Canada Logistics Network</div>
+                        <div class="region-hub">Toronto, Montreal, Vancouver, Calgary</div>
+                    </td>
+                    <td>740,000</td>
+                    <td><span class="impact-pill impact-medium">Medium-High</span></td>
+                    <td>Cross-border Transport, Cold Storage, Distribution Centres</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Two-Column Charts -->
+    <div class="two-col">
+        <div class="chart-container">
+            <h3 class="chart-title">Employment by Role Category</h3>
+            <canvas id="employmentChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3 class="chart-title">Automation Exposure by Role</h3>
+            <canvas id="automationChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Role Transformation -->
+    <section class="section">
+        <h2 class="section-title">Role-Level Transformation Analysis</h2>
+        <div class="three-col">
+            <div class="card">
+                <h3 class="card-title">Roles in Decline</h3>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <span class="role-icon decline"></span>
+                        <div>
+                            <div class="role-name">Warehouse Pickers & Packers</div>
+                            <div class="role-desc">Manual item selection and packaging automated by robotic systems with computer vision and AI-guided arms</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon decline"></span>
+                        <div>
+                            <div class="role-name">Long-Haul Truck Drivers</div>
+                            <div class="role-desc">Interstate freight transport increasingly handled by autonomous trucks with remote monitoring oversight</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon decline"></span>
+                        <div>
+                            <div class="role-name">Forklift Operators</div>
+                            <div class="role-desc">Material movement within warehouses automated by autonomous guided vehicles and robotic forklifts</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon decline"></span>
+                        <div>
+                            <div class="role-name">Inventory Clerks</div>
+                            <div class="role-desc">Stock counting and tracking replaced by RFID systems, computer vision, and real-time AI inventory management</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon decline"></span>
+                        <div>
+                            <div class="role-name">Shipping & Receiving Clerks</div>
+                            <div class="role-desc">Inbound and outbound processing automated through sensor networks and AI-powered logistics platforms</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Roles Being Transformed</h3>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <span class="role-icon transform"></span>
+                        <div>
+                            <div class="role-name">Warehouse Supervisors</div>
+                            <div class="role-desc">Shifting from direct worker oversight to robot fleet management and exception handling in automated facilities</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon transform"></span>
+                        <div>
+                            <div class="role-name">Last-Mile Delivery Drivers</div>
+                            <div class="role-desc">Evolving to manage autonomous delivery vehicles, drones, and handle complex customer interaction scenarios</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon transform"></span>
+                        <div>
+                            <div class="role-name">Logistics Coordinators</div>
+                            <div class="role-desc">Transitioning from manual routing to oversight of AI optimisation systems and strategic network planning</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon transform"></span>
+                        <div>
+                            <div class="role-name">Quality Control Inspectors</div>
+                            <div class="role-desc">Moving from manual inspection to managing AI-powered vision systems and investigating algorithm-flagged anomalies</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon transform"></span>
+                        <div>
+                            <div class="role-name">Freight Brokers</div>
+                            <div class="role-desc">Adapting from manual load matching to strategic oversight of AI-driven freight matching platforms</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Emerging & Growing Roles</h3>
+                <ul class="role-list">
+                    <li class="role-item">
+                        <span class="role-icon grow"></span>
+                        <div>
+                            <div class="role-name">Robotics Technicians</div>
+                            <div class="role-desc">Specialists maintaining, repairing, and optimising warehouse automation systems and robotic equipment</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon grow"></span>
+                        <div>
+                            <div class="role-name">Autonomous Fleet Supervisors</div>
+                            <div class="role-desc">Professionals monitoring autonomous vehicle operations, handling edge cases, and ensuring safety compliance</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon grow"></span>
+                        <div>
+                            <div class="role-name">Supply Chain Data Analysts</div>
+                            <div class="role-desc">Experts interpreting AI-generated logistics insights and optimising network efficiency through data analysis</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon grow"></span>
+                        <div>
+                            <div class="role-name">Automation Integration Specialists</div>
+                            <div class="role-desc">Engineers designing and implementing AI and robotics solutions in existing warehouse environments</div>
+                        </div>
+                    </li>
+                    <li class="role-item">
+                        <span class="role-icon grow"></span>
+                        <div>
+                            <div class="role-name">Sustainability Logistics Managers</div>
+                            <div class="role-desc">Professionals optimising supply chains for carbon reduction using AI-powered route and inventory planning</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Forecast -->
+    <section class="section">
+        <h2 class="section-title">Employment Trajectory Forecast (2022-2030)</h2>
+        <div class="chart-container">
+            <canvas id="forecastChart"></canvas>
+        </div>
+        <p style="margin-top: 20px;">
+            Employment trajectories reveal severe displacement across core logistics roles. Warehouse picker and packer positions face 68% decline by 2030 as robotic systems achieve human-level dexterity and speed at lower operational cost. Long-haul trucking employment declines 52% as autonomous trucks handle increasing shares of interstate freight, beginning with simple highway routes and expanding to complex scenarios. Forklift operator and inventory clerk roles decline approximately 60% each as warehouse automation becomes standard practice in medium and large facilities. Meanwhile, robotics technician and automation specialist roles grow 420%, creating roughly 180,000 new positions. The net effect is catastrophic workforce contraction: overall sector employment falls from 6.8 million to 5.2 million workers, eliminating 1.6 million positions.
+        </p>
+    </section>
+
+    <!-- Human Impact -->
+    <section class="section">
+        <h2 class="section-title">Human Impact Assessment</h2>
+
+        <div class="impact-box red">
+            <h4>Mass Displacement of Accessible Employment (2024-2027)</h4>
+            <p>
+                Logistics and warehousing jobs historically provided economic security for workers without university degrees, offering stable income, benefits, and geographic accessibility. Warehouse picker positions, numbering over 1.2 million workers, require minimal formal education yet provide family-supporting wages and advancement opportunities. Their rapid automation eliminates accessible entry points into the labour market for millions of workers with limited alternatives. Long-haul truck drivers, approximately 1.8 million in North America, face displacement of a profession that offered independence, decent pay, and continental mobility. Many drivers chose the occupation specifically for its relative job security and freedom from traditional workplace hierarchies. The psychological trauma of losing not just income but professional identity and autonomy compounds economic hardship.
+            </p>
+        </div>
+
+        <div class="impact-box">
+            <h4>Geographic Concentration of Economic Pain (2025-2028)</h4>
+            <p>
+                Logistics employment concentrates in specific regions and communities. Small cities like Memphis, Indianapolis, and Stockton built economies around distribution hubs. Entire communities depend on warehouse and trucking employment: when a major fulfilment centre automates, thousands of local jobs vanish simultaneously, overwhelming regional labour markets. Unlike dispersed office workers who can potentially relocate, logistics workers face geographic immobility due to family ties, home ownership, and lack of resources for relocation. Rural truck stops, small-town warehouses, and regional distribution networks collapse as automation concentrates operations in fewer, larger, highly automated facilities. The ripple effects devastate local businesses, tax bases, and community cohesion.
+            </p>
+        </div>
+
+        <div class="impact-box blue">
+            <h4>Physical Toll and Health Implications (2024-2030)</h4>
+            <p>
+                Paradoxically, automation may temporarily increase injury rates among remaining human workers. As robots handle routine tasks, humans concentrate in physically demanding exception-handling roles: lifting awkward items, accessing difficult locations, performing repairs in cramped spaces. Workers in partially automated facilities report increased injury rates and stress as they struggle to maintain pace with robotic systems. The sector's tradition of prioritising speed and efficiency over worker wellbeing intensifies as automated systems set inhuman productivity benchmarks. Workers who retain employment often experience deteriorating health, chronic pain, and burnout from intensified physical demands and psychological pressure of competing against machines.
+            </p>
+        </div>
+
+        <div class="impact-box red">
+            <h4>Skills Mismatch and Retraining Barriers (2025-2030)</h4>
+            <p>
+                Emerging roles like robotics technician and automation specialist require technical skills fundamentally different from those developed through warehouse and driving work. A picker with 15 years of experience possesses expertise in efficient movement, item recognition, and physical endurance, none directly transferable to robot maintenance or software operation. Retraining programmes face high failure rates: workers accustomed to physical labour struggle with classroom-based technical training, literacy barriers prevent effective learning, and family obligations preclude extended unpaid education. Age discrimination compounds difficulties, as employers preferentially hire younger workers for technical roles. Most displaced logistics workers lack viable pathways to equivalent-paying employment.
+            </p>
+        </div>
+
+        <div class="impact-box">
+            <h4>Erosion of Working-Class Stability (2026-2030)</h4>
+            <p>
+                Logistics jobs represented one of the last remaining sectors offering working-class families middle-income stability without advanced credentials. Their elimination accelerates economic polarisation and class stratification. Families dependent on warehouse and trucking income face downward mobility: mortgage defaults, inability to fund children's education, loss of healthcare coverage, and community displacement. The sector's automation demonstrates that physical labour provides no protection against technological unemployment. Workers who believed their jobs "too complex to automate" or "requiring human judgement" discover these assumptions false. The psychological impact extends beyond individuals to entire communities confronting their economic obsolescence in the automated economy.
+            </p>
+        </div>
+
+        <div class="impact-box blue">
+            <h4>Opportunity in Specialised Transition Support (2027-2030)</h4>
+            <p>
+                A small subset of logistics workers successfully transition to robotics maintenance and fleet supervision roles through intensive, employer-sponsored training programmes. These workers typically possess mechanical aptitude, technical curiosity, and support systems enabling extended retraining. Companies discover that experienced warehouse workers bring valuable operational knowledge to automation system design and troubleshooting. However, these success stories represent fewer than 10% of displaced workers. The vast majority require different intervention: living wage guarantees, portable benefits, subsidised education in entirely different sectors, or early retirement pathways. The sector's transformation demonstrates that individual retraining cannot solve structural unemployment at scale.
+            </p>
+        </div>
+    </section>
+
+    <!-- Two More Charts -->
+    <div class="two-col">
+        <div class="chart-container">
+            <h3 class="chart-title">Historical & Projected Employment Trend</h3>
+            <canvas id="trendChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3 class="chart-title">Scenario Analysis: 2024-2030</h3>
+            <canvas id="scenarioChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Key Challenges -->
+    <section class="section">
+        <h2 class="section-title">Key Human-Centred Challenges</h2>
+        <div class="two-col">
+            <div class="card">
+                <h3 class="card-title">Massive Workforce Displacement</h3>
+                <p>
+                    Approximately 1.6 million logistics workers face job loss by 2030, concentrated among warehouse pickers, long-haul drivers, and forklift operators. These positions offered accessible employment for workers without advanced education, providing family-supporting wages and benefits. Displacement occurs rapidly within specific facilities and regions, overwhelming local support systems and labour markets. Workers lack transferable skills for emerging roles, face age discrimination, and possess limited resources for geographic relocation or extended retraining. The scale and speed of displacement exceeds capacity of existing social safety nets and workforce development programmes.
+                </p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Community Economic Collapse</h3>
+                <p>
+                    Distribution hub communities experience concentrated economic devastation. Small cities dependent on warehouse complexes or trucking centres face simultaneous loss of thousands of jobs, collapsing tax revenues, overwhelmed social services, and deteriorating infrastructure. Local businesses serving logistics workers close. Property values decline. Schools lose funding. The ripple effects compound as secondary employment in retail, services, and local government contracts. Unlike gradual industrial decline, automation-driven collapse occurs within 2-3 years, preventing adaptive response. Federal and state resources prove insufficient for comprehensive community transition support.
+                </p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Health and Safety Deterioration</h3>
+                <p>
+                    Remaining human workers face intensified physical demands and injury risk. Partially automated warehouses concentrate humans in exception-handling roles requiring awkward movements, heavy lifting, and sustained physical exertion. Productivity pressure increases as workers compete against robotic benchmarks. Injury rates rise despite overall workforce reduction. Long-term health consequences include chronic pain, repetitive strain injuries, and cardiovascular stress. Mental health challenges escalate from job insecurity, survivor guilt, and anxiety about future displacement. Worker compensation systems struggle to address automation-related injury patterns.
+                </p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Inadequate Retraining Infrastructure</h3>
+                <p>
+                    Existing workforce development systems cannot effectively retrain displaced logistics workers for emerging roles. Technical training programmes assume literacy levels and learning styles mismatched with logistics workforce. Programmes offer no income support during training, forcing workers to choose between learning and family support. Completion rates remain below 40% for technical retraining. Even successful graduates face hiring discrimination due to age, lack of prior technical experience, or perceived skill deficits. Community colleges and vocational schools lack capacity, qualified instructors, and updated curricula to serve displaced worker populations at scale.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Policy Recommendations -->
+    <section class="section">
+        <h2 class="section-title">Human-Centred Policy Recommendations</h2>
+        <div class="two-col">
+            <div class="card">
+                <h3 class="card-title">Comprehensive Displacement Support</h3>
+                <p><strong>Extended Income Support:</strong> Establish federal wage insurance programme providing 70% income replacement for up to 24 months for displaced logistics workers. Extend unemployment benefits to 104 weeks for workers enrolled in accredited retraining programmes. Create emergency family support funds covering healthcare premiums, mortgage assistance, and childcare during transition periods.</p>
+                <p><strong>Early Warning Systems:</strong> Require logistics companies to provide 18-month advance notice before major automation implementations affecting 50+ workers. Mandate employer contributions to worker transition funds scaled to automation-related displacement. Establish rapid response teams providing immediate assessment and support when mass layoffs occur.</p>
+                <p><strong>Retirement Bridge Programmes:</strong> Create early retirement options with enhanced benefits for logistics workers aged 55+ facing displacement. Fund bridge programmes providing income support and healthcare coverage until Medicare eligibility. Allow penalty-free access to retirement accounts for displaced workers in financial distress.</p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Targeted Retraining Initiatives</h3>
+                <p><strong>Logistics-to-Technical Pathways:</strong> Develop intensive programmes specifically designed for logistics workers transitioning to robotics maintenance and automation operations. Partner with community colleges to offer accelerated certifications with hands-on learning emphasis. Provide stipends covering living expenses during training periods. Guarantee job placement support and employer wage subsidies for successful graduates.</p>
+                <p><strong>Alternative Career Pathways:</strong> Fund training in healthcare support roles, skilled trades, and renewable energy installation for workers unsuited to technical logistics roles. Subsidise apprenticeships in construction, electrical work, and HVAC. Create pathway programmes into public sector employment including infrastructure maintenance and community services.</p>
+                <p><strong>Literacy and Foundational Skills:</strong> Establish prerequisite programmes addressing literacy, numeracy, and digital skills gaps before technical training. Offer evening and weekend classes accommodating work schedules. Provide childcare and transportation support. Use peer mentoring and cohort-based learning to improve completion rates.</p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Community Transition Support</h3>
+                <p><strong>Regional Economic Diversification:</strong> Create federal grants supporting economic diversification in logistics-dependent communities. Fund infrastructure improvements attracting alternative industries. Subsidise small business development and entrepreneurship programmes. Invest in broadband and technology infrastructure enabling remote work opportunities.</p>
+                <p><strong>Place-Based Investment:</strong> Establish targeted investment zones in communities experiencing concentrated logistics job loss. Offer tax incentives for companies creating quality employment in affected regions. Fund community anchor institutions including hospitals, schools, and universities. Support local innovation hubs and workforce development centres.</p>
+                <p><strong>Social Service Capacity Building:</strong> Increase funding for mental health services, substance abuse treatment, and family support programmes in affected communities. Expand food assistance and housing support programmes. Provide grants to community organisations offering job search assistance, financial counselling, and peer support networks.</p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">Responsible Automation Standards</h3>
+                <p><strong>Worker Impact Assessments:</strong> Mandate comprehensive human impact assessments before deploying automation systems affecting 100+ workers. Require companies to demonstrate efforts to redeploy workers before termination. Establish oversight mechanisms ensuring automation augments workers where technically feasible rather than defaulting to replacement.</p>
+                <p><strong>Gradual Transition Requirements:</strong> Incentivise phased automation implementation allowing workforce adjustment over 3-5 year periods. Require employers to provide on-site retraining opportunities for workers willing to transition to technical roles. Establish portable benefit systems ensuring healthcare and retirement security during transitions.</p>
+                <p><strong>Labour Standards in Automated Facilities:</strong> Strengthen workplace safety regulations addressing human-robot interaction. Mandate ergonomic standards preventing injury from intensified physical demands. Require transparent productivity metrics preventing inhumane performance pressure. Ensure union access and collective bargaining rights in automated warehouses.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Future Outlook -->
+    <section class="section">
+        <h2 class="section-title">Future Outlook & Human Considerations</h2>
+        <p>
+            The logistics and warehousing sector's transformation represents one of the most consequential labour market disruptions in North American economic history. The simultaneous automation of warehouse operations and freight transport will eliminate millions of accessible, family-supporting jobs within a single decade. Unlike previous technological transitions that created new employment opportunities alongside displacement, logistics automation concentrates benefits among capital owners and technology companies while offering few viable pathways for displaced workers into equivalent-quality employment.
+        </p>
+        <p>
+            By 2030, the sector will operate with 24% fewer workers despite handling substantially increased freight volumes. Mega-warehouses operated by skeleton crews of robotics technicians and supervisors will replace labour-intensive distribution centres. Autonomous trucks will traverse highways monitored remotely by fleet supervisors managing hundreds of vehicles simultaneously. The efficiency gains will be extraordinary; the human costs potentially devastating. Workers who built careers around physical capability, reliability, and operational expertise will discover these attributes hold diminishing value in automated supply chains.
+        </p>
+        <p>
+            The concentration of displacement among working-class communities, disproportionately affecting workers of colour and those without college degrees, risks exacerbating existing inequalities. Many displaced workers reside in regions with limited alternative employment, face family obligations preventing relocation, and lack financial resources for extended retraining. The sector's automation thus threatens not merely individual livelihoods but community stability, intergenerational mobility, and social cohesion across large swathes of North America.
+        </p>
+        <p>
+            Yet the outcome is not predetermined. Policy choices made over the coming years will determine whether automation's benefits are broadly shared or narrowly concentrated. Comprehensive support systems can provide displaced workers with income security, healthcare coverage, and genuine opportunities for meaningful employment in alternative sectors. Communities can receive investment enabling economic diversification and sustainable development. Companies can be incentivised to prioritise gradual transitions and worker redeployment over aggressive cost-cutting through mass termination.
+        </p>
+        <p>
+            The logistics sector's transformation forces confrontation with fundamental questions about economic organisation and social obligation. Does society owe support to workers whose skills become obsolete through technological change? What responsibility do companies bear for workers and communities that enabled their profitability? How should automation's productivity gains be distributed? The answers will shape not only the logistics sector but the broader trajectory of technological unemployment in the 21st century. The stakes extend beyond economics to the preservation of human dignity, community solidarity, and shared prosperity in an age of accelerating automation.
+        </p>
+    </section>
+
+</main>
+
+<script>
+    /* Employment by Role */
+    new Chart(document.getElementById('employmentChart'), {
+        type: 'bar',
+        data: {
+            labels: [
+                'Long-Haul Trucking',
+                'Warehouse Pickers/Packers',
+                'Forklift Operators',
+                'Last-Mile Delivery',
+                'Warehouse Supervisors',
+                'Inventory Clerks',
+                'Logistics Coordinators',
+                'Shipping/Receiving',
+                'Robotics/Technical Staff'
+            ],
+            datasets: [{
+                label: 'Employment (thousands)',
+                data: [1800, 1240, 680, 920, 540, 480, 620, 380, 140],
+                backgroundColor: [
+                    'rgba(239,83,80,0.7)',
+                    'rgba(239,83,80,0.7)',
+                    'rgba(239,83,80,0.7)',
+                    'rgba(255,152,0,0.7)',
+                    'rgba(255,152,0,0.7)',
+                    'rgba(239,83,80,0.7)',
+                    'rgba(255,152,0,0.7)',
+                    'rgba(239,83,80,0.7)',
+                    'rgba(102,187,106,0.7)'
+                ],
+                borderRadius: 4, borderWidth: 0
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf', callback: v => v >= 1000 ? (v/1000).toFixed(1)+'M' : v+'K' } },
+                y: { ticks: { color: '#9fb8d8', font: { size: 9 } }, grid: { display: false } }
+            }
+        }
+    });
+
+    /* Automation Exposure */
+    new Chart(document.getElementById('automationChart'), {
+        type: 'bar',
+        data: {
+            labels: [
+                'Warehouse Pickers',
+                'Inventory Clerks',
+                'Forklift Operators',
+                'Shipping/Receiving Clerks',
+                'Long-Haul Drivers',
+                'Freight Sorters',
+                'Loading Dock Workers',
+                'Route Planners',
+                'Warehouse Supervisors',
+                'Last-Mile Drivers'
+            ],
+            datasets: [{
+                label: 'Automation Exposure (%)',
+                data: [89, 86, 83, 81, 76, 74, 68, 62, 48, 38],
+                backgroundColor: ctx => {
+                    const v = ctx.dataset.data[ctx.dataIndex];
+                    if (v >= 60) return 'rgba(239,83,80,0.7)';
+                    if (v >= 30) return 'rgba(255,152,0,0.7)';
+                    return 'rgba(102,187,106,0.7)';
+                },
+                borderRadius: 4, borderWidth: 0
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: true,
+            scales: {
+                x: { max: 100, ticks: { color: '#7a9bbf', callback: v => v + '%' } },
+                y: { ticks: { color: '#9fb8d8', font: { size: 9 } }, grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    /* Forecast Line */
+    new Chart(document.getElementById('forecastChart'), {
+        type: 'line',
+        data: {
+            labels: ['2022','2023','2024','2025','2026','2027','2028','2029','2030'],
+            datasets: [
+                {
+                    label: 'Warehouse Pickers & Packers',
+                    data: [1320, 1280, 1240, 1080, 900, 720, 560, 440, 400],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.07)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Long-Haul Truck Drivers',
+                    data: [1840, 1820, 1800, 1640, 1440, 1220, 1020, 900, 860],
+                    borderColor: '#ab47bc',
+                    backgroundColor: 'rgba(171,71,188,0.06)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Forklift & Inventory Clerks',
+                    data: [1240, 1200, 1160, 1020, 860, 700, 580, 500, 480],
+                    borderColor: '#ff9800',
+                    backgroundColor: 'rgba(255,152,0,0.06)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                },
+                {
+                    label: 'Robotics & Technical Specialists',
+                    data: [140, 160, 180, 240, 320, 400, 480, 540, 580],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.08)',
+                    tension: 0.4, fill: true, borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 9 }, padding: 7 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: { ticks: { color: '#7a9bbf', callback: v => (v/1000).toFixed(1)+'M' } }
+            }
+        }
+    });
+
+    /* Historical & Projected Trend */
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: ['2000','2004','2008','2010','2014','2018','2022','2024','2026','2028','2030'],
+            datasets: [
+                {
+                    label: 'Actual Employment',
+                    data: [4200, 4600, 5100, 4800, 5400, 6200, 6900, 6800, null, null, null],
+                    borderColor: '#42a5f5',
+                    backgroundColor: 'rgba(66,165,245,0.08)',
+                    tension: 0.3, fill: true, borderWidth: 2,
+                    pointRadius: 3
+                },
+                {
+                    label: 'Base Scenario Projection',
+                    data: [null, null, null, null, null, null, null, 6800, 6100, 5500, 5200],
+                    borderColor: '#ff9800',
+                    backgroundColor: 'rgba(255,152,0,0.06)',
+                    tension: 0.3, borderWidth: 2, borderDash: [5,3], fill: true,
+                    pointRadius: 3
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 10 }, padding: 10 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: {
+                    ticks: { color: '#7a9bbf', callback: v => (v/1000).toFixed(0)+'M' },
+                    min: 3000, max: 8000
+                }
+            }
+        }
+    });
+
+    /* Scenario Analysis */
+    new Chart(document.getElementById('scenarioChart'), {
+        type: 'line',
+        data: {
+            labels: ['2024','2025','2026','2027','2028','2029','2030'],
+            datasets: [
+                {
+                    label: 'Conservative Scenario',
+                    data: [6800, 6600, 6400, 6200, 6100, 6000, 5900],
+                    borderColor: '#66bb6a',
+                    backgroundColor: 'rgba(102,187,106,0.05)',
+                    borderDash: [6,3], tension: 0.3, borderWidth: 2, fill: true
+                },
+                {
+                    label: 'Base Scenario',
+                    data: [6800, 6400, 6000, 5700, 5500, 5300, 5200],
+                    borderColor: '#42a5f5',
+                    backgroundColor: 'rgba(66,165,245,0.07)',
+                    tension: 0.3, borderWidth: 2.5, fill: true
+                },
+                {
+                    label: 'Disruptive Scenario',
+                    data: [6800, 6200, 5600, 5100, 4800, 4600, 4500],
+                    borderColor: '#ef5350',
+                    backgroundColor: 'rgba(239,83,80,0.06)',
+                    borderDash: [4,2], tension: 0.3, borderWidth: 2, fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 10 }, padding: 10 } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: {
+                    ticks: { color: '#7a9bbf', callback: v => (v/1000).toFixed(1)+'M' },
+                    min: 4000, max: 7500
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

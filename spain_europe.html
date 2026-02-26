@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spain | Human Impact Index</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --text: #e0e6f0;
+    --text-muted: #8899aa;
+    --blue: #64b5f6;
+    --green: #81c784;
+    --purple: #ce93d8;
+    --amber: #ffb74d;
+    --red: #ef5350;
+    --teal: #4db6ac;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .page-header { background: linear-gradient(135deg, #0d1525 0%, #131e35 50%, #0d1525 100%); border-bottom: 1px solid var(--border); padding: 2rem 0; }
+  .header-inner { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+  .back-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--green); font-size: 0.85rem; margin-bottom: 1rem; }
+  .back-link:hover { color: var(--text); text-decoration: none; }
+  .country-title { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .country-flag { font-size: 2.5rem; }
+  .country-title h1 { font-size: 2.2rem; font-weight: 700; color: var(--text); }
+  .country-title .region-tag { background: var(--green); color: #000; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem; max-width: 700px; }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+  .stat-card .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.3rem; }
+  .stat-card .value { font-size: 1.4rem; font-weight: 700; color: var(--green); }
+  .stat-card .note { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+  .momentum-section { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem 1.5rem; }
+  .momentum-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.6rem; }
+  .momentum-bar-wrap { position: relative; height: 10px; background: var(--border); border-radius: 5px; margin-bottom: 0.5rem; }
+  .momentum-bar-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--green), var(--blue)); }
+  .momentum-row { display: flex; justify-content: space-between; align-items: center; }
+  .momentum-score { font-size: 1.8rem; font-weight: 700; color: var(--green); }
+  .momentum-desc { font-size: 0.8rem; color: var(--text-muted); max-width: 500px; }
+
+  .main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+  .tab-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+  .tab-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); padding: 0.45rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; transition: all 0.2s; }
+  .tab-btn:hover, .tab-btn.active { background: var(--green); border-color: var(--green); color: #000; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .sector-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+  .sector-icon { font-size: 2rem; }
+  .sector-header h2 { font-size: 1.5rem; font-weight: 700; }
+  .sector-momentum { margin-left: auto; text-align: right; }
+  .sector-momentum .score { font-size: 2rem; font-weight: 700; color: var(--green); }
+  .sector-momentum .label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+  .snapshot-badge { display: inline-block; background: var(--amber); color: #000; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; text-transform: uppercase; margin-left: 0.6rem; vertical-align: middle; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+  .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; }
+  .info-card h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.8rem; }
+  .info-card ul { list-style: none; }
+  .info-card ul li { padding: 0.3rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .info-card ul li:last-child { border-bottom: none; }
+  .info-card ul li::before { content: "→ "; color: var(--green); }
+  .at-risk::before { content: "▼ "; color: var(--red) !important; }
+  .emerging::before { content: "▲ "; color: var(--green) !important; }
+
+  .impact-box { background: linear-gradient(135deg, #0d2218, #0d1a2e); border: 1px solid #1e4530; border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem; }
+  .impact-box h3 { color: var(--green); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
+  .impact-box p { font-size: 0.9rem; color: var(--text); line-height: 1.7; }
+
+  .reg-box { background: linear-gradient(135deg, #0d1a2e, #0a1520); border: 1px solid #1e3a5f; border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem; }
+  .reg-box h3 { color: var(--blue); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
+  .reg-box p { font-size: 0.9rem; color: var(--text); line-height: 1.7; }
+
+  .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .chart-wrap h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 1rem; }
+  canvas { max-height: 280px; }
+
+  .section-title { font-size: 1.2rem; font-weight: 700; margin: 2rem 0 1rem; color: var(--text); border-left: 3px solid var(--green); padding-left: 0.75rem; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { background: var(--surface); color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.06em; padding: 0.7rem 1rem; text-align: left; border-bottom: 2px solid var(--border); }
+  td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: rgba(129,199,132,0.04); }
+  .high { color: var(--red); font-weight: 600; }
+  .medium { color: var(--amber); font-weight: 600; }
+  .low { color: var(--green); font-weight: 600; }
+
+  .policy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .policy-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--green); border-radius: 8px; padding: 1.2rem; }
+  .policy-card h4 { font-size: 0.85rem; font-weight: 700; color: var(--green); margin-bottom: 0.5rem; }
+  .policy-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+  .source-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; }
+  .source-box h3 { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.8rem; }
+  .source-box p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.8; }
+
+  footer { background: var(--surface); border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; font-size: 0.8rem; color: var(--text-muted); }
+  footer .brand { color: var(--green); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="header-inner">
+    <a class="back-link" href="europe_overview.html">← Back to Europe Overview</a>
+    <div class="country-title">
+      <span class="country-flag">🇪🇸</span>
+      <div>
+        <h1>Spain <span class="region-tag">Europe</span></h1>
+      </div>
+    </div>
+    <p class="subtitle">Spain is among Europe's fastest-growing economies and carries one of the continent's highest unemployment rates. AI integration is accelerating but uneven — concentrated in a small number of large firms, while the majority of Spain's SME-dominated economy lags significantly behind. The workers bearing the cost of this transition are disproportionately young, temporary, and in low-wage service roles.</p>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="label">Total Employed</div>
+        <div class="value">21.86M</div>
+        <div class="note">INE EPA Q4 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Unemployment Rate</div>
+        <div class="value">11.5%</div>
+        <div class="note">Year-end 2024 (INE)</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">AI Firm Adoption</div>
+        <div class="value">11.3%</div>
+        <div class="note">Eurostat 2024 (10+ employees)</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">AI Market Revenue</div>
+        <div class="value">€2.5bn</div>
+        <div class="note">2024, rising to €11.5bn by 2030</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">AI Professionals</div>
+        <div class="value">145,000</div>
+        <div class="note">IndesIA 2024 report</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">GDP Growth 2024</div>
+        <div class="value">3.2%</div>
+        <div class="note">INE; fastest in EU</div>
+      </div>
+    </div>
+    <div class="momentum-section">
+      <div class="momentum-label">Overall AI Transition Momentum Score</div>
+      <div class="momentum-bar-wrap">
+        <div class="momentum-bar-fill" style="width: 61%"></div>
+      </div>
+      <div class="momentum-row">
+        <div class="momentum-score">61 / 100</div>
+        <div class="momentum-desc">AI adoption is accelerating but highly concentrated in large firms. The EU AI Act provides regulatory scaffolding, but Spain's structural labour market weaknesses — high youth unemployment, temporary contracts, SME dominance — mean transition risks are poorly distributed. ENIA national strategy is promising but implementation remains early.</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showTab('data-centres')">Data Centres</button>
+    <button class="tab-btn" onclick="showTab('logistics')">Logistics</button>
+    <button class="tab-btn" onclick="showTab('office-trad')">Office Traditional</button>
+    <button class="tab-btn" onclick="showTab('office-tech')">Office Tech &amp; Creative</button>
+    <button class="tab-btn" onclick="showTab('retail')">Retail</button>
+    <button class="tab-btn" onclick="showTab('cre-services')">CRE Services</button>
+    <button class="tab-btn" onclick="showTab('professional')">Professional Services</button>
+    <button class="tab-btn" onclick="showTab('manufacturing')">Manufacturing <span class="snapshot-badge">Snapshot</span></button>
+    <button class="tab-btn" onclick="showTab('financial')">Financial Services</button>
+  </div>
+
+  <!-- DATA CENTRES -->
+  <div class="tab-panel active" id="data-centres">
+    <div class="sector-header">
+      <span class="sector-icon">🏭</span>
+      <div>
+        <h2>Data Centres</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">68</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Spain is emerging as a significant data centre hub within Europe, driven by its renewable energy capacity, favourable land costs relative to Northern Europe, and strong fibre connectivity to Latin America and Africa. Madrid has become one of Southern Europe's largest data centre markets. The employment impact is mixed: construction creates skilled jobs in a market with elevated construction unemployment, but ongoing operations require fewer workers per MW than traditional industrial facilities. Workers in data centre construction tend to be unionised and reasonably well-paid; ongoing operations staff are fewer and must be technically skilled. The EU AI Act and Spain's AESIA oversight body create compliance roles but do not address transition support for displaced workers in other sectors enabled by the data infrastructure being built.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Employment Context</h3>
+        <ul>
+          <li>Madrid is Southern Europe's dominant data centre market, hosting facilities by Equinix, Digital Realty, and Merlin Properties</li>
+          <li>Spain benefits from strategic fibre links to Latin America and Sub-Saharan Africa — unique geographic advantage in Europe</li>
+          <li>Barcelona also hosts significant hyperscale capacity serving Mediterranean markets</li>
+          <li>Spanish government has designated data centres as critical infrastructure under ENIA (National AI Strategy)</li>
+          <li>MareNostrum 5 supercomputer at the Barcelona Supercomputing Centre: 314 petaflops — among Europe's most powerful AI research facilities</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Roles Under Pressure / Emerging</h3>
+        <ul>
+          <li class="at-risk">Traditional IT operations and helpdesk roles — AI-driven monitoring reducing manual oversight</li>
+          <li class="at-risk">Entry-level network technicians — automated diagnostics compressing team sizes</li>
+          <li class="emerging">AI infrastructure engineers and GPU cluster specialists</li>
+          <li class="emerging">Energy systems and cooling engineers — renewable integration is a growth sub-discipline</li>
+          <li class="emerging">AI compliance and CAC-equivalent AESIA filing officers</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>Spain's AESIA (Agencia Española de Supervisión de la Inteligencia Artificial) became the designated EU AI Act national supervisory authority. Spain's ENIA national AI strategy allocates approximately €1.5 billion in measures and includes investment in compute infrastructure, Spanish-language AI models (ALIA), and a national Data Office. The EU Energy Efficiency Directive applies to large data centres in Spain, requiring PUE reporting and renewable energy targets. There are no specific worker transition obligations linked to data centre development.</p>
+    </div>
+  </div>
+
+  <!-- LOGISTICS -->
+  <div class="tab-panel" id="logistics">
+    <div class="sector-header">
+      <span class="sector-icon">🚚</span>
+      <div>
+        <h2>Logistics and Warehousing</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">63</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Spain's logistics sector is growing strongly, with vacancies in purchasing, logistics, and warehousing up 9% in 2024 (InfoJobs/Esade survey). Yet this headline growth conceals a structural tension: automation investment by Amazon, Zara's parent Inditex, and Correos (the national postal service) is reducing the headcount needed per unit of throughput. The workers most exposed are the temporary and seasonal logistics workers — disproportionately migrant workers and young people without qualifications — who form the flexible labour pool that Spanish warehousing depends on. Spain's labour reform of 2021 improved permanent contract incentives, but temporary employment remains structurally embedded in logistics. Algorithmic route management and performance monitoring of delivery workers raises labour rights questions that Spanish courts are only beginning to address.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Employment Context</h3>
+        <ul>
+          <li>Logistics is one of Spain's top five job categories by vacancy volume (InfoJobs 2024)</li>
+          <li>E-commerce growth drove Spanish parcel volumes to record levels in 2024</li>
+          <li>Inditex (Zara) runs one of the world's most AI-optimised fast-fashion logistics networks from Arteixo, Galicia</li>
+          <li>Amazon has nine fulfilment and logistics centres in Spain, deploying AMR (autonomous mobile robots) in multiple facilities</li>
+          <li>Spain's 2021 labour reform reduced temporary contracts: permanent employment increased by 589,400 in 2024 (INE EPA)</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Warehouse pickers — robotic picking systems in Amazon and Inditex hubs</li>
+          <li class="at-risk">Sortation workers — automated conveyor and scanning systems</li>
+          <li class="at-risk">Delivery couriers on platform contracts — algorithmic management and potential autonomous delivery pilots</li>
+          <li class="at-risk">Inventory clerks — RFID and AI-driven stock management</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-card" style="margin-bottom:1.5rem">
+      <h3>Emerging Opportunities</h3>
+      <ul>
+        <li class="emerging">Robotics maintenance technicians — growing as AMR fleets expand</li>
+        <li class="emerging">AI logistics optimisation analysts</li>
+        <li class="emerging">Last-mile delivery coordination specialists (as urban logistics becomes more complex)</li>
+        <li class="emerging">Sustainability and green logistics coordinators — Spain's decarbonisation targets create demand</li>
+      </ul>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>Spain's "Riders Law" (Royal Decree-Law 9/2021) established that platform delivery workers are presumed to be employees, creating one of Europe's strongest protections for gig logistics workers. However, enforcement remains contested, and algorithmic management of workers' performance and earnings is not fully addressed. The EU AI Act's requirements for transparency in AI systems used in employment contexts (high-risk AI category) will apply from 2026, but Spain has yet to develop specific guidance on algorithmic management in logistics. The 2021 labour reform's shift toward permanent contracts has some positive impact, but logistics remains dominated by fixed-term seasonal hiring.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TRADITIONAL -->
+  <div class="tab-panel" id="office-trad">
+    <div class="sector-header">
+      <span class="sector-icon">🏢</span>
+      <div>
+        <h2>Office Traditional</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">58</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Spain's traditional office workforce — administrative assistants, data entry clerks, document processors, and junior analysts — faces increasing AI exposure. The Banco de España's Economic Bulletin (Q2 2025) notes that AI adoption in Spanish firms with ten or more employees reached 11.3%, with the most common applications being process automation and chatbots. For workers in administrative roles, this translates to a gradual but accelerating erosion of routine task work. Spain's elevated youth unemployment (historically among Europe's highest) is particularly concerning: administrative jobs have historically been an entry point for young people with limited qualifications, and AI is narrowing this entry channel at precisely the moment when Spain's employment rate is reaching post-crisis highs. The workers who lose these roles face a labour market where the growing jobs demand skills they do not yet have.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Administrative assistants and office clerks — generative AI tools handling scheduling, drafting, and correspondence</li>
+          <li class="at-risk">Data entry and document processing workers — OCR and AI extraction</li>
+          <li class="at-risk">Junior HR administrators — AI screening and onboarding tools</li>
+          <li class="at-risk">Receptionists and front-of-house office staff — AI-integrated building access and visitor management</li>
+          <li class="at-risk">Translation and language support roles — large multilingual models (Spanish is well-served)</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Opportunities</h3>
+        <ul>
+          <li class="emerging">AI workflow managers and prompt specialists within office environments</li>
+          <li class="emerging">Digital transformation coordinators within public administration (Spain has significant public sector employment)</li>
+          <li class="emerging">Human-in-the-loop oversight roles for regulated processes</li>
+          <li class="emerging">AI literacy trainers — growing demand from SMEs requiring upskilling support</li>
+        </ul>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <h3>Spain AI Adoption Rate — Firms with 10+ Employees vs EU27 Average (%)</h3>
+      <canvas id="adoptionChart"></canvas>
+    </div>
+  </div>
+
+  <!-- OFFICE TECH -->
+  <div class="tab-panel" id="office-tech">
+    <div class="sector-header">
+      <span class="sector-icon">💻</span>
+      <div>
+        <h2>Office Tech and Creative</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">66</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Spain's tech and creative sector is growing — ICT employment rose 4.2% in 2024 (Etalentum/INE data) — but the sector faces significant internal polarisation driven by AI. Spain has 145,000 AI and data professionals, growing at 2.8% annually, but 70% are male, and the largest talent gaps are in NLP engineering and computer vision. The creative industries — advertising, content production, graphic design — face pressure from generative AI tools. Spain's AI talent shortage means that the firms driving adoption are often dependent on foreign talent or consultants, while domestic workers without AI skills find their roles increasingly at risk. The ALIA project — developing AI models in Spanish and co-official languages — is a significant national investment that could create new roles, but is still at early stage.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Graphic designers and illustrators without AI tool proficiency</li>
+          <li class="at-risk">Junior content writers and copywriters — generative AI producing first drafts</li>
+          <li class="at-risk">Mid-tier software developers without AI-augmented workflows</li>
+          <li class="at-risk">Web development generalists — no-code AI tools compressing demand</li>
+          <li class="at-risk">Data analysts in non-specialist roles — BI platforms automating routine analysis</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Opportunities</h3>
+        <ul>
+          <li class="emerging">NLP engineers — largest talent gap in Spain, strong wage premium</li>
+          <li class="emerging">Computer vision engineers — second-largest gap (IndesIA 2024)</li>
+          <li class="emerging">AI product managers and UX specialists for AI interfaces</li>
+          <li class="emerging">Multilingual AI model trainers and linguists (ALIA project)</li>
+          <li class="emerging">AI ethics and governance officers (AESIA compliance roles)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>Spain's National AI Strategy (ENIA) designates the tech and creative sectors as priority areas for AI investment and skills development. The Secretaría de Estado de Digitalización e Inteligencia Artificial (SEDIA) coordinates cross-ministerial AI policy. The EU AI Act's provisions on AI in employment and HR contexts (classified as high-risk) require specific transparency and human oversight obligations from August 2026. Spain's AESIA will supervise compliance. Gender imbalance in AI talent (70% male) is identified as a policy challenge but has not yet been systematically addressed through binding measures.</p>
+    </div>
+  </div>
+
+  <!-- RETAIL -->
+  <div class="tab-panel" id="retail">
+    <div class="sector-header">
+      <span class="sector-icon">🛒</span>
+      <div>
+        <h2>Retail</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">60</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Spain's retail sector employs several million workers, many of them on part-time and seasonal contracts. The sector is dominated by SMEs alongside a small number of large players — Inditex, Mercadona, El Corte Inglés — that are investing heavily in AI-driven retail operations. AI is entering Spanish retail through chatbots and virtual customer service, AI-powered demand forecasting reducing inventory staff needs, and self-checkout adoption in supermarket chains. The workers most at risk are part-time shop assistants, cashiers, and back-office inventory staff — roles disproportionately held by women, young people, and workers with limited formal qualifications. Spain's ERTE (short-time work scheme) experience during the pandemic created a template for managing labour market transitions, but there is no AI-specific equivalent.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Cashiers — Mercadona and Carrefour expanding self-checkout and frictionless payment</li>
+          <li class="at-risk">Customer service agents — AI chatbots handling first-line queries for major retailers</li>
+          <li class="at-risk">Inventory and stock room staff — AI demand forecasting reducing manual planning roles</li>
+          <li class="at-risk">Shop floor assistants in fast-fashion — Inditex RFID and AI optimisation reducing floor labour intensity</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Opportunities</h3>
+        <ul>
+          <li class="emerging">Personalisation and customer data analysts</li>
+          <li class="emerging">E-commerce operations coordinators</li>
+          <li class="emerging">Sustainable retail and supply chain specialists — growing regulatory demand</li>
+          <li class="emerging">Digital experience designers for hybrid retail environments</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRE SERVICES -->
+  <div class="tab-panel" id="cre-services">
+    <div class="sector-header">
+      <span class="sector-icon">🏗️</span>
+      <div>
+        <h2>Commercial Real Estate Services</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">58</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Spain's CRE services sector — spanning brokerage, property management, valuation, and facilities management — is undergoing the same AI-driven transformation as its European counterparts, but from a smaller institutional base. The Madrid and Barcelona office markets are active, and the logistics real estate sub-market has grown strongly. Global firms (CBRE, JLL, Cushman and Wakefield) operate in Spain and are rolling out AI tools globally, including in their Spanish operations. Junior analysts and property management staff face the greatest automation exposure. The sector's relatively small domestic workforce means the absolute number of displaced workers is modest, but the career pathway implications are significant — entry-level CRE jobs in Spain have historically been a route into the broader business services economy.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Junior property analysts — AI valuation and comparable analysis tools</li>
+          <li class="at-risk">Lease administration staff — automated lease abstraction reducing manual review</li>
+          <li class="at-risk">Facilities management administrators — IoT and AI-driven building management</li>
+          <li class="at-risk">Property marketing assistants — AI-generated listing content and visual assets</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Opportunities</h3>
+        <ul>
+          <li class="emerging">Data centre real estate advisers — Spain's growing DC market creates specialist demand</li>
+          <li class="emerging">ESG and sustainability analysts for commercial portfolios</li>
+          <li class="emerging">AI-assisted investment analysts with client-facing skills</li>
+          <li class="emerging">PropTech implementation specialists</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL SERVICES -->
+  <div class="tab-panel" id="professional">
+    <div class="sector-header">
+      <span class="sector-icon">⚖️</span>
+      <div>
+        <h2>Professional Services</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">62</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Spain's professional services sector — encompassing legal, consulting, accountancy, and advisory firms — is integrating AI tools rapidly at the senior adoption level, while the junior workforce faces growing displacement risk. Major Spanish law firms and the Big Four accountancy practices are deploying AI for contract review, due diligence, and audit analytics. The workers bearing the adjustment cost are junior lawyers, trainee accountants, and graduate research analysts whose roles depend on tasks AI is rapidly automating. Spain's high youth unemployment means the entry-level professional services pathway is already congested; AI narrowing these roles further deepens the structural problem. There is no sector-specific reskilling framework for professional services workers in Spain.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Junior lawyers and legal assistants — AI contract and due diligence review tools</li>
+          <li class="at-risk">Trainee accountants handling routine reconciliation — AI audit analytics</li>
+          <li class="at-risk">Junior management consultants — AI-generated research and synthesis</li>
+          <li class="at-risk">Translators in professional contexts — high-quality Spanish-language LLMs</li>
+          <li class="at-risk">Paralegals and legal administrators</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Opportunities</h3>
+        <ul>
+          <li class="emerging">EU AI Act compliance specialists (growing rapidly with 2026 enforcement approaching)</li>
+          <li class="emerging">AI risk and governance advisers for firms subject to AESIA supervision</li>
+          <li class="emerging">Senior client-facing advisers where human judgement and relationships remain central</li>
+          <li class="emerging">Data protection specialists — GDPR and AI Act intersection creates complex legal advisory demand</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>The EU AI Act (effective August 2024, enforcement from August 2026) classifies AI systems used in employment, worker management, and access to self-employment as high-risk. This creates growing demand for legal and compliance professionals who understand both AI technology and employment law. Spain's AESIA is the designated national supervisory authority but remains nascent. The Spanish Bar Association (CGAE) has issued AI use guidance for lawyers, but it is non-binding and principally focused on confidentiality and client data protection, not workforce transition.</p>
+    </div>
+  </div>
+
+  <!-- MANUFACTURING SNAPSHOT -->
+  <div class="tab-panel" id="manufacturing">
+    <div class="sector-header">
+      <span class="sector-icon">🔧</span>
+      <div>
+        <h2>Manufacturing <span class="snapshot-badge">Snapshot</span></h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Indicative Analysis — Data limitations apply</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">59</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Spain is the second-largest automotive manufacturer in Europe and has one of the highest robot densities in the EU. The manufacturing sector accounts for approximately 11% of GDP. AI and robotics adoption in manufacturing is accelerating, particularly in automotive assembly (Stellantis, Volkswagen, Ford plants), where Spain's export-oriented production must compete globally on cost and quality. Workers in mid-skill assembly and routine machining roles face the greatest automation exposure. Spain's industrial regions — Catalonia, Basque Country, Navarre, and Aragon — have more developed skills and retraining infrastructure than the national average, but this is not a nationally consistent picture. Note: Comprehensive sub-sector employment data for Spanish manufacturing is available in Spanish-language INE publications; the figures used here are derived from macro sector shares and should be treated as indicative estimates.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Employment Context (Estimate)</h3>
+        <ul>
+          <li>Industrial sector accounts for approximately 13–14% of total employment (INE structural data)</li>
+          <li>Manufacturing estimated at approximately 2.2–2.4 million workers (derived from sectoral GDP and employment data; treat as estimate)</li>
+          <li>Automotive is the dominant sub-sector; Spain exported 2.2 million vehicles in 2023 (ANFAC)</li>
+          <li>Spain's robot density is among Europe's highest, concentrated in automotive manufacturing</li>
+          <li>Industrial production grew 0.7% in 2024 (INE)</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Assembly line workers — robotic automation in automotive body and paint shops</li>
+          <li class="at-risk">Quality inspectors — AI vision systems</li>
+          <li class="at-risk">Routine CNC machine operators</li>
+          <li class="emerging">EV battery systems technicians — Spain's EV transition investment creates new roles</li>
+          <li class="emerging">Robotics maintenance and cobotics operators</li>
+          <li class="emerging">AI quality systems engineers</li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1.5rem;">This sector is covered at snapshot level. Comprehensive analysis would benefit from INE Encuesta Industrial Anual data and Fundación SEAT / ANFAC sectoral reports in Spanish. Readers requiring deeper analysis are directed to those sources.</p>
+  </div>
+
+  <!-- FINANCIAL SERVICES -->
+  <div class="tab-panel" id="financial">
+    <div class="sector-header">
+      <span class="sector-icon">💳</span>
+      <div>
+        <h2>Financial Services</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">65</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Spain's financial services sector is home to two of Europe's most AI-ambitious banks: BBVA and Banco Santander. Both have made high-profile partnerships with OpenAI and have invested heavily in AI across their global operations, including Spanish domestic operations. BBVA's ChatGPT Enterprise deployment saves staff approximately three hours per week on routine tasks — a meaningful productivity gain that reduces future headcount requirements even as it improves current worker experience. Santander's AI initiatives generated over €200 million in savings in 2024 and have AI copilots supporting over 40% of contact centre interactions. The workers bearing the downward pressure are branch cashiers, transaction processors, and contact centre agents — roles concentrated among younger workers in urban centres without university degrees. Spain's total banking sector assets exceeded €4 trillion in 2024, but branch networks are contracting as digital adoption accelerates.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Employment Context</h3>
+        <ul>
+          <li>Spain's financial sector total assets exceeded €4 trillion in 2024 (European Commission / CaixaBank estimates)</li>
+          <li>BBVA employs approximately 120,000 globally; rolling out ChatGPT across entire workforce (December 2025)</li>
+          <li>Santander employs approximately 200,000 globally; AI copilots active in 40% of Spanish contact centre interactions</li>
+          <li>Real-time payment transactions in Spain: 763 million in 2023, forecast 2.8 billion by 2028 — Bizum network driving automation</li>
+          <li>RegTech market in Spain and Europe: €350.7 million in 2024, growing at 23% annually</li>
+          <li>Estimated financial services employment in Spain: 400,000–480,000 (estimate derived from Eurostat structural data; precise INE figure requires Spanish-language EPA sector breakdown)</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Bank tellers and branch cashiers — Bizum and mobile banking reducing transaction volumes</li>
+          <li class="at-risk">Transaction processors — AI and instant payment rails eliminating manual steps</li>
+          <li class="at-risk">Junior credit analysts — AI hybrid credit analysis workflows (BBVA model)</li>
+          <li class="at-risk">Compliance and risk clerks — RegTech AI replacing manual monitoring</li>
+          <li class="at-risk">Contact centre agents — AI copilots handling 40%+ of Santander Spain interactions</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-card" style="margin-bottom:1.5rem">
+      <h3>Emerging Opportunities</h3>
+      <ul>
+        <li class="emerging">AI model risk validators and governance specialists</li>
+        <li class="emerging">Wealth management advisers for growing Spanish middle class</li>
+        <li class="emerging">Fintech product engineers (Madrid Fintech ecosystem: €2.8 billion total valuation)</li>
+        <li class="emerging">AI-native banking product managers</li>
+        <li class="emerging">Data scientists and quantitative analysts for credit risk</li>
+        <li class="emerging">AESIA and EU AI Act compliance specialists within financial institutions</li>
+      </ul>
+    </div>
+    <div class="chart-wrap">
+      <h3>Spain Financial Services — AI Integration Indicators 2023–2025</h3>
+      <canvas id="finChart"></canvas>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>Spain's financial services AI regulation sits at the intersection of EU and national frameworks. The EU AI Act classifies AI used in credit scoring and insurance risk assessment as high-risk, requiring conformity assessments before deployment. The ECB has assessed that finance and insurance are among the EU sectors with the highest AI labour market exposure. Spain's Banco de España has published research on AI and employment impacts. BBVA's partnership with the University of Navarra on "Fair Learning" — a three-year research programme on responsible AI ethics — represents a positive step by the private sector, but is voluntary and does not create worker rights. There are no Spanish requirements for financial institutions to disclose the workforce impact of AI deployment or to fund retraining for displaced roles.</p>
+    </div>
+  </div>
+
+  <!-- REGIONAL TABLE -->
+  <h2 class="section-title">Sector Employment and AI Exposure Overview</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Sector</th>
+          <th>Employment (Est.)</th>
+          <th>AI Adoption Level</th>
+          <th>Automation Exposure</th>
+          <th>EU AI Act Coverage</th>
+          <th>Momentum</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Data Centres</td>
+          <td>Est. 15,000–25,000 (ops)</td>
+          <td>High</td>
+          <td class="medium">Medium (ops)</td>
+          <td class="low">Partial</td>
+          <td>68</td>
+        </tr>
+        <tr>
+          <td>Logistics &amp; Warehousing</td>
+          <td>Est. 700,000–900,000</td>
+          <td>Medium–High</td>
+          <td class="high">High</td>
+          <td class="medium">Riders Law + EU AI Act 2026</td>
+          <td>63</td>
+        </tr>
+        <tr>
+          <td>Office Traditional</td>
+          <td>Part of 21.86M employed</td>
+          <td>Medium (11.3%)</td>
+          <td class="high">High</td>
+          <td class="medium">Partial (EU AI Act 2026)</td>
+          <td>58</td>
+        </tr>
+        <tr>
+          <td>Office Tech &amp; Creative</td>
+          <td>ICT: est. 600,000–800,000</td>
+          <td>High</td>
+          <td class="medium">Mixed (polarised)</td>
+          <td class="low">Partial</td>
+          <td>66</td>
+        </tr>
+        <tr>
+          <td>Retail</td>
+          <td>Est. 1.8–2.2 million</td>
+          <td>Medium</td>
+          <td class="high">High</td>
+          <td class="medium">High-risk AI in HR contexts</td>
+          <td>60</td>
+        </tr>
+        <tr>
+          <td>CRE Services</td>
+          <td>Est. 120,000–180,000</td>
+          <td>Medium</td>
+          <td class="medium">Medium</td>
+          <td class="low">Limited</td>
+          <td>58</td>
+        </tr>
+        <tr>
+          <td>Professional Services</td>
+          <td>Est. 600,000–800,000</td>
+          <td>Medium–High</td>
+          <td class="high">High</td>
+          <td class="medium">Growing (EU AI Act compliance)</td>
+          <td>62</td>
+        </tr>
+        <tr>
+          <td>Manufacturing (Snapshot)</td>
+          <td>Est. 2.2–2.4 million</td>
+          <td>Medium–High</td>
+          <td class="medium">Medium–High</td>
+          <td class="medium">Sector-specific EU rules</td>
+          <td>59</td>
+        </tr>
+        <tr>
+          <td>Financial Services</td>
+          <td>Est. 400,000–480,000</td>
+          <td>Very High (large firms)</td>
+          <td class="high">High</td>
+          <td class="high">High-risk (EU AI Act)</td>
+          <td>65</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.5rem;">Note: Spanish sector-level employment estimates are derived from INE EPA macro data, Eurostat structural business statistics, and industry sources. INE sub-sector breakdowns at the required granularity require Spanish-language EPA tables; estimates should be treated as indicative. Manufacturing is covered at snapshot level.</p>
+
+  <!-- POLICY GAPS -->
+  <h2 class="section-title">Policy Gaps: What the EU AI Act and ENIA Do Not Address</h2>
+  <div class="policy-grid">
+    <div class="policy-card">
+      <h4>SME Adoption Gap</h4>
+      <p>Spain's AI adoption rate of 11.3% conceals a sharp divide: approximately 40% of large Spanish firms use AI, compared to only 8% of SMEs (BBVA Research). Spain's business fabric is dominated by SMEs that lack the resources to manage AI transitions. Neither ENIA nor the EU AI Act provides meaningful transition support for SME workers displaced by competitors' AI adoption.</p>
+    </div>
+    <div class="policy-card">
+      <h4>Youth Unemployment and Entry-Level Erosion</h4>
+      <p>Spain's structurally high youth unemployment means that the loss of entry-level roles to AI automation carries outsized social risk. There is no targeted policy connecting AI-driven entry-level displacement to youth employment programmes. The ENIA strategy's skills measures are largely general and do not address this specific structural intersection.</p>
+    </div>
+    <div class="policy-card">
+      <h4>No Mandatory Employer Disclosure</h4>
+      <p>Spanish employers are not required to notify workers or unions in advance when AI deployment is likely to reduce headcount requirements. The EU AI Act's transparency provisions for high-risk AI apply to specific system types but do not require workforce impact disclosure. Collective bargaining exists in theory but is poorly adapted to AI-driven incremental displacement.</p>
+    </div>
+    <div class="policy-card">
+      <h4>Gig and Platform Worker Gaps</h4>
+      <p>The Riders Law was a landmark protection, but the broader gig economy — including delivery, domestic cleaning platforms, and digital creative marketplaces — remains outside consistent protection. Algorithmic performance management creates new forms of labour precarity that labour law designed for employment relationships does not adequately address.</p>
+    </div>
+    <div class="policy-card">
+      <h4>Gender Dimension Underaddressed</h4>
+      <p>Roles most at risk from AI — administrative, cashiers, contact centre agents — are disproportionately held by women. Spain's AI talent workforce is 70% male. Neither ENIA nor EU AI Act provisions specifically address the gendered distribution of AI transition costs. Spain's 27% at-risk-of-poverty rate (third-highest in EU) means women in low-wage service roles face compounded vulnerability.</p>
+    </div>
+    <div class="policy-card">
+      <h4>AESIA Under-Resourced</h4>
+      <p>Spain's AESIA is the designated national AI supervisory authority under the EU AI Act, but it was established with limited initial resources relative to the oversight task. The 2026 enforcement date for most EU AI Act provisions is approaching, and AESIA's operational capacity to investigate high-risk AI deployment in employment, credit, and social services contexts is unproven.</p>
+    </div>
+  </div>
+
+  <!-- SOURCE NOTE -->
+  <div class="source-box">
+    <h3>Source Note</h3>
+    <p>
+      <strong>Employment data:</strong> Instituto Nacional de Estadística (INE), Encuesta de Población Activa (EPA) Q4 2024 press release (January 2025). Total employment 21,857,900 and unemployment rate figures are confirmed INE data. Sector-level employment estimates are derived from INE macro structural data and Eurostat; precise sub-sector figures require Spanish-language EPA breakdowns which are not fully accessible in English at the sector granularity used in this tool. All sub-sector estimates are labelled as such.
+      <br><br>
+      <strong>AI adoption:</strong> Banco de España, Economic Bulletin Q2 2025 (AI adoption rate 11.3% for Spanish firms, 13.5% EU27 average — Eurostat 2024). Statista, Artificial Intelligence in Spain (AI market revenue, user forecasts, 2024). IndesIA / datos.gob.es, Data and AI Talent Market 2024 (145,000 AI professionals, gender breakdown, talent gaps). BBVA Research, AI Economic Impact in Spain (cited via Nucamp, September 2025).
+      <br><br>
+      <strong>Financial services:</strong> Santander/OpenAI partnership announcement (August 2025 — AI copilots at 40% of contact centre interactions, €200M savings in 2024). BBVA/OpenAI partnership and ChatGPT rollout (FStech, December 2025). Nucamp, AI in Financial Services Spain (RegTech market data, real-time payment volumes). Madrid Fintech ecosystem: madrimasd.org. Esade/InfoJobs 2024 Labour Market Survey (logistics vacancy data).
+      <br><br>
+      <strong>Logistics and labour:</strong> INE EPA Q4 2024 (permanent vs temporary contract changes). Riders Law — Royal Decree-Law 9/2021. Esade Institute for Labor Studies / InfoJobs 2024 Annual Labour Market Report. OECD Employment Outlook 2024 Country Note: Spain (unemployment rate, employment rate).
+      <br><br>
+      <strong>AI regulation:</strong> EU AI Act (Regulation (EU) 2024/1689, published 12 July 2024). Spain ENIA National AI Strategy (2024 update). AESIA establishment as national supervisory authority. Spain AI Strategy Report, AI Watch / European Commission. IAPP and Chambers and Partners AI governance trackers.
+      <br><br>
+      <strong>Manufacturing:</strong> ANFAC (Spanish automotive association) vehicle export data. Santander Trade economic profile. MDPI paper, Technological Impact on Employment in Spain 2023–2035. INE industrial production data 2024.
+      <br><br>
+      <strong>Data reliability note:</strong> Spanish sector-level employment figures at the granularity required by this tool are most accurately sourced from Spanish-language INE EPA publications and Eurostat Structural Business Statistics. The estimates provided in the regional table are calibrated against available macro data and should be treated as informed approximations, not precisely sourced official statistics.
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  <span class="brand">Human Impact Index</span> — Authored by Andrew Phipps, PhD Candidate in Philosophy (AI Ethics), University of Sussex &amp; Former Global Leader, Cushman &amp; Wakefield. For research and educational purposes.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// AI Adoption Chart
+const adoptCtx = document.getElementById('adoptionChart').getContext('2d');
+new Chart(adoptCtx, {
+  type: 'line',
+  data: {
+    labels: ['2021', '2022', '2023', '2024'],
+    datasets: [{
+      label: 'Spain AI Adoption Rate (%)',
+      data: [7.7, 8.5, 9.8, 11.3],
+      borderColor: '#81c784',
+      backgroundColor: 'rgba(129,199,132,0.1)',
+      pointBackgroundColor: '#81c784',
+      tension: 0.4,
+      fill: true
+    }, {
+      label: 'EU27 Average (%)',
+      data: [7.7, 9.5, 11.2, 13.5],
+      borderColor: '#64b5f6',
+      backgroundColor: 'rgba(100,181,246,0.05)',
+      pointBackgroundColor: '#64b5f6',
+      tension: 0.4,
+      borderDash: [6, 4]
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { color: '#e0e6f0' } },
+      tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}%` } }
+    },
+    scales: {
+      x: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' } },
+      y: { ticks: { color: '#8899aa', callback: v => v + '%' }, grid: { color: '#1e2d45' }, min: 5, max: 20, title: { display: true, text: 'AI Adoption Rate (%)', color: '#8899aa' } }
+    }
+  }
+});
+
+// Financial Services Chart
+const finCtx = document.getElementById('finChart').getContext('2d');
+new Chart(finCtx, {
+  type: 'bar',
+  data: {
+    labels: ['Santander Contact Centre AI Coverage (%)', 'BBVA Staff Using ChatGPT Enterprise (000s)', 'RegTech Market Spain €M', 'Bizum Real-Time Txns (billions)'],
+    datasets: [{
+      label: '2023',
+      data: [20, 3.3, 285, 0.763],
+      backgroundColor: 'rgba(129,199,132,0.4)',
+      borderColor: '#81c784',
+      borderWidth: 1
+    }, {
+      label: '2024/2025',
+      data: [40, 30, 350.7, 1.2],
+      backgroundColor: 'rgba(129,199,132,0.7)',
+      borderColor: '#81c784',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    indexAxis: 'y',
+    plugins: {
+      legend: { labels: { color: '#e0e6f0' } },
+      tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.x}` } }
+    },
+    scales: {
+      x: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' } },
+      y: { ticks: { color: '#8899aa', font: { size: 11 } }, grid: { color: '#1e2d45' } }
+    }
+  }
+});
+</script>
+</body>
+</html>

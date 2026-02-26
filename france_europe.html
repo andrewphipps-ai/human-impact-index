@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>France | Human Impact Index</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg-card: #0f1628;
+    --bg-hover: #141c35;
+    --text: #e0e6f0;
+    --text-muted: #8899bb;
+    --blue: #64b5f6;
+    --green: #81c784;
+    --amber: #ffb74d;
+    --red: #ef9a9a;
+    --accent: #81c784;
+    --border: rgba(100,181,246,0.15);
+    --tab-active-bg: rgba(129,199,132,0.10);
+    --tab-active-border: #81c784;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 15px; line-height: 1.6; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .page-header { background: linear-gradient(135deg, #0a0e1a 0%, #0d1620 60%, #0a0e1a 100%); border-bottom: 1px solid var(--border); padding: 24px 32px; }
+  .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .brand { font-size: 13px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .brand a { color: var(--accent); font-weight: 600; }
+  .back-link { font-size: 13px; color: var(--text-muted); }
+  .back-link:hover { color: var(--accent); }
+  .page-title { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .page-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
+
+  .stats-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+  .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 14px 20px; min-width: 160px; }
+  .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
+  .stat-value { font-size: 22px; font-weight: 700; }
+  .stat-value.blue { color: var(--blue); }
+  .stat-value.green { color: var(--green); }
+  .stat-value.amber { color: var(--amber); }
+  .stat-note { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .momentum-bar-wrap { margin-top: 4px; }
+  .momentum-bar-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+  .momentum-bar-track { background: rgba(255,255,255,0.07); border-radius: 4px; height: 8px; width: 100%; overflow: hidden; }
+  .momentum-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #81c784 0%, #4caf50 100%); }
+
+  .main-wrap { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+  .tab-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 0; }
+  .tab-btn { background: none; border: none; border-bottom: 2px solid transparent; color: var(--text-muted); cursor: pointer; font-size: 13px; padding: 8px 14px; white-space: nowrap; transition: color 0.2s; margin-bottom: -1px; }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--tab-active-bg); border-radius: 6px 6px 0 0; }
+
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  .sector-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+  .sector-title { font-size: 22px; font-weight: 700; color: #fff; }
+  .sector-meta { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+  .momentum-pill { background: rgba(129,199,132,0.12); border: 1px solid rgba(129,199,132,0.4); border-radius: 20px; color: var(--green); font-size: 13px; font-weight: 600; padding: 6px 16px; white-space: nowrap; }
+  .snapshot-pill { background: rgba(255,183,77,0.12); border: 1px solid rgba(255,183,77,0.4); border-radius: 20px; color: var(--amber); font-size: 12px; font-weight: 600; padding: 4px 12px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
+
+  .info-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; }
+  .info-card h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 10px; }
+  .info-card ul { list-style: none; }
+  .info-card ul li { padding: 5px 0; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .info-card ul li:last-child { border-bottom: none; }
+  .info-card ul li::before { content: "→ "; color: var(--green); font-size: 12px; }
+  .info-card p { font-size: 14px; line-height: 1.7; color: #c8d4e8; }
+
+  .impact-box { background: linear-gradient(135deg, rgba(129,199,132,0.07), rgba(100,181,246,0.04)); border: 1px solid rgba(129,199,132,0.22); border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; }
+  .impact-box h4 { color: var(--green); font-size: 13px; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+  .impact-box p { font-size: 14px; line-height: 1.7; color: #c8d4e8; }
+
+  .reg-box { background: rgba(100,181,246,0.05); border: 1px solid rgba(100,181,246,0.2); border-radius: 8px; padding: 16px 20px; margin-bottom: 16px; }
+  .reg-box h4 { color: var(--blue); font-size: 13px; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+  .reg-box p { font-size: 14px; line-height: 1.7; color: #c8d4e8; }
+
+  .chart-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+  .chart-wrap h4 { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; text-align: center; }
+  canvas { max-height: 260px; }
+
+  .table-section { margin-top: 32px; }
+  .section-heading { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .emp-table { width: 100%; border-collapse: collapse; }
+  .emp-table th { background: rgba(129,199,132,0.08); color: var(--green); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  .emp-table td { padding: 10px 14px; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; }
+  .emp-table tr:hover td { background: var(--bg-hover); }
+  .risk-high { color: var(--red); font-weight: 600; }
+  .risk-med { color: var(--amber); font-weight: 600; }
+  .risk-low { color: var(--green); font-weight: 600; }
+
+  .policy-section { margin-top: 32px; }
+  .policy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .policy-grid { grid-template-columns: 1fr; } }
+  .policy-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; }
+  .policy-card h4 { font-size: 13px; color: var(--amber); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
+  .policy-card p, .policy-card ul { font-size: 14px; line-height: 1.7; color: #c8d4e8; }
+  .policy-card ul { list-style: none; }
+  .policy-card ul li { padding: 4px 0; }
+  .policy-card ul li::before { content: "◆ "; color: var(--amber); font-size: 10px; }
+
+  .source-note { margin-top: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; }
+  .source-note h4 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
+  .source-note p { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+
+  .page-footer { margin-top: 48px; padding: 20px 32px; border-top: 1px solid var(--border); text-align: center; font-size: 12px; color: var(--text-muted); }
+  .page-footer strong { color: var(--green); }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="header-top">
+    <div class="brand"><a href="index.html">Human Impact Index</a> &rarr; <a href="europe_overview.html">Europe</a> &rarr; France</div>
+    <a class="back-link" href="europe_overview.html">&larr; Back to Europe Overview</a>
+  </div>
+  <div class="page-title">France</div>
+  <div class="page-subtitle">AI Workforce Transformation Analysis &mdash; Europe Region | Updated Q1 2026</div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total Employed</div>
+      <div class="stat-value blue">28.5m</div>
+      <div class="stat-note">IMF estimate 2025 (INSEE basis)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Unemployment Rate</div>
+      <div class="stat-value amber">7.3%</div>
+      <div class="stat-note">Eurostat Q4 2024</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Workers Exposed to Gen AI</div>
+      <div class="stat-value green">30.9%</div>
+      <div class="stat-note">OECD 2024; 4.9pp above OECD avg</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Overall Momentum Score</div>
+      <div class="stat-value" style="color:var(--green)">61</div>
+      <div class="stat-note">Out of 100</div>
+    </div>
+  </div>
+
+  <div class="momentum-bar-wrap">
+    <div class="momentum-bar-label">Overall AI Transition Momentum: 61 / 100</div>
+    <div class="momentum-bar-track"><div class="momentum-bar-fill" style="width:61%"></div></div>
+  </div>
+</header>
+
+<main class="main-wrap">
+
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="showTab('data-centres',this)">Data Centres</button>
+    <button class="tab-btn" onclick="showTab('logistics',this)">Logistics</button>
+    <button class="tab-btn" onclick="showTab('office-trad',this)">Office Traditional</button>
+    <button class="tab-btn" onclick="showTab('office-tech',this)">Office Tech &amp; Creative</button>
+    <button class="tab-btn" onclick="showTab('retail',this)">Retail</button>
+    <button class="tab-btn" onclick="showTab('cre-services',this)">CRE Services</button>
+    <button class="tab-btn" onclick="showTab('professional',this)">Professional Services</button>
+    <button class="tab-btn" onclick="showTab('manufacturing',this)">Manufacturing</button>
+    <button class="tab-btn" onclick="showTab('financial',this)">Financial Services</button>
+  </nav>
+
+  <!-- DATA CENTRES -->
+  <div class="tab-pane active" id="data-centres">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Data Centres</div>
+        <div class="sector-meta">Infrastructure workforce, operations, cooling, construction | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 70 / 100</div>
+    </div>
+
+    <div class="chart-wrap">
+      <h4>France Data Centre Investment — Hyperscaler Commitments Announced 2024–2025 (USD Billion, Indicative)</h4>
+      <canvas id="dcChart"></canvas>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Sector Context</h4>
+        <p>France has emerged as a priority European destination for AI infrastructure investment, driven by the February 2025 AI Action Summit in Paris, at which President Macron announced an investment package of EUR 109 billion for AI development. France is the world's fifth-largest data centre market. Paris and the Ile-de-France region dominate, with significant capacity in suburban corridors. The French government is actively pursuing data sovereignty requirements that favour domestic operators and EU-headquartered hyperscalers. AWS, Google, Microsoft, and Oracle have all made major France-specific investment commitments since 2024.</p>
+      </div>
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Manual server monitoring and log-keeping roles</li>
+          <li>Legacy infrastructure maintenance technicians</li>
+          <li>Traditional data centre operations staff</li>
+          <li>Air-cooled facility engineers (liquid cooling transition)</li>
+          <li>Basic NOC (network operations centre) operatives</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Liquid and immersion cooling system engineers</li>
+          <li>AI infrastructure architects (GPU cluster design)</li>
+          <li>Data sovereignty and cloud compliance specialists</li>
+          <li>Renewable energy integration managers</li>
+          <li>Green data centre sustainability officers</li>
+          <li>Hyperscale construction project managers</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>Human Impact Note</h4>
+        <p>France's data centre boom is primarily an infrastructure and investment story, with direct employment creation concentrated in highly specialised technical roles. The EUR 109 billion Macron investment package is primarily directed at AI infrastructure and hyperscaler subsidies, with no identified component for worker transition or reskilling from legacy IT roles. Construction employment gains are significant but temporary and are concentrated in skilled trades rather than accessible to displaced workers from other sectors.</p>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>France's data centre sector will generate employment, but the question is whether the jobs created are accessible to the workers being displaced from other AI-disrupted sectors. The evidence suggests not: data centre operations roles require technical specialisations in liquid cooling, GPU infrastructure, and cloud systems that are far removed from the skills of displaced retail, administrative, or manufacturing workers. France's National AI Strategy and the France 2030 investment plan are focused on competitiveness and infrastructure; worker welfare provisions remain secondary. The AI Action Summit's emphasis on "Inclusive and Sustainable AI for People and the Planet" has not yet translated into concrete worker transition mechanisms within the data centre sector.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context (EU AI Act and France)</h4>
+      <p>The EU AI Act has applied to France since August 2024. France has not yet formally designated its national competent authority, with a multi-authority model proposed (CNIL for fundamental rights, DGCCRF/DGE as coordinating bodies, sector regulators for domain-specific conformity). Data centre operations fall within the EU AI Act's scope primarily as hosting infrastructure rather than as AI deployers, meaning direct worker protection provisions from the Act are limited in this sector. France's data sovereignty framework (cloud certification requirements, HDS health data hosting standards) is creating compliance roles that represent genuine employment opportunity for appropriately qualified workers.</p>
+    </div>
+  </div>
+
+  <!-- LOGISTICS -->
+  <div class="tab-pane" id="logistics">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Logistics and Warehousing</div>
+        <div class="sector-meta">Transport, storage, fulfilment, distribution, last-mile | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 59 / 100</div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Sector Workforce</h4>
+        <p>France's logistics sector employs approximately 2.7 million workers, representing around 9.5% of the national workforce (EURES / DARES estimates). The Hauts-de-France region — positioned between Paris, London, and Brussels — is the sector's primary hub. France's strategic geographic position as Europe's logistics crossroads makes it particularly significant. Amazon, Carrefour, and the major express carriers are the largest employers. The sector includes a high proportion of lower-paid, physically demanding roles with limited educational requirements.</p>
+      </div>
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Manual warehouse pickers and sorters</li>
+          <li>Freight documentation clerks</li>
+          <li>Inventory management operatives</li>
+          <li>Traditional route planning staff</li>
+          <li>Customs and border processing clerks</li>
+          <li>Customer returns processing operatives</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Warehouse robotics technicians and supervisors</li>
+          <li>AI route optimisation analysts</li>
+          <li>Autonomous vehicle safety operators</li>
+          <li>Supply chain data analysts</li>
+          <li>Last-mile drone operations coordinators</li>
+          <li>Cold chain AI systems managers</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>French Labour Law Context</h4>
+        <p>France's Code du Travail provides stronger worker protections than most European counterparts. Mandatory social dialogue (comites sociaux et economiques — CSE) requires consultation with worker representatives before introducing new technologies in companies with 50 or more employees. This right to information and consultation before major technological change is a meaningful protection that does not exist in the UK or Japan. However, the CSE system primarily provides information rights, not veto rights, and enforcement is uneven across sectors.</p>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>France's logistics sector is automating rapidly, with large distribution centres — particularly those operated by e-commerce giants — deploying automated picking systems, AI-driven route optimisation, and autonomous guided vehicles. The human cost is concentrated among the 2.7 million workers in lower-skilled logistics roles, who typically have limited formal qualifications and face significant retraining barriers. France's Hauts-de-France region, where logistics employment is most concentrated, also records the highest automation risk nationally (OECD, 2024). The CSE consultation requirement provides a procedural right but does not guarantee that workers receive retraining support, income maintenance during transition, or priority access to emerging roles. The Macron government's "France Travail" reform (2023) seeks to improve employment support, but its application to AI-displaced logistics workers has not been specifically calibrated.</p>
+    </div>
+
+    <div class="chart-wrap">
+      <h4>Regional Automation Exposure in French Logistics Hubs (Indicative — OECD Regional Data 2024)</h4>
+      <canvas id="logChart"></canvas>
+    </div>
+  </div>
+
+  <!-- OFFICE TRADITIONAL -->
+  <div class="tab-pane" id="office-trad">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Office Traditional</div>
+        <div class="sector-meta">Administrative, clerical, back-office, public sector support | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 57 / 100</div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Sector Context</h4>
+        <p>France's public sector is one of the largest in the OECD, employing approximately 5.7 million civil servants (fonctionnaires), representing around 20% of the total workforce. Traditional office employment across public and private sectors encompasses an estimated 6–7 million workers. The OECD (2024) finds that 30.9% of French workers are exposed to generative AI — significantly above the 26% OECD average. Ile-de-France (Paris region) shows the highest GenAI exposure at 41.5%, reflecting the concentration of knowledge-intensive administrative roles in the capital.</p>
+      </div>
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Administrative secretaries and assistants</li>
+          <li>Data entry and records management clerks</li>
+          <li>Customer correspondence and complaints handlers</li>
+          <li>Public sector document processing roles</li>
+          <li>Basic accounting and invoicing operatives</li>
+          <li>Switchboard and telephony roles</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI-assisted public services coordinators</li>
+          <li>Digital transformation project managers</li>
+          <li>Data governance and compliance officers</li>
+          <li>AI ethics oversight roles (public sector)</li>
+          <li>Hybrid workplace experience managers</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>Human Impact Note</h4>
+        <p>France's large public sector provides a degree of job security that private sector counterparts lack, but is not immune to AI-driven efficiency initiatives. The government's own AI deployment strategy includes automating administrative processes. The OECD finding that only 5.1% of French workers are at high risk of automation (versus 12% OECD average) reflects France's relatively educated workforce composition; however, the 30.9% exposed to generative AI represents a larger and often overlooked cohort whose job quality and role scope is being transformed without necessarily triggering displacement.</p>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>France's traditional office sector presents a nuanced picture. The country's relatively strong workers' rights framework, including consultation rights via the CSE and robust dismissal protections, provides a degree of insulation against immediate AI-driven job losses. However, the OECD's finding that 30.9% of French workers are exposed to generative AI — more than in Germany or Italy — means that role erosion and task displacement are significant and underacknowledged concerns. Workers who remain employed but whose roles are hollowed out by AI tools receive less attention than those who lose jobs entirely, yet their experience of deskilling, reduced autonomy, and intensified monitoring represents a genuine human cost. The March 2024 report to President Macron estimated that 10–20% of French workers' tasks will be affected, but the policy response focuses on macroeconomic opportunity rather than this middle layer of affected but employed workers.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>The EU AI Act classifies certain AI systems used in employment contexts as high-risk (Annex III), requiring conformity assessments, transparency, and human oversight. This applies in France from 2026. The CNIL's 2025–2028 strategic plan includes sector-specific AI recommendations. France's Law for a Digital Republic (2016) requires individuals subject to AI-based administrative decisions to be informed and to have the right to request explanation of the algorithm's rules — a meaningful transparency provision, though enforcement in employment contexts remains limited. The Algorithmic Accountability dimension of French data law does not yet extend to workplace AI monitoring systems, a significant gap.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TECH & CREATIVE -->
+  <div class="tab-pane" id="office-tech">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Office Tech and Creative</div>
+        <div class="sector-meta">Technology companies, creative industries, media, digital services, startups | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 66 / 100</div>
+    </div>
+
+    <div class="chart-wrap">
+      <h4>Paris: Top-5 Global AI Venture Capital Hub — AI VC Funding 2024 (USD Billion)</h4>
+      <canvas id="vcChart"></canvas>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Sector Context</h4>
+        <p>France's technology and creative sector is concentrated in Paris and Ile-de-France, which ranked fifth globally for AI-related venture capital funding in 2024 as part of a top-5 cluster accounting for 60% of global AI VC (CBRE, 2025). France's AI development workforce exceeds 50,000, placing it seventh globally. Domestic AI champions include Mistral AI (generative AI), Dataiku (enterprise AI), and a growing ecosystem of AI startups supported by BPI France. The creative industries — fashion, cinema, gastronomy, luxury goods — are also significant, with growing AI exposure in design, content, and marketing functions.</p>
+      </div>
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior software developers (code generation tools)</li>
+          <li>Digital content producers and copywriters</li>
+          <li>Graphic designers in commodity content roles</li>
+          <li>Basic UX/UI researchers</li>
+          <li>Marketing analytics associates</li>
+          <li>Translation and localisation professionals</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI product managers and prompt engineers</li>
+          <li>LLM evaluation and fine-tuning specialists</li>
+          <li>European AI governance and compliance experts</li>
+          <li>AI-assisted luxury design directors</li>
+          <li>Data annotation and AI training specialists</li>
+          <li>Mistral AI and French AI ecosystem roles</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>French Creative Sector Context</h4>
+        <p>France's March 2025 lawsuit by publishers and authors against Meta — alleging unauthorised use of their works to train generative AI — reflects the creative sector's particular vulnerability. French authors, artists, and content creators have pushed for legislative protection, with Law Proposal No 1630 (2023) seeking to mandate disclosure of AI-generated works and compensation for creators whose works are used in training. The proposal has not yet been enacted. The CSPLA December 2024 report on AI Act implementation for rights-holders represents the most substantive engagement with this issue, but leaves the fundamental economic question — fair compensation for creators — unresolved.</p>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>France's tech and creative sectors present a genuine opportunity story alongside real human costs. Paris's emergence as a top-5 global AI investment hub is creating significant high-skilled employment. However, the workers benefiting from this expansion are predominantly already-advantaged: highly educated, technically skilled, and concentrated in the capital. The creative workers whose labour contributed to training the AI systems now displacing them — writers, illustrators, voice actors, translators — are receiving no share of the value created. The Macron AI strategy's EUR 109 billion investment package is fundamentally an infrastructure and competitiveness play; the human equity dimension of who benefits and who bears the cost is inadequately addressed. France's tradition of cultural protectionism provides some creative sector insulation, but has not yet been effectively extended to AI training data rights.</p>
+    </div>
+  </div>
+
+  <!-- RETAIL -->
+  <div class="tab-pane" id="retail">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Retail</div>
+        <div class="sector-meta">Physical retail, e-commerce, food retail, consumer services | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 56 / 100</div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Sector Context</h4>
+        <p>France's retail sector employs approximately 2–2.5 million workers directly, with the major food retailers (Carrefour, Leclerc, Intermarche) being dominant employers. Total retail-adjacent employment, including food service and accommodation, is closer to 4–5 million. The sector has experienced significant consolidation and format change since 2019, with hypermarket footprints contracting and e-commerce accelerating. AI-driven self-checkout, demand forecasting, and automated replenishment are standard across major retailers. Remote work at 10.8% of the French workforce (INSEE 2023) has structurally reduced weekday city-centre retail demand.</p>
+      </div>
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Checkout and cashier operatives</li>
+          <li>Customer service centre agents</li>
+          <li>Manual inventory and stock-check roles</li>
+          <li>Traditional buying and merchandising assistants</li>
+          <li>Routine order processing clerks</li>
+          <li>Hypermarket administrative staff</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI-driven personalisation and CRM analysts</li>
+          <li>Smart store technology supervisors</li>
+          <li>E-commerce fulfilment coordinators</li>
+          <li>Customer experience designers</li>
+          <li>Sustainability and ESG reporting specialists</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>Human Impact Note</h4>
+        <p>French retail workers benefit from stronger collective bargaining and dismissal protections than most OECD counterparts. Major retailers must negotiate AI deployment changes through their CSE (Comite Social et Economique). However, consultation does not prevent automation, and the retail sector's high proportion of part-time, lower-paid, and female workers means that the human cost of AI-driven efficiency is disproportionately borne by already-vulnerable workers. Carrefour's well-publicised restructuring in 2024 illustrates the dynamic: technology transformation and headcount reduction are presented as separate processes even when they are causally linked.</p>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>France's retail sector is a case study in the gap between procedural rights and substantive protection. Workers have formal consultation rights, but the systemic displacement of cashier, customer service, and back-office retail roles by AI tools is proceeding regardless. The human cost is absorbed primarily by women (who make up the majority of retail workers), younger workers in entry-level roles, and employees in peripheral regions where alternative employment options are limited. France's social security system provides better income replacement than many peers, but its design is not calibrated to repeated or prolonged AI-driven displacement from low-wage roles. The fundamental question of who shares in the productivity gains from retail automation remains unanswered by current policy.</p>
+    </div>
+  </div>
+
+  <!-- CRE SERVICES -->
+  <div class="tab-pane" id="cre-services">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Commercial Real Estate Services</div>
+        <div class="sector-meta">Property brokerage, valuation, asset management, facilities management | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 60 / 100</div>
+    </div>
+
+    <div class="chart-wrap">
+      <h4>Paris Office Real Estate Market — Take-up and Vacancy Context (2024–2025)</h4>
+      <canvas id="creChart"></canvas>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Sector Context</h4>
+        <p>France's office real estate market — valued at approximately USD 81.85 billion in 2025 — is one of Europe's largest, anchored by Paris and Ile-de-France (Mordor Intelligence, 2025). The Paris office market recorded 768,400 sq m of take-up in H1 2025, down 12% year-on-year, with demand shifting toward flexible, prime-located spaces. The sector employs an estimated 200,000–300,000 directly in brokerage, valuation, asset management, and facilities roles. AI tools — automated valuation models, JLL GPT, CBRE Ellis AI, and Cushman and Wakefield's Microsoft Azure partnership — are actively deployed across the major firms. Nine in ten large French companies plan to embed AI workplace management tools within five years (Mordor Intelligence / JLL, 2025).</p>
+      </div>
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior research analysts and market intelligence roles</li>
+          <li>Routine lease abstraction and document review</li>
+          <li>Basic property valuation support roles</li>
+          <li>Facilities management administrative staff</li>
+          <li>Manual space planning and occupancy analysts</li>
+          <li>Property marketing content producers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI-assisted investment decision analysts</li>
+          <li>Proptech and smart building advisors</li>
+          <li>ESG and green building certification specialists</li>
+          <li>Data-driven portfolio strategy advisors</li>
+          <li>AI workplace experience designers</li>
+          <li>Client relationship managers (AI-augmented)</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>Human Impact Note</h4>
+        <p>The Paris CBD remains Europe's premium office location, with Covivio recording Paris CBD rents reaching USD 1,320 per sq m in 2024 and J.P. Morgan leasing the iconic Marche Saint-Honore. However, the flight to quality that sustains prime rents simultaneously depresses secondary markets and accelerates facilities rationalisation at secondary locations — where the workers most dependent on stable property sector employment are concentrated. AI's role in compressing junior CRE research and analysis pipelines threatens the developmental pathway that sustains the next generation of senior advisors, a structural issue the sector has not yet addressed.</p>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>France's CRE services sector is experiencing AI disruption concentrated at the junior and process-intensive levels. The sector's characteristic feature — that the most valuable work is relationship-driven and experiential, while the most displaceable work is analytical and administrative — means that AI is compressing the traditional career development pipeline. Senior professionals who built their expertise through years of manual research and analysis face a future where the pathway they used is being closed for the next generation. The February 2025 CRE sector sell-off (CBRE down 12%, Cushman down 14%) reflects market anxiety about this disruption. For workers in facilities management, property administration, and junior research roles, the transformation is real and current, not theoretical. French labour law's consultation requirements provide procedural protection; substantive career security remains elusive.</p>
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL SERVICES -->
+  <div class="tab-pane" id="professional">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Professional Services</div>
+        <div class="sector-meta">Legal, accounting, consulting, HR, advisory | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 62 / 100</div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Sector Context</h4>
+        <p>France's professional services sector is large and Paris-dominated. Legal services employ approximately 70,000 lawyers (avocats) and a substantial support workforce. The consulting sector — McKinsey, BCG, Capgemini, Accenture France, and domestic firms — employs approximately 300,000. Accounting and audit (Cabinet Deloitte, EY France, PwC France, KPMG France) employ another 150,000+ across France. The HEC Paris analysis (Bergeaud, 2024) — commissioned as part of the March 2024 report to President Macron — found that 10–20% of French workers' tasks will be affected by automation, with a high prevalence among managers and professional services workers.</p>
+      </div>
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior lawyers — document review, legal research</li>
+          <li>Audit associates — data sampling, routine testing</li>
+          <li>Management consulting analysts — slide production, data analysis</li>
+          <li>HR administrators and generalists</li>
+          <li>Tax return preparers and basic compliance roles</li>
+          <li>Paralegal and legal secretary roles</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI governance and EU AI Act compliance consultants</li>
+          <li>Algorithmic audit and explainability specialists</li>
+          <li>ESG data and sustainability advisory roles</li>
+          <li>Legal AI product and LegalTech developers</li>
+          <li>Human-centred AI change management advisors</li>
+          <li>Workforce transition and reskilling consultants</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>Paris as AI Ethics Hub</h4>
+        <p>France's February 2025 AI Action Summit — hosted in Paris and attended by global leaders — endorsed the "Statement on Inclusive and Sustainable Artificial Intelligence for People and the Planet." This positions Paris as a centre for AI ethics and governance, creating genuine professional services demand in regulatory advisory, AI Act compliance consulting, and CNIL engagement. However, this emerging market will employ thousands, not hundreds of thousands, and is not a substitute for addressing broader displacement in the profession's junior tiers.</p>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <h4>GenAI Exposure by Professional Services Sub-Role — France (OECD/HEC 2024, Indicative)</h4>
+      <canvas id="profChart"></canvas>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>France's professional services sector faces a structural challenge that mirrors its OECD peers: AI is most disruptive to the entry-level and junior-intermediate roles that have historically served as the pipeline through which workers develop the expertise to become senior advisors. The Bergeaud (2024) analysis found automation exposure disproportionately concentrated among managers and professionals — the exact cohort that structures the sector's workforce. French law firms and consulting firms are reducing junior intake and restructuring roles, without a coherent framework for where the careers of those displaced are expected to go. The France 2030 strategy funds AI development and infrastructure; the human capital transition question is left to market forces and an underpowered vocational training system.</p>
+    </div>
+  </div>
+
+  <!-- MANUFACTURING -->
+  <div class="tab-pane" id="manufacturing">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Manufacturing</div>
+        <div class="sector-meta">Automotive, aerospace, pharmaceuticals, food processing | Snapshot Analysis</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="momentum-pill">Momentum: 58 / 100</div>
+        <div class="snapshot-pill">Snapshot</div>
+      </div>
+    </div>
+
+    <div class="info-card" style="margin-bottom:16px;">
+      <h4>Snapshot Assessment</h4>
+      <p>France's manufacturing sector employs approximately 3.3 million workers, representing about 10.5% of the workforce (EURES / INSEE estimates). Key industries include automotive (Renault, Stellantis), aerospace (Airbus, Safran, Dassault), pharmaceuticals (Sanofi), and agri-food processing. INSEE data (2024–25) shows industry employment — which includes manufacturing — declining in the near term, with INSEE forecasting continued falls in H1 2025 in industry and construction. AI and robotics adoption in French manufacturing lags Germany and is geographically uneven: Grand Est and Hauts-de-France record the highest automation risk (OECD 2024). Stellantis and Renault have both announced significant AI-driven production changes, with workforce implications that are restructuring-related rather than primarily technology-driven — making causal attribution difficult. Primary disaggregated data on AI-specific manufacturing displacement in France is not available in sources consulted; this is treated as a snapshot with OECD regional data used as the primary benchmark. Detailed manufacturing data for France should be sought from INSEE manufacturing surveys and DARES sectoral employment reports for precision investment-grade analysis.</p>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>France's manufacturing workers face the double pressure of AI-enabled production automation and the accelerating shift to electric vehicles, which requires different skills and different supply chains. The human cost is concentrated in the post-industrial regions — Grand Est (former steel and textiles), Hauts-de-France (automotive), and parts of Normandy (automotive, chemicals) — where manufacturing is the primary employer and alternative employment pathways are limited. The EU AI Act's high-risk classification for AI in employment contexts applies to AI systems screening, sorting, or evaluating manufacturing workers, providing a degree of regulatory protection that is absent in non-EU counterparts. However, the Act does not prevent automation of manufacturing roles per se, only requiring transparency and human oversight for AI-based worker assessment systems.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>France's Code du Travail requires CSE consultation before technological changes that significantly affect working conditions, providing a formal procedural right before AI-driven manufacturing changes. The EU AI Act's high-risk provisions (Annex III) apply to AI systems used in recruitment, promotion, and monitoring of workers in manufacturing, requiring transparency and human oversight by August 2026. France's national retraining infrastructure (France Travail, CPF personal training accounts) is theoretically available to displaced manufacturing workers, but take-up among lower-skilled workers and those from peripheral regions remains low. The automotive sector's MEDEF-negotiated retraining frameworks are sector-specific and do not cover cross-sector transition needs.</p>
+    </div>
+  </div>
+
+  <!-- FINANCIAL SERVICES -->
+  <div class="tab-pane" id="financial">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Financial Services</div>
+        <div class="sector-meta">Banking, insurance, asset management, fintech | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 65 / 100</div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Sector Workforce</h4>
+        <p>France's financial services sector employs approximately 1.3–1.5 million workers (Eurostat/INSEE; estimate). Major employers include BNP Paribas, Societe Generale, Credit Agricole, AXA (world's largest insurer by revenue), and Natixis. Paris is one of Europe's leading financial centres, ranking second in the EU after London's partial departure created post-Brexit realignment. The Autorite de Controle Prudentiel et de Resolution (ACPR) announced in July 2024 that it is developing an audit methodology for AI systems used by banks and insurers — a significant regulatory development.</p>
+      </div>
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Branch banking tellers and advisors (routine queries)</li>
+          <li>Back-office payment processing clerks</li>
+          <li>Insurance claims handlers (standard claims)</li>
+          <li>Compliance document review associates</li>
+          <li>Credit assessment and scoring analysts (rule-based)</li>
+          <li>Customer service centre operatives</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI model risk and validation officers</li>
+          <li>Financial AI ethics and explainability auditors</li>
+          <li>Digital banking product managers</li>
+          <li>RegTech and SupTech specialists</li>
+          <li>Algorithmic fraud detection supervisors</li>
+          <li>ESG data analytics roles</li>
+          <li>Client-facing AI-augmented wealth advisors</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>ACPR Regulatory Development</h4>
+        <p>The ACPR's July 2024 announcement of an AI audit methodology is one of France's most substantive sector-specific AI governance measures. Unlike the EU AI Act (which covers deployer obligations broadly), the ACPR methodology is specifically directed at financial institution AI systems and reflects France's tradition of strong prudential oversight. However, the audit methodology focuses on systemic and consumer risk — not worker welfare. The question of how AI deployment affects the financial sector's approximately 300,000 back-office and operational workers is not addressed by prudential regulation.</p>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <h4>French Financial Services — AI-Related Employment Impact Indicators (Indicative Estimates)</h4>
+      <canvas id="finChart"></canvas>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>France's financial services sector is among the most advanced in deploying AI tools for credit scoring, fraud detection, customer service automation, and compliance monitoring. The human cost is being borne primarily by the sector's large back-office workforce — claims handlers, payment processors, compliance associates — who are experiencing role compression and, in some cases, direct displacement. France's financial sector unions (notably CFDT and FO in banking) have been more active than most in seeking AI deployment consultation rights, but they face the same structural limitation as all European labour bodies: the right to be informed does not translate to the power to shape the transition. The ACPR's focus on systemic and consumer risk, while valuable, leaves the workforce dimension of financial AI deployment without a dedicated regulatory mechanism. The EU AI Act's high-risk classification for AI in employment and credit-scoring contexts is the primary worker-relevant protection, effective from 2026.</p>
+    </div>
+  </div>
+
+  <!-- EMPLOYMENT TABLE -->
+  <div class="table-section">
+    <h2 class="section-heading">Employment Overview by Sector — France</h2>
+    <div style="overflow-x:auto;">
+      <table class="emp-table">
+        <thead>
+          <tr>
+            <th>Sector</th>
+            <th>Est. Employment (2024–25)</th>
+            <th>Primary Source</th>
+            <th>Automation Exposure</th>
+            <th>Momentum</th>
+            <th>Coverage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Data Centres</td>
+            <td>~30,000–50,000 (est.)</td>
+            <td>Market intelligence; no INSEE disaggregation available</td>
+            <td class="risk-low">Low–Medium</td>
+            <td>70</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>Logistics &amp; Warehousing</td>
+            <td>~2.7 million</td>
+            <td>EURES/DARES; 9.5% of workforce estimate</td>
+            <td class="risk-high">High</td>
+            <td>59</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>Office Traditional</td>
+            <td>~6–7 million (est.)</td>
+            <td>INSEE clerical/admin categories (incl. public sector)</td>
+            <td class="risk-med">Medium–High</td>
+            <td>57</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>Office Tech &amp; Creative</td>
+            <td>~1.5–2 million (est.)</td>
+            <td>INSEE ICT/creative; CBRE global AI workforce estimate (50k+ AI-specific)</td>
+            <td class="risk-med">Medium</td>
+            <td>66</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>Retail</td>
+            <td>~2–2.5 million (direct)</td>
+            <td>INSEE; DARES sectoral estimates</td>
+            <td class="risk-high">High (entry-level)</td>
+            <td>56</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>CRE Services</td>
+            <td>~200,000–300,000 (est.)</td>
+            <td>FNAIM/market intelligence; no precise INSEE sub-sector</td>
+            <td class="risk-med">Medium</td>
+            <td>60</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>Professional Services</td>
+            <td>~500,000–700,000 (est.)</td>
+            <td>INSEE professional/scientific; OECD sectoral mapping</td>
+            <td class="risk-med">Medium–High</td>
+            <td>62</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>Manufacturing</td>
+            <td>~3.3 million</td>
+            <td>EURES/INSEE; 10.5% of workforce</td>
+            <td class="risk-high">High (Grand Est, Hauts-de-France)</td>
+            <td>58</td>
+            <td>Snapshot</td>
+          </tr>
+          <tr>
+            <td>Financial Services</td>
+            <td>~1.3–1.5 million (est.)</td>
+            <td>Eurostat/INSEE; estimate</td>
+            <td class="risk-high">High (back-office)</td>
+            <td>65</td>
+            <td>Full</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- POLICY SECTION -->
+  <div class="policy-section">
+    <h2 class="section-heading">Policy Gaps and Human-Centred Recommendations</h2>
+    <div class="policy-grid">
+      <div class="policy-card">
+        <h4>Critical Policy Gaps</h4>
+        <ul>
+          <li>CSE consultation rights provide information, not substantive influence over AI deployment pace or design</li>
+          <li>No compensation mechanism exists for creative workers whose works are used to train AI models</li>
+          <li>France Travail retraining provisions are not calibrated to the pace or scale of AI-driven displacement</li>
+          <li>The EUR 109bn Macron AI investment package has no identified worker transition component</li>
+          <li>ACPR AI audit methodology focuses on systemic/consumer risk; worker welfare is outside its remit</li>
+          <li>Regional disparities in automation exposure (Grand Est, Hauts-de-France at highest risk) lack targeted policy response</li>
+          <li>EU AI Act high-risk employment provisions apply from 2026; enforcement infrastructure is not yet established</li>
+          <li>The CPF (Compte Personnel de Formation) personal training account is under-resourced for AI-transition retraining needs</li>
+        </ul>
+      </div>
+      <div class="policy-card">
+        <h4>Recommended Priority Actions</h4>
+        <ul>
+          <li>Strengthen CSE consultation rights to include meaningful co-determination of AI deployment timelines in companies deploying high-risk AI systems</li>
+          <li>Legislate a fair-use licensing framework for creative works used in AI training, with mandatory remuneration through collective management organisations</li>
+          <li>Create a sectoral AI transition fund financed by a levy on productivity gains from AI deployment, channelled through the France Travail system</li>
+          <li>Establish AI-specific CPF credits, available proactively to workers in high-exposure sectors before displacement occurs</li>
+          <li>Mandate regional just-transition plans for Grand Est and Hauts-de-France, where automation and AI exposure is concentrated</li>
+          <li>Expand the ACPR AI audit mandate to include workforce impact reporting requirements for financial institutions deploying high-risk AI</li>
+          <li>Establish a permanent AI and Labour commission with trade union, employer, and civil society representation, reporting to the Prime Minister</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOURCE NOTE -->
+  <div class="source-note">
+    <h4>Source Note and Data Methodology</h4>
+    <p>Employment figures are drawn primarily from INSEE (Institut national de la statistique et des etudes economiques) employment estimates and the DARES (Direction de l'animation de la recherche, des etudes et des statistiques) sectoral data. EURES France labour market information provides sector-level workforce distribution data. AI exposure data is from OECD (2024), "Job Creation and Local Economic Development: The Geography of Generative AI," which provides France-specific regional estimates of AI exposure and automation risk. AI governance and regulatory context draws on Chambers and Partners AI Practice Guide France (2025), Bird &amp; Bird AI Regulatory Horizon Tracker France (2025), HSF Kramer AI Tracker France (2025), CNIL publications (2024–25), and White &amp; Case AI Watch global tracker. Office market data from Mordor Intelligence (2025) and market reporting referenced in Paris-Immobilier-Neuf analysis. CRE sector AI adoption from JLL Global Future of Work Survey 2024 and CBRE Global Tech Talent Guidebook 2025. Data centre investment data references the February 2025 AI Action Summit announcements and associated market reporting. HEC Paris / Bergeaud (2024) analysis of generative AI exposure in the French economy draws on INSEE PCS (socio-professional category) classifications. Employment figures marked "(est.)" are author estimates derived from proportional mapping of INSEE sector categories, OECD employment composition data, and EURES sectoral labour market information; they should be treated as indicative rather than authoritative. All momentum scores are consistent with the APAC regional framework adjusted for European regulatory context; European scores are generally 2–5 points lower than North America equivalents due to greater regulatory friction. All figures reflect the most recent available data at the time of publication (Q1 2026). This analysis is produced for research and advisory purposes; readers requiring precise regulatory or investment-grade data should consult primary sources directly.</p>
+  </div>
+
+</main>
+
+<footer class="page-footer">
+  <strong>Human Impact Index</strong> | Authored by Andrew Phipps, PhD Candidate in Philosophy (AI Ethics), University of Sussex &amp; Former Global Leader, Cushman &amp; Wakefield | Europe Edition Q1 2026
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const cGreen = '#81c784';
+const cBlue = '#64b5f6';
+const cAmber = '#ffb74d';
+const cRed = '#ef9a9a';
+const cGrid = 'rgba(255,255,255,0.07)';
+const cText = '#8899bb';
+
+Chart.defaults.color = cText;
+Chart.defaults.borderColor = cGrid;
+
+// DATA CENTRES
+new Chart(document.getElementById('dcChart'), {
+  type: 'bar',
+  data: {
+    labels: ['AWS\n(announced)', 'Microsoft\n(announced)', 'Oracle\n(announced)', 'Google\n(announced)', 'Other\nhyperscalers\n(est.)'],
+    datasets: [{
+      label: 'Investment (USD Billion)',
+      data: [5.0, 4.0, 3.2, 2.5, 3.0],
+      backgroundColor: 'rgba(129,199,132,0.45)',
+      borderColor: cGreen,
+      borderWidth: 1,
+      borderRadius: 4
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'USD Billion (Indicative)' } } } }
+});
+
+// LOGISTICS - Regional automation exposure
+new Chart(document.getElementById('logChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Grand Est', 'Hauts-de-France', 'Normandie', 'Pays de la Loire', 'Auvergne-Rhone-Alpes', 'Ile-de-France'],
+    datasets: [{
+      label: 'Share at High Automation Risk (%)',
+      data: [8.0, 7.2, 6.8, 5.5, 5.0, 1.7],
+      backgroundColor: [cRed, cRed, cAmber, cAmber, cAmber, cGreen].map(c => c + '88'),
+      borderColor: [cRed, cRed, cAmber, cAmber, cAmber, cGreen],
+      borderWidth: 1,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { title: { display: true, text: '% Workers at High Automation Risk' } } }
+  }
+});
+
+// VC CHART
+new Chart(document.getElementById('vcChart'), {
+  type: 'bar',
+  data: {
+    labels: ['San Francisco\nBay Area', 'London', 'New York', 'Beijing', 'Paris'],
+    datasets: [{
+      label: 'AI VC Funding 2024 (USD Bn)',
+      data: [38, 12, 11, 9, 7],
+      backgroundColor: ['rgba(100,181,246,0.6)','rgba(100,181,246,0.55)','rgba(100,181,246,0.5)','rgba(100,181,246,0.45)','rgba(129,199,132,0.7)'],
+      borderColor: [cBlue, cBlue, cBlue, cBlue, cGreen],
+      borderWidth: 1,
+      borderRadius: 4
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'USD Billion' } } } }
+});
+
+// CRE CHART
+new Chart(document.getElementById('creChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Paris CBD take-up\nH1 2024 (000 sq m)', 'Paris CBD take-up\nH1 2025 (000 sq m)', 'Companies planning\nAI workplace tools\nwithin 5yrs (%)'],
+    datasets: [{
+      label: 'Value',
+      data: [874, 768, 90],
+      backgroundColor: [cBlue + '88', cAmber + '88', cGreen + '88'],
+      borderColor: [cBlue, cAmber, cGreen],
+      borderWidth: 1,
+      borderRadius: 4
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+// PROFESSIONAL SERVICES
+new Chart(document.getElementById('profChart'), {
+  type: 'radar',
+  data: {
+    labels: ['Legal Research', 'Accounting', 'Management Consulting', 'HR Administration', 'Tax Preparation', 'Strategic Advisory', 'AI Compliance'],
+    datasets: [
+      {
+        label: 'Automation Exposure (0–100)',
+        data: [72, 70, 58, 65, 75, 20, 5],
+        backgroundColor: 'rgba(129,199,132,0.12)',
+        borderColor: cGreen,
+        pointBackgroundColor: cGreen
+      },
+      {
+        label: 'Emerging Demand (0–100)',
+        data: [20, 25, 45, 30, 20, 70, 90],
+        backgroundColor: 'rgba(100,181,246,0.1)',
+        borderColor: cBlue,
+        pointBackgroundColor: cBlue
+      }
+    ]
+  },
+  options: { responsive: true, scales: { r: { min: 0, max: 100, ticks: { stepSize: 25 } } } }
+});
+
+// FINANCIAL
+new Chart(document.getElementById('finChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Back-office\nautomation exposure', 'Branch banking\nautomation exposure', 'Claims processing\nautomation exposure', 'AI compliance\nand audit roles\n(emerging demand)', 'Digital banking\nproduct roles\n(emerging demand)'],
+    datasets: [{
+      label: 'Score (0–100, indicative)',
+      data: [78, 65, 70, 55, 60],
+      backgroundColor: [cRed, cRed, cRed, cGreen, cGreen].map(c => c + '88'),
+      borderColor: [cRed, cRed, cRed, cGreen, cGreen],
+      borderWidth: 1,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { max: 100, title: { display: true, text: 'Score (indicative)' } } }
+  }
+});
+
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

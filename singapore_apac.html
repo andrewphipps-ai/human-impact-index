@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Singapore | Human Impact Index</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0e1a; color: #e0e6f0; font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; }
+  a { color: #64b5f6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Header */
+  .site-header { background: #0d1226; border-bottom: 1px solid #1e2a4a; padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-size: 1.1rem; font-weight: 700; color: #64b5f6; letter-spacing: 0.04em; }
+  .back-link { font-size: 0.85rem; color: #8899bb; }
+  .back-link:hover { color: #64b5f6; }
+
+  /* Hero */
+  .hero { background: linear-gradient(135deg, #0d1226 0%, #111a35 60%, #0f1f30 100%); padding: 48px 32px 36px; border-bottom: 1px solid #1e2a4a; }
+  .hero-inner { max-width: 1100px; margin: 0 auto; }
+  .region-badge { display: inline-block; background: #ce93d820; border: 1px solid #ce93d840; color: #ce93d8; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
+  .hero h1 { font-size: 2.6rem; font-weight: 800; color: #e0e6f0; margin-bottom: 6px; }
+  .hero .subtitle { font-size: 1.05rem; color: #8899bb; margin-bottom: 28px; }
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card { background: #0a0e1a; border: 1px solid #1e2a4a; border-radius: 8px; padding: 16px 18px; }
+  .stat-card .label { font-size: 0.72rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .stat-card .value { font-size: 1.55rem; font-weight: 700; color: #64b5f6; }
+  .stat-card .sub { font-size: 0.75rem; color: #8899bb; margin-top: 2px; }
+
+  /* Momentum bar */
+  .momentum-section { background: #0a0e1a; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px 22px; }
+  .momentum-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .momentum-label { font-size: 0.8rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; }
+  .momentum-score { font-size: 1.6rem; font-weight: 700; color: #64b5f6; }
+  .momentum-bar-bg { background: #1e2a4a; border-radius: 4px; height: 10px; width: 100%; }
+  .momentum-bar-fill { background: linear-gradient(90deg, #64b5f6, #ce93d8); border-radius: 4px; height: 10px; }
+  .momentum-note { font-size: 0.75rem; color: #8899bb; margin-top: 8px; }
+
+  /* Main content */
+  .main { max-width: 1100px; margin: 0 auto; padding: 36px 32px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 0; border-bottom: 1px solid #1e2a4a; }
+  .tab-btn { background: none; border: none; color: #8899bb; padding: 10px 16px; font-size: 0.82rem; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; white-space: nowrap; }
+  .tab-btn:hover { color: #e0e6f0; }
+  .tab-btn.active { color: #64b5f6; border-bottom-color: #64b5f6; }
+  .tab-content { display: none; padding: 28px 0 0; }
+  .tab-content.active { display: block; }
+
+  /* Sector layout */
+  .sector-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .sector-title { font-size: 1.45rem; font-weight: 700; color: #e0e6f0; }
+  .sector-momentum { text-align: right; }
+  .sector-momentum .score { font-size: 1.8rem; font-weight: 700; color: #ce93d8; }
+  .sector-momentum .label { font-size: 0.72rem; color: #8899bb; text-transform: uppercase; }
+  .snapshot-badge { display: inline-block; background: #ce93d820; border: 1px solid #ce93d840; color: #ce93d8; font-size: 0.7rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-left: 10px; vertical-align: middle; }
+  .sector-desc { font-size: 0.95rem; color: #c0cfe0; margin-bottom: 22px; line-height: 1.7; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  @media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
+
+  .info-box { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 18px 20px; }
+  .info-box h4 { font-size: 0.78rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+  .info-box ul { list-style: none; }
+  .info-box ul li { font-size: 0.88rem; color: #c0cfe0; padding: 4px 0; border-bottom: 1px solid #1e2a4a20; }
+  .info-box ul li:before { content: "›"; color: #64b5f6; margin-right: 8px; }
+  .info-box ul li:last-child { border-bottom: none; }
+
+  .impact-box { background: #0f1f2e; border: 1px solid #ce93d830; border-left: 3px solid #ce93d8; border-radius: 8px; padding: 18px 20px; margin-bottom: 20px; }
+  .impact-box h4 { font-size: 0.78rem; color: #ce93d8; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .impact-box p { font-size: 0.9rem; color: #c0cfe0; line-height: 1.65; }
+
+  .reg-box { background: #0d1226; border: 1px solid #64b5f630; border-left: 3px solid #64b5f6; border-radius: 8px; padding: 18px 20px; margin-bottom: 20px; }
+  .reg-box h4 { font-size: 0.78rem; color: #64b5f6; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .reg-box p { font-size: 0.9rem; color: #c0cfe0; line-height: 1.65; }
+
+  .chart-container { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+  .chart-container h4 { font-size: 0.82rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
+
+  /* Employment table */
+  .emp-table-section { margin-top: 40px; }
+  .emp-table-section h2 { font-size: 1.2rem; font-weight: 700; color: #e0e6f0; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #1e2a4a; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th { background: #0d1226; color: #8899bb; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 14px; text-align: left; border-bottom: 1px solid #1e2a4a; }
+  td { padding: 10px 14px; border-bottom: 1px solid #1e2a4a10; color: #c0cfe0; }
+  tr:hover td { background: #0d122620; }
+  .score-cell { font-weight: 700; color: #ce93d8; }
+  .est-note { font-size: 0.75rem; color: #8899bb; font-style: italic; }
+
+  /* Policy */
+  .policy-section { margin-top: 40px; }
+  .policy-section h2 { font-size: 1.2rem; font-weight: 700; color: #e0e6f0; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #1e2a4a; }
+  .policy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .policy-card { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 18px 20px; }
+  .policy-card h4 { font-size: 0.88rem; font-weight: 700; color: #e0e6f0; margin-bottom: 8px; }
+  .policy-card p { font-size: 0.85rem; color: #8899bb; line-height: 1.6; }
+  .policy-card.gap { border-color: #ce93d830; }
+  .policy-card.gap h4 { color: #ce93d8; }
+
+  /* Source note */
+  .source-note { margin-top: 40px; background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px 22px; font-size: 0.78rem; color: #8899bb; line-height: 1.7; }
+  .source-note strong { color: #c0cfe0; }
+
+  /* Footer */
+  footer { background: #0d1226; border-top: 1px solid #1e2a4a; padding: 22px 32px; text-align: center; font-size: 0.78rem; color: #8899bb; }
+  footer span { color: #64b5f6; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">Human Impact Index</div>
+  <a href="apac_overview.html" class="back-link">← Back to APAC Overview</a>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="region-badge">APAC Region</div>
+    <h1>Singapore</h1>
+    <p class="subtitle">AI Workforce Transformation Analysis — Human-Centred Assessment</p>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="label">Total Labour Force</div>
+        <div class="value">3.72M</div>
+        <div class="sub">World Bank / MOM, 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Employment Rate</div>
+        <div class="value">68.2%</div>
+        <div class="sub">Resident participation, 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Unemployment Rate</div>
+        <div class="value">2.8%</div>
+        <div class="sub">Resident rate, MOM 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">AI Tortoise Index</div>
+        <div class="value">#3</div>
+        <div class="sub">Global ranking, 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Tech Workforce</div>
+        <div class="value">214,000</div>
+        <div class="sub">IMDA, 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">PMET Share</div>
+        <div class="value">63.7%</div>
+        <div class="sub">Of resident employed, 2024</div>
+      </div>
+    </div>
+
+    <div class="momentum-section">
+      <div class="momentum-header">
+        <div>
+          <div class="momentum-label">Overall AI Momentum Score</div>
+          <div class="momentum-note">Reflects pace of AI adoption and human impact intensity; higher scores indicate faster transition requiring more urgent worker support.</div>
+        </div>
+        <div class="momentum-score">71 / 100</div>
+      </div>
+      <div class="momentum-bar-bg"><div class="momentum-bar-fill" style="width:71%"></div></div>
+    </div>
+  </div>
+</section>
+
+<main class="main">
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('data-centres')">Data Centres</button>
+    <button class="tab-btn" onclick="showTab('logistics')">Logistics</button>
+    <button class="tab-btn" onclick="showTab('office-trad')">Office Traditional</button>
+    <button class="tab-btn" onclick="showTab('office-tech')">Office Tech & Creative</button>
+    <button class="tab-btn" onclick="showTab('retail')">Retail</button>
+    <button class="tab-btn" onclick="showTab('cre-services')">CRE Services</button>
+    <button class="tab-btn" onclick="showTab('professional')">Professional Services</button>
+    <button class="tab-btn" onclick="showTab('financial')">Financial Services</button>
+  </div>
+
+  <!-- DATA CENTRES -->
+  <div id="data-centres" class="tab-content active">
+    <div class="sector-header">
+      <div class="sector-title">Data Centres</div>
+      <div class="sector-momentum"><div class="score">76</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Singapore is Asia-Pacific's premier data centre hub, ranked third globally by Tortoise AI Index. The government imposed a moratorium on new construction in 2019 due to energy and land constraints, lifting it in phases from 2022 under a demanding green framework. Existing capacity exceeds 569 MW, with data centres consuming over 7% of national electricity. The city-state hosts hyperscaler facilities for Google, Microsoft, Equinix, Digital Realty, and others. Constrained new supply against surging AI-driven demand has made Singapore one of the tightest data centre markets globally, with vacancy rates reported below 2%. A new 200 MW Call for Application (DC-CFA2) launched in 2025 imposes a 1.25 PUE ceiling and 50% green energy mandate — among the most stringent standards in the region.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Manual infrastructure monitoring technicians</li>
+          <li>Tier 1 helpdesk and remote hands roles</li>
+          <li>Physical security and access control staff</li>
+          <li>Routine facilities maintenance operatives</li>
+          <li>Contract operations staff displaced by automation</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI infrastructure and GPU cluster engineers</li>
+          <li>Green data centre sustainability specialists</li>
+          <li>Liquid and immersive cooling technology experts</li>
+          <li>AI-enhanced energy optimisation operators</li>
+          <li>Data centre security and compliance analysts</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Singapore's data centre sector is technically advanced but employs a relatively modest direct workforce given the degree of automation. Displaced contract technicians, who are often migrant workers, face the greatest vulnerability — they are frequently excluded from the SkillsFuture reskilling ecosystem that serves resident workers. The supply moratorium and green energy requirements have redirected construction activity, creating temporary work but few permanent roles. The workforce that operates these facilities is increasingly lean, and new AI workload requirements demand highly specialised skills that most legacy operators do not hold. There is a significant gap between the economic value Singapore extracts from data centre activity and the human capital investment directed at transition support.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>Singapore's Green Data Centre Roadmap (May 2024) sets binding PUE and Water Usage Effectiveness targets. The Economic Development Board offers investment allowances linked to sustainability compliance. Crucially, no regulatory framework specifically addresses workforce transition or requires operators to report on staff displacement associated with automation upgrades. Singapore's AI Governance Framework and Model AI Governance Framework focus on responsible deployment rather than labour protections.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>Singapore Data Centre: Capacity vs AI-Driven Demand Pressure</h4>
+      <canvas id="chartDC" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- LOGISTICS -->
+  <div id="logistics" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Logistics &amp; Warehousing</div>
+      <div class="sector-momentum"><div class="score">72</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Singapore's logistics sector is central to its identity as a global trade hub, anchored by the Port of Singapore — the world's second-busiest by container throughput — and Changi Airport. The National AI Missions designated connectivity and logistics as one of four priority sectors for accelerated AI adoption. Autonomous vehicles, AI-powered route optimisation, robotic picking systems, and smart port technology are all active areas of deployment. Warehouse robotics have grown significantly, with robot density across Singapore increasing at an average of 27% annually since 2015 (IFR estimate). However, migrant workers in warehousing and port operations are largely excluded from reskilling frameworks, creating a two-tier transition experience.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Manual warehouse pickers and packers</li>
+          <li>Port and cargo handling operatives</li>
+          <li>Freight forwarding clerks and data entry staff</li>
+          <li>Truck and delivery drivers (medium term)</li>
+          <li>Low-skill inventory management workers</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Autonomous vehicle fleet supervisors</li>
+          <li>Smart port systems technicians</li>
+          <li>AI supply chain analysts</li>
+          <li>Robotics maintenance engineers</li>
+          <li>Digital freight platform managers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>The logistics sector employs a large share of migrant workers on Work Permits, who are systematically excluded from SkillsFuture and other government-funded reskilling programmes. These workers face the highest automation exposure with the fewest transition pathways. OECD and IMF analysis confirms that low-skill logistics roles have high AI exposure and low complementarity, meaning job substitution rather than augmentation is the dominant outcome. Singapore's progressive labour policy narrative does not extend meaningfully to this segment of the workforce. The human cost of productivity gains in this sector is disproportionately borne by some of the most economically vulnerable workers in the country.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>The Progressive Wage Model (PWM) has been extended to several logistics occupations, mandating minimum wage floors and training pathways for resident workers. However, PWM coverage does not extend to migrant Work Permit holders in the same sectors. The National AI Mission for Connectivity and Logistics focuses on deployment efficiency rather than worker transition. Singapore's Budget 2026 expanded AI upskilling support, but programme design continues to target PMETs and resident workers rather than the manual workforce most exposed to substitution.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TRADITIONAL -->
+  <div id="office-trad" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Office — Traditional Sectors</div>
+      <div class="sector-momentum"><div class="score">65</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Singapore's CBD Grade A office market posted 2.4% year-on-year rental growth in 2025, driven by flight-to-quality and scarcity of premium space (Cushman & Wakefield). Overall office occupancy remains firm, but the underlying workforce dynamic is shifting. AI adoption is compressing clerical and administrative functions across traditional office sectors including government, utilities, and business support. The IMF's 2024 analysis of Singapore's labour force found that clerical support workers have high AI exposure and very low complementarity, meaning these roles face substitution rather than augmentation. DBS Bank's announcement that it expects to cut approximately 4,000 contract roles over three years is indicative of the pattern across the wider office economy.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Administrative and clerical support staff</li>
+          <li>Data entry and document processing operators</li>
+          <li>Call centre and front-line customer service agents</li>
+          <li>Contract and gig workers in admin functions</li>
+          <li>Middle management in routine decision roles</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI governance and compliance officers</li>
+          <li>Human-in-the-loop process supervisors</li>
+          <li>Workplace experience and hybrid environment managers</li>
+          <li>Digital transformation project managers</li>
+          <li>Data privacy and records management specialists</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Younger workers and women are disproportionately represented in the clerical and administrative roles most at risk. The IMF's Singapore analysis found that an estimated half of workers under 30 are in high AI-exposure occupations with low complementarity. Contract workers — the first to face displacement as banks and large employers restructure — typically lack access to employer-funded reskilling support. Singapore's SkillsFuture system provides a structural safety net, but programme uptake is voluntary, capacity is finite, and coverage is uneven. The office economy's productivity gains are accruing to employers; there is no mechanism compelling businesses to reinvest those gains in transition support for displaced workers.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TECH -->
+  <div id="office-tech" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Office — Tech &amp; Creative</div>
+      <div class="sector-momentum"><div class="score">74</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Singapore has positioned itself as Southeast Asia's technology hub, with hyperscaler campuses from Google, Meta, and AWS, and a dense concentration of fintech, biotech, and creative technology companies. The tech workforce grew from 208,300 in 2023 to 214,000 in 2024 (IMDA). The government has committed over S$1 billion over five years to AI compute, talent, and industry development. Demand for AI-adjacent skills — cloud, data engineering, machine learning — has risen sharply, with AI-related tech postings increasing from 11% to 14% of all listings between 2019 and 2024. However, entry-level tech roles face compression as AI code-generation tools reduce demand for junior developers.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior software developers (entry-level code generation compressed)</li>
+          <li>ICT associates and lower-tier tech support</li>
+          <li>Routine QA testers and manual code reviewers</li>
+          <li>Basic data analysts displaced by AI dashboards</li>
+          <li>Standard UX/UI designers without AI augmentation skills</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI engineers and LLM application developers</li>
+          <li>AI risk, ethics, and compliance specialists</li>
+          <li>Agentic AI systems architects</li>
+          <li>Cloud infrastructure and MLOps engineers</li>
+          <li>Creative directors with generative AI fluency</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Singapore's tech and creative sector presents a paradox: aggregate employment is growing, yet entry-level roles are under pressure from the same AI tools the sector develops and sells. Young workers who entered tech expecting a pathway to seniority may find the entry rungs have been removed. The 81% of employers who say they prioritise AI talent, combined with the 74% who struggle to find it, creates a bifurcated market in which existing senior professionals gain, while new entrants face structural barriers. Singapore's AISG apprenticeship programmes are a genuine attempt to address this, but scale remains limited relative to the transition challenge.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>AI Skills Demand Growth in Singapore Tech Postings (% of all tech listings)</h4>
+      <canvas id="chartTech" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- RETAIL -->
+  <div id="retail" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Retail</div>
+      <div class="sector-momentum"><div class="score">62</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Singapore's retail sector employs a significant share of younger and part-time workers. The sector is undergoing accelerated transformation through AI-driven inventory management, personalisation engines, self-checkout systems, and chatbot-based customer service. Suburban retail rents grew 0.9% year-on-year in 2025 (Cushman & Wakefield), reflecting sustained physical footfall demand even as online turnover grows. The Progressive Wage Model has been extended to retail, mandating minimum wages and training requirements for resident workers in the sector, providing some structural protection not available in comparable markets.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Cashiers and checkout staff (self-checkout expansion)</li>
+          <li>Inventory and stockroom operatives</li>
+          <li>Call centre and customer service agents</li>
+          <li>Basic visual merchandising roles</li>
+          <li>Administrative and back-office retail functions</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI-assisted personal shoppers and experience staff</li>
+          <li>Omnichannel and e-commerce operations managers</li>
+          <li>Customer analytics and CRM specialists</li>
+          <li>Retail tech implementation coordinators</li>
+          <li>Sustainability and ethical supply chain monitors</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>The Progressive Wage Model provides a meaningful floor for resident retail workers, but it does not neutralise AI-driven displacement — it shapes how displacement is managed after it occurs. Younger workers and part-timers, many of whom depend on retail income while studying, face seasonal income volatility compounded by automation of the routine roles they typically hold. Foreign workers in retail also lack equivalent protections. The fundamental question remains unanswered by current policy: when AI reduces the number of roles rather than merely changing their content, where do displaced workers go?</p>
+    </div>
+  </div>
+
+  <!-- CRE SERVICES -->
+  <div id="cre-services" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Commercial Real Estate Services</div>
+      <div class="sector-momentum"><div class="score">66</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Singapore's commercial real estate services market is served by the global majors — Cushman & Wakefield, JLL, CBRE, and Knight Frank — alongside a sophisticated local broker and property management community. CBD Grade A office rents grew 2.4% year-on-year in 2025, sustaining transaction volumes and advisory fee income. AI is being integrated across property management (AI-driven building systems), valuation (automated comparable analysis), lease management (LLM-based document review), and market research (AI-generated reports). Science Park rents rose 5.7% year-on-year in 2025, reflecting strong tech-occupier demand that itself is reshaping CRE advisory mandates.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Property research and market report analysts</li>
+          <li>Lease administration and documentation staff</li>
+          <li>Junior brokers reliant on data aggregation tasks</li>
+          <li>Facilities management coordinators (AI building systems)</li>
+          <li>Standard valuation and appraisal roles</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Data centre advisory specialists</li>
+          <li>AI-augmented tenant experience consultants</li>
+          <li>Proptech integration and smart building managers</li>
+          <li>ESG and green building advisory roles</li>
+          <li>Cross-border deal advisors for AI-sector occupiers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>CRE services firms in Singapore are sophisticated early adopters of AI tools, with global majors deploying generative AI across research, lease review, and client communication. The displacement pressure in this sector falls most heavily on junior and mid-level staff whose value was previously anchored in data compilation, market report writing, and documentation tasks — all of which are now increasingly automated. Relationship-driven senior advisory roles are more insulated, but this insulation is concentrated among an already-privileged segment of the workforce. Singapore's CRE services sector currently has no sector-specific reskilling commitment, leaving displaced staff to navigate general SkillsFuture frameworks.</p>
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL SERVICES -->
+  <div id="professional" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Professional Services</div>
+      <div class="sector-momentum"><div class="score">69</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Professional services in Singapore — encompassing legal, accounting, consulting, architecture, and engineering — represent a high-value employment segment with a resident PMET concentration above the national average. AI is penetrating the sector rapidly: AI Singapore's collaboration with MAS produced AI tools for risk management and compliance; ISCA launched an AI Fluency Programme for accountants; and major law firms are deploying AI for document review, contract analysis, and due diligence. Professional services median monthly income reached S$6,900 in 2024 (MOM), reflecting strong labour market position, but the composition of work within these roles is changing substantially.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior lawyers handling document review and discovery</li>
+          <li>Audit associates performing routine data reconciliation</li>
+          <li>Management consultants in process analysis</li>
+          <li>Paralegals and legal researchers</li>
+          <li>Architectural draughting and specification writing staff</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI legal strategy and compliance advisors</li>
+          <li>Forensic AI auditors and technology risk specialists</li>
+          <li>AI ethics and responsible governance consultants</li>
+          <li>Interdisciplinary AI project managers</li>
+          <li>Structured finance and AI-augmented M&A advisors</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Professional services workers in Singapore have higher adaptability and financial resources than workers in other at-risk sectors, but the disruption is structural rather than marginal. Junior entry points into law, accounting, and consulting are being compressed by AI at precisely the stage where graduate workers build the foundational skills needed for seniority. If the entry-level work that trains professionals is automated away before workers develop their competency base, a skills pipeline problem emerges that no individual firm can solve alone. Singapore's professional associations are beginning to respond — the ISCA AI Fluency Programme is a concrete step — but the pace of institutional response lags the pace of AI deployment.</p>
+    </div>
+  </div>
+
+  <!-- FINANCIAL SERVICES -->
+  <div id="financial" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Financial Services</div>
+      <div class="sector-momentum"><div class="score">78</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Singapore's financial services sector is one of the most advanced in the world for AI deployment. DBS Bank operates over 800 AI models across 350+ use cases, generating S$750 million in economic value in 2024 and targeting S$1 billion by 2025. OCBC's deployment of OCBC GPT to all 30,000 global employees in 2023 represents one of the fastest enterprise-wide GenAI rollouts globally. MAS has been proactive in AI governance through the FEAT principles (Fairness, Ethics, Accountability, Transparency) and the AI risk management consultation paper released at the 2025 Singapore FinTech Festival. Financial services employed approximately 250,000 workers as of end-2023 (parliamentary answer, MOM, March 2024), with median monthly income of S$8,700 — the highest of any sector in Singapore.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Retail banking tellers and branch operations staff</li>
+          <li>Insurance underwriting and claims processing clerks</li>
+          <li>Compliance and KYC data entry operatives</li>
+          <li>Junior equity analysts performing data compilation</li>
+          <li>Contract and gig workers (estimated 4,000 DBS roles over 3 years)</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI risk and model governance specialists</li>
+          <li>Fintech product managers and AI integration leads</li>
+          <li>Algorithmic trading and quantitative AI analysts</li>
+          <li>Digital wealth and robo-advisory client managers</li>
+          <li>Quantum and advanced AI research roles (OCBC)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Financial services presents the starkest picture of AI's uneven distribution of benefit and burden. The economic value generated by AI deployment — hundreds of millions of dollars annually for the major banks — accrues principally to institutions and shareholders. The workers displaced are disproportionately contract staff, typically excluded from the benefits packages, pension contributions, and retraining support available to permanent employees. DBS's disclosure that approximately 4,000 contract roles will be cut over three years is notable for its transparency, but there is no parallel commitment to the welfare of those workers post-displacement. The sector's high median wage masks a wide internal distribution: the highly paid professionals who benefit from AI augmentation and the low-paid contract workers who bear the cost of AI substitution are both counted in the same average.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context: MAS and AI Governance</h4>
+      <p>MAS has published the FEAT Principles (2018), the Veritas framework (2020-2024), and a 2025 consultation paper on AI risk management for financial institutions. These frameworks represent genuine global leadership in responsible AI governance for the sector. However, they are focused on algorithmic fairness and systemic risk, not on the labour rights of workers displaced by AI adoption. There is no MAS requirement for financial institutions to disclose AI-related workforce impacts, to provide transition support for displaced staff, or to demonstrate that productivity gains from AI are shared with the workforce. This gap between AI governance sophistication and labour protection is Singapore's most significant unresolved policy tension.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>Singapore Financial Services: AI Value Generation vs Workforce Transition Support (Illustrative Index, 2020-2024)</h4>
+      <canvas id="chartFS" height="110"></canvas>
+    </div>
+  </div>
+
+  <!-- EMPLOYMENT TABLE -->
+  <section class="emp-table-section">
+    <h2>Sector Employment Overview — Singapore</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Sector</th>
+          <th>Estimated Employment</th>
+          <th>Source / Notes</th>
+          <th>Coverage</th>
+          <th>Momentum</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Data Centres</td>
+          <td>~8,000–12,000 direct</td>
+          <td class="est-note">Estimate; EDB / industry sources. Highly automated.</td>
+          <td>Full</td>
+          <td class="score-cell">76</td>
+        </tr>
+        <tr>
+          <td>Logistics &amp; Warehousing</td>
+          <td>~200,000–240,000</td>
+          <td class="est-note">Estimate; MOM transport &amp; storage category, 2024</td>
+          <td>Full</td>
+          <td class="score-cell">72</td>
+        </tr>
+        <tr>
+          <td>Office — Traditional</td>
+          <td>~500,000–600,000</td>
+          <td class="est-note">Estimate; admin, public admin, utilities, clerical functions</td>
+          <td>Full</td>
+          <td class="score-cell">65</td>
+        </tr>
+        <tr>
+          <td>Office — Tech &amp; Creative</td>
+          <td>~214,000 tech; ~30,000 creative</td>
+          <td class="est-note">Tech: IMDA 2024; Creative: estimate</td>
+          <td>Full</td>
+          <td class="score-cell">74</td>
+        </tr>
+        <tr>
+          <td>Retail</td>
+          <td>~200,000–220,000</td>
+          <td class="est-note">Estimate; MOM retail trade category, 2024</td>
+          <td>Full</td>
+          <td class="score-cell">62</td>
+        </tr>
+        <tr>
+          <td>CRE Services</td>
+          <td>~30,000–45,000</td>
+          <td class="est-note">Estimate; real estate activities, MOM 2024</td>
+          <td>Full</td>
+          <td class="score-cell">66</td>
+        </tr>
+        <tr>
+          <td>Professional Services</td>
+          <td>~180,000–210,000</td>
+          <td class="est-note">Estimate; professional &amp; business services, MOM</td>
+          <td>Full</td>
+          <td class="score-cell">69</td>
+        </tr>
+        <tr>
+          <td>Financial Services</td>
+          <td>~250,000+</td>
+          <td class="est-note">MOM parliamentary answer, March 2024 (end-2023 figure)</td>
+          <td>Full</td>
+          <td class="score-cell">78</td>
+        </tr>
+        <tr>
+          <td>Manufacturing</td>
+          <td>~370,000–400,000</td>
+          <td class="est-note">MOM 2024; not covered per APAC brief guidance for Singapore</td>
+          <td><em>Not covered</em></td>
+          <td class="score-cell">—</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:0.75rem;color:#8899bb;margin-top:10px;">Sector employment figures are estimates where indicated. Singapore's MOM reports employment by industry classification (SSIC 2020); mapping to the Human Impact Index sector framework requires aggregation and judgement. Figures should be treated as indicative, not precise.</p>
+  </section>
+
+  <!-- POLICY GAPS -->
+  <section class="policy-section">
+    <h2>Policy Gaps &amp; Human-Centred Recommendations</h2>
+    <div class="policy-grid">
+      <div class="policy-card gap">
+        <h4>Migrant Worker Exclusion from Reskilling</h4>
+        <p>SkillsFuture and the Progressive Wage Model primarily serve Singapore citizens and PRs. The large migrant workforce — concentrated in logistics, construction, and services — has no equivalent transition pathway when AI displaces their roles. A dedicated support fund or industry-levy model is needed.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Contract Worker Displacement Disclosure</h4>
+        <p>Firms that cut thousands of contract roles through AI adoption — as DBS has signalled — are not required to disclose workforce impact, provide transition support, or demonstrate compliance with any labour protection standard. Mandatory disclosure and a transition fund obligation should accompany large-scale AI deployment.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Productivity Gain Sharing Mechanism</h4>
+        <p>AI is generating hundreds of millions of dollars annually for major employers. There is no policy instrument compelling businesses to share AI-generated productivity gains with the workers whose roles were displaced. A structured productivity dividend, directed at retraining funds, would address this gap.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Entry-Level Pathway Preservation</h4>
+        <p>AI compression of junior roles in law, finance, tech, and consulting threatens the pipeline of experienced mid-career and senior professionals. Without deliberate policy intervention to preserve or redesign entry-level learning pathways, Singapore faces a structural skills deficit within a decade.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>AI Governance and Labour Rights Integration</h4>
+        <p>MAS, IMDA, and other regulatory bodies have built world-leading AI governance frameworks focused on systemic risk and algorithmic fairness. None yet require firms to account for workforce impact as a governance obligation. The regulatory perimeter should be extended to include AI-driven labour displacement as a regulated risk category.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Gender and Age Equity in Transition</h4>
+        <p>The IMF's Singapore analysis identifies women and workers under 30 as disproportionately vulnerable to AI displacement. Budget 2026 included enhanced SkillsFuture provisions for workers over 40, but the under-30 cohort — counter-intuitively more exposed than assumed — has received less targeted support.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOURCE NOTE -->
+  <div class="source-note">
+    <strong>Data Sources &amp; Notes:</strong> Ministry of Manpower Singapore (MOM) Labour Force in Singapore 2024; MOM Labour Market Reports Q2–Q4 2024; MOM Parliamentary Written Answer on Financial Sector Statistics (March 2024); Infocomm Media Development Authority (IMDA) Singapore Digital Economy Report 2025; AI Singapore (AISG) programme documentation; World Bank Labor Force Data 2024; Tortoise Global AI Index 2024 (Singapore: #3 global); IMF Selected Issues Paper on Singapore AI Exposure (Khan, 2024); Monetary Authority of Singapore (MAS) AI governance frameworks including FEAT Principles and 2025 AI Risk Management Consultation; Cushman &amp; Wakefield Singapore Market Outlook 2026; ManpowerGroup Employment Outlook Survey Singapore Q1 2026; StartupNews.fyi on Singapore Budget 2026 AI Measures (February 2026); IFR World Robotics 2024 (Singapore robot density). Sector employment figures are estimates based on MOM SSIC 2020 industry classifications mapped to the Human Impact Index sector framework; they should be treated as indicative. All estimates are clearly labelled in the employment table. Authored by Andrew Phipps, PhD Candidate in Philosophy (AI Ethics), University of Sussex.
+  </div>
+
+</main>
+
+<footer>
+  <p><span>Human Impact Index</span> | Authored by Andrew Phipps, PhD Candidate in Philosophy (AI Ethics), University of Sussex | Former Global Leader, Cushman &amp; Wakefield</p>
+</footer>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Chart: Data Centres capacity vs demand
+const ctxDC = document.getElementById('chartDC').getContext('2d');
+new Chart(ctxDC, {
+  type: 'bar',
+  data: {
+    labels: ['2019', '2020', '2021', '2022', '2023', '2024', '2025 (est)'],
+    datasets: [
+      {
+        label: 'Operational Capacity (MW)',
+        data: [540, 555, 560, 562, 570, 580, 620],
+        backgroundColor: '#ce93d840',
+        borderColor: '#ce93d8',
+        borderWidth: 1.5
+      },
+      {
+        label: 'AI Demand Pressure Index (relative)',
+        data: [30, 35, 42, 55, 72, 90, 100],
+        type: 'line',
+        borderColor: '#64b5f6',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: 4,
+        tension: 0.3,
+        yAxisID: 'y2'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#c0cfe0', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' }, title: { display: true, text: 'Capacity (MW)', color: '#8899bb' } },
+      y2: { position: 'right', ticks: { color: '#64b5f6' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Demand Index', color: '#64b5f6' } }
+    }
+  }
+});
+
+// Chart: Tech skills demand
+const ctxTech = document.getElementById('chartTech').getContext('2d');
+new Chart(ctxTech, {
+  type: 'line',
+  data: {
+    labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+    datasets: [{
+      label: 'AI-related postings as % of all tech listings',
+      data: [11, 11.5, 12, 12.8, 13.5, 14],
+      borderColor: '#ce93d8',
+      backgroundColor: '#ce93d815',
+      fill: true,
+      borderWidth: 2,
+      pointRadius: 5,
+      tension: 0.4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#c0cfe0', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb', callback: v => v + '%' }, grid: { color: '#1e2a4a' }, min: 9, max: 16 }
+    }
+  }
+});
+
+// Chart: Financial services AI value vs worker support
+const ctxFS = document.getElementById('chartFS').getContext('2d');
+new Chart(ctxFS, {
+  type: 'line',
+  data: {
+    labels: ['2020', '2021', '2022', '2023', '2024'],
+    datasets: [
+      {
+        label: 'AI Economic Value Generation (relative index)',
+        data: [20, 35, 52, 68, 90],
+        borderColor: '#64b5f6',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        tension: 0.4,
+        pointRadius: 4
+      },
+      {
+        label: 'Transition Support Investment (relative index)',
+        data: [18, 20, 22, 25, 28],
+        borderColor: '#ce93d8',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        borderDash: [5, 4],
+        tension: 0.4,
+        pointRadius: 4
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { color: '#c0cfe0', font: { size: 11 } } },
+      tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y } }
+    },
+    scales: {
+      x: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' }, title: { display: true, text: 'Relative Index (2020=20)', color: '#8899bb' } }
+    }
+  }
+});
+</script>
+</body>
+</html>

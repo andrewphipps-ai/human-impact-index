@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Australia | Human Impact Index</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0a0e1a; color: #e0e6f0; line-height: 1.7; }
+
+        .page-header { background: linear-gradient(135deg, #0d1b2a 0%, #1a2a4a 50%, #0d2035 100%); border-bottom: 1px solid rgba(64,180,255,0.2); }
+
+        .header-top { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .back-nav { color: #64b5f6; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+        .back-nav:hover { color: #90caf9; }
+        .region-badge { background: linear-gradient(135deg,#2a1a3a,#3d0d4a); border: 1px solid rgba(200,130,255,0.4); color: #ce93d8; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+        .brand-mark { font-size: 0.85rem; color: #4a6fa5; font-weight: 600; }
+
+        .header-content { padding: 40px 40px 36px; display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
+        .header-text { flex: 1; }
+        .region-label { font-size: 0.8rem; font-weight: 700; color: #ce93d8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .region-label::before { content:''; display:inline-block; width:24px; height:2px; background:#ce93d8; }
+        .page-title { font-size: 2.8rem; font-weight: 800; color: #ffffff; line-height: 1.15; margin-bottom: 14px; }
+        .page-subtitle { font-size: 1.05rem; color: #9fb8d8; max-width: 680px; line-height: 1.7; }
+
+        .header-stats { display: flex; flex-direction: column; gap: 14px; min-width: 280px; }
+        .stat-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(100,181,246,0.15); border-radius: 12px; padding: 16px 20px; text-align: center; }
+        .stat-value { font-size: 1.9rem; font-weight: 800; color: #64b5f6; line-height: 1; }
+        .stat-value.warning { color: #ff9800; }
+        .stat-value.danger  { color: #ef5350; }
+        .stat-value.positive { color: #66bb6a; }
+        .stat-label { font-size: 0.78rem; color: #7a9bbf; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .momentum-bar-section { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 24px 40px; display: flex; align-items: center; gap: 30px; }
+        .momentum-label { font-size: 0.85rem; font-weight: 700; color: #7a9bbf; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .momentum-track { flex: 1; height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; }
+        .momentum-fill  { height: 100%; background: linear-gradient(90deg,#1565c0,#42a5f5,#ff9800); border-radius: 5px; }
+        .momentum-score { font-size: 1.5rem; font-weight: 800; color: #ff9800; white-space: nowrap; }
+        .momentum-descriptor { font-size: 0.82rem; color: #9fb8d8; white-space: nowrap; }
+
+        .content-wrapper { max-width: 1400px; margin: 0 auto; padding: 40px; }
+        .section { margin-bottom: 50px; }
+        .section-title { font-size: 1.4rem; font-weight: 700; color: #ffffff; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid rgba(100,181,246,0.25); display: flex; align-items: center; gap: 10px; }
+        .section-title::before { content:''; display:inline-block; width:4px; height:22px; background:linear-gradient(180deg,#64b5f6,#ce93d8); border-radius:2px; }
+
+        .prose { color: #b8cfe8; font-size: 0.97rem; line-height: 1.85; margin-bottom: 16px; }
+        .prose strong { color: #e0e6f0; font-weight: 600; }
+
+        .sector-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+        .sector-tab { padding: 8px 18px; border-radius: 20px; font-size: 0.83rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: #7a9bbf; transition: all 0.2s; }
+        .sector-tab:hover { border-color: rgba(206,147,216,0.4); color: #e0e6f0; }
+        .sector-tab.active { background: rgba(206,147,216,0.12); border-color: rgba(206,147,216,0.45); color: #ce93d8; }
+
+        .sector-panel { display: none; }
+        .sector-panel.active { display: block; }
+
+        .sector-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 24px; flex-wrap: wrap; }
+        .sector-meta { flex: 1; }
+        .sector-name { font-size: 1.3rem; font-weight: 700; color: #ffffff; margin-bottom: 6px; }
+        .sector-snapshot { font-size: 0.88rem; color: #7a9bbf; }
+
+        .sector-scores { display: flex; gap: 14px; flex-wrap: wrap; }
+        .score-pill { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 18px; text-align: center; min-width: 110px; }
+        .score-pill-value { font-size: 1.5rem; font-weight: 800; }
+        .score-pill-label { font-size: 0.72rem; color: #7a9bbf; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+        .col-blue { color: #64b5f6; }
+        .col-orange { color: #ff9800; }
+        .col-red { color: #ef5350; }
+        .col-green { color: #66bb6a; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
+        .info-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 22px; }
+        .info-card-title { font-size: 0.9rem; font-weight: 700; color: #e0e6f0; margin-bottom: 12px; }
+        .info-card-body { font-size: 0.86rem; color: #7a9bbf; line-height: 1.75; }
+        .info-card-body li { margin-bottom: 6px; padding-left: 4px; }
+
+        .human-impact-box { background: linear-gradient(135deg,rgba(21,101,192,0.12),rgba(13,32,53,0.9)); border: 1px solid rgba(100,181,246,0.2); border-left: 4px solid #64b5f6; border-radius: 12px; padding: 22px 26px; margin-top: 20px; }
+        .hit-label { font-size: 0.78rem; font-weight: 700; color: #64b5f6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .hit-body { font-size: 0.9rem; color: #9fb8d8; line-height: 1.8; }
+
+        .reg-box { background: linear-gradient(135deg,rgba(42,26,58,0.6),rgba(61,13,74,0.4)); border: 1px solid rgba(206,147,216,0.2); border-left: 4px solid #ce93d8; border-radius: 12px; padding: 18px 22px; margin-top: 16px; }
+        .reg-label { font-size: 0.78rem; font-weight: 700; color: #ce93d8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+        .reg-body { font-size: 0.86rem; color: #d8b8e0; line-height: 1.75; }
+
+        .data-callout { background: rgba(100,181,246,0.06); border: 1px solid rgba(100,181,246,0.15); border-radius: 10px; padding: 16px 20px; margin-top: 16px; font-size: 0.86rem; color: #9fb8d8; line-height: 1.7; }
+        .data-callout strong { color: #64b5f6; }
+
+        .chart-container { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 22px; margin-top: 16px; }
+        .chart-title { font-size: 0.92rem; font-weight: 700; color: #e0e6f0; margin-bottom: 16px; }
+
+        .regional-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.86rem; }
+        .regional-table th { background: rgba(255,255,255,0.06); color: #7a9bbf; text-transform: uppercase; letter-spacing: 0.7px; font-size: 0.74rem; padding: 10px 14px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .regional-table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #b8cfe8; }
+        .regional-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .source-note { font-size: 0.78rem; color: #4a6a8a; line-height: 1.7; margin-top: 14px; padding: 12px 16px; background: rgba(255,255,255,0.02); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); }
+        .source-note strong { color: #5a8aaa; }
+
+        .snapshot-badge { display: inline-block; background: rgba(255,152,0,0.12); border: 1px solid rgba(255,152,0,0.25); color: #ff9800; padding: 3px 10px; border-radius: 4px; font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 8px; vertical-align: middle; }
+
+        .page-footer { background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.06); padding: 30px 40px; text-align: center; }
+        .footer-text { font-size: 0.82rem; color: #4a6fa5; line-height: 1.7; }
+        .footer-text strong { color: #7a9bbf; }
+
+        @media (max-width: 768px) {
+            .header-top { padding: 12px 20px; }
+            .header-content { flex-direction: column; padding: 24px 20px; }
+            .header-stats { min-width: unset; flex-direction: row; flex-wrap: wrap; }
+            .stat-card { flex: 1; min-width: 120px; }
+            .page-title { font-size: 2rem; }
+            .content-wrapper { padding: 20px; }
+            .momentum-bar-section { padding: 16px 20px; flex-wrap: wrap; }
+            .two-col { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="page-header">
+    <div class="header-top">
+        <a href="apac_overview.html" class="back-nav">← Back to Asia Pacific Overview</a>
+        <span class="region-badge">🇦🇺 Australia</span>
+        <span class="brand-mark">Human Impact Index</span>
+    </div>
+    <div class="header-content">
+        <div class="header-text">
+            <div class="region-label">Asia Pacific · Country Analysis</div>
+            <h1 class="page-title">Australia: AI Workforce<br>Transformation</h1>
+            <p class="page-subtitle">
+                Australia is the most structurally comparable market to the UK in the APAC region: an advanced, service-heavy
+                economy with strong labour institutions, a concentration of employment in knowledge, financial, and professional
+                services, and a commercial real estate sector whose major players are the same global firms operating across
+                both markets. AI adoption is progressing rapidly, with 68% of computer-based workers reporting AI use in the
+                past month, yet formal training provision lags significantly, with only 35% having received structured AI
+                training. The human impact challenge in Australia is less about acute displacement and more about an emerging
+                polarisation between workers whose roles are being enhanced by AI and those whose roles are being hollowed out.
+            </p>
+        </div>
+        <div class="header-stats">
+            <div class="stat-card">
+                <div class="stat-value">14.2M</div>
+                <div class="stat-label">Total Workforce</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value warning">1.3M</div>
+                <div class="stat-label">Roles Needing Transition by 2030</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value danger">21%</div>
+                <div class="stat-label">Medium-High AI Exposure (JSA)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value positive">68%</div>
+                <div class="stat-label">Office Workers Using AI</div>
+            </div>
+        </div>
+    </div>
+    <div class="momentum-bar-section">
+        <span class="momentum-label">Overall AI Disruption Momentum</span>
+        <div class="momentum-track"><div class="momentum-fill" style="width:58%"></div></div>
+        <span class="momentum-score">58</span>
+        <span class="momentum-descriptor">Medium-High Disruption</span>
+    </div>
+</header>
+
+<main class="content-wrapper">
+
+    <!-- AUSTRALIA CONTEXT -->
+    <section class="section">
+        <h2 class="section-title">The Australian Context</h2>
+        <p class="prose">
+            Australia's AI workforce story is more nuanced than most regional benchmarks suggest, partly because the data
+            tells different stories depending on the methodological lens applied. The Reserve Bank of Australia's November
+            2025 Bulletin, citing <strong>Jobs and Skills Australia (JSA 2025)</strong>, estimates that approximately
+            4% of the workforce is highly exposed to AI automation under a strict, current-capability definition, with
+            21% in the medium-to-high exposure category. McKinsey estimates that up to 62% of current work hours could
+            theoretically be automated with today's AI technology, while their 2023 research puts the number of workers
+            needing to transition roles by 2030 at <strong>approximately 1.3 million</strong>, around 9% of the workforce.
+            These figures are not contradictory; they measure different things. What they collectively indicate is a
+            workforce facing significant task-level transformation even where headline job numbers remain stable.
+        </p>
+        <p class="prose">
+            The PwC 2025 AI Jobs Barometer provides the most granular Australian-specific data available. It finds that
+            <strong>augmentable jobs grew 47% between 2019 and 2024</strong>, while automatable jobs grew 45%, and that
+            industries most exposed to AI saw three times higher growth in revenue per employee than less-exposed industries.
+            This productivity data is important for the Human Impact Index framing: AI is delivering measurable economic
+            value in Australian firms, but the distribution of that value, between shareholders, executives, and frontline
+            workers, is not addressed by the productivity data and is the central human impact question.
+        </p>
+        <p class="prose">
+            The <strong>Commonwealth Bank of Australia</strong> case is instructive. It replaced administrative office
+            roles with an AI-powered chatbot, generating headlines, but subsequently reversed planned further AI job cuts
+            following worker pushback. This pattern of deployment, response, and partial reversal reflects a labour market
+            in which workers retain some negotiating capacity, but where the overall direction of change is clearly toward
+            fewer routine knowledge worker roles over the medium term.
+        </p>
+        <div class="data-callout">
+            <strong>On the 21% vs 62% discrepancy:</strong> JSA's 21% medium-to-high exposure estimate is the authoritative
+            Australian government figure and is used as the headline for this analysis. The theoretical 62% automation
+            potential figure represents what could be automated with current technology under ideal conditions, not what
+            will be automated in practice. The Human Impact Index uses the more conservative government figure because it
+            better reflects the actual near-term human impact timeline, while noting the larger theoretical exposure in
+            sector-level analysis where relevant.
+        </div>
+    </section>
+
+    <!-- SECTOR ANALYSIS -->
+    <section class="section">
+        <h2 class="section-title">Sector Analysis</h2>
+        <div class="sector-tabs">
+            <div class="sector-tab active" onclick="showSector('data-centres')">Data Centres</div>
+            <div class="sector-tab" onclick="showSector('logistics')">Logistics &amp; Warehousing</div>
+            <div class="sector-tab" onclick="showSector('office-traditional')">Office Traditional</div>
+            <div class="sector-tab" onclick="showSector('office-tech')">Office Tech &amp; Creative</div>
+            <div class="sector-tab" onclick="showSector('retail')">Retail</div>
+            <div class="sector-tab" onclick="showSector('cre-services')">CRE Services</div>
+            <div class="sector-tab" onclick="showSector('professional')">Professional Services</div>
+            <div class="sector-tab" onclick="showSector('financial')">Financial Services</div>
+            <div class="sector-tab" onclick="showSector('manufacturing')">Manufacturing <span class="snapshot-badge">Snapshot</span></div>
+        </div>
+
+        <!-- DATA CENTRES -->
+        <div class="sector-panel active" id="panel-data-centres">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Data Centres</div>
+                    <div class="sector-snapshot">Full analysis · Sydney and Melbourne as primary APAC data centre hubs</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-red">85</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">~12K</div><div class="score-pill-label">Direct Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-green">+Strong</div><div class="score-pill-label">Job Creation</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Australia's data centre sector is experiencing rapid investment-driven growth, with Sydney and Melbourne
+                functioning as the primary APAC regional hubs for hyperscaler deployments. Microsoft, Google, and Amazon
+                have all committed significant capital to Australian data centre expansion, driven by data sovereignty
+                requirements, latency needs for Southeast Asian markets, and the AI compute demand that is reshaping
+                global infrastructure investment. The sector is a net creator of employment in the current cycle, but
+                the roles being created require substantially higher technical qualifications than the Australian
+                workforce average.
+            </p>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Manual monitoring and traditional data centre operations</li>
+                        <li>Routine network administration (increasingly AI-managed)</li>
+                        <li>First-line IT support and helpdesk functions</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>AI infrastructure engineers and GPU cluster specialists</li>
+                        <li>Data centre sustainability and energy management roles</li>
+                        <li>Cloud and AI platform engineers</li>
+                        <li>Cybersecurity specialists for AI systems</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">The data centre sector's net positive employment story conceals a skills transition
+                challenge that is acute in the Australian context. The country ranks 5th globally for AI adoption but faces
+                genuine workforce supply constraints for the technical roles the sector needs. Geographic concentration in
+                Sydney and Melbourne means that employment benefits are not distributed across the broader economy. Regional
+                and rural Australia sees none of the data centre employment growth despite hosting some of the renewable
+                energy infrastructure that enables it.</div>
+            </div>
+        </div>
+
+        <!-- LOGISTICS -->
+        <div class="sector-panel" id="panel-logistics">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Logistics &amp; Warehousing</div>
+                    <div class="sector-snapshot">Full analysis · ~590K workers · E-commerce and retail supply chain driven</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-orange">68</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">~590K</div><div class="score-pill-label">Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-red">High</div><div class="score-pill-label">Physical Automation Risk</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Australian logistics automation is accelerating, driven by e-commerce growth and significant capital
+                investment in automated fulfilment. The Queensland bakery case, a $53 million AI-powered automated
+                facility using autonomous robots for production operations, exemplifies the scale of investment being
+                made in physical automation across the supply chain. AI is being deployed in route optimisation, demand
+                forecasting, predictive maintenance, and warehouse management systems across the sector.
+            </p>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Warehouse pickers and packers (automated fulfilment)</li>
+                        <li>Inventory management clerks</li>
+                        <li>Route planning and dispatch coordinators</li>
+                        <li>Manual quality control operators</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>Automated system operators and technicians</li>
+                        <li>Supply chain data analysts</li>
+                        <li>Last-mile delivery coordination roles</li>
+                        <li>Logistics technology implementation specialists</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">Logistics displacement in Australia falls heavily on workers without post-secondary
+                qualifications, with lower-income earners concentrated in warehouse and fulfilment roles most exposed to
+                physical automation. The geographic spread of logistics employment across suburban and regional areas means
+                displaced workers have limited local alternatives. Australia's lack of a mandatory AI workplace consultation
+                framework means these transitions proceed without the structured protections that German or EU workers
+                would have.</div>
+            </div>
+        </div>
+
+        <!-- OFFICE TRADITIONAL -->
+        <div class="sector-panel" id="panel-office-traditional">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Office Traditional</div>
+                    <div class="sector-snapshot">Full analysis · Administrative functions across public and private sectors</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-orange">62</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-orange">~1.4M</div><div class="score-pill-label">Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-red">High</div><div class="score-pill-label">AI Task Exposure</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Australia's traditional office workforce, encompassing public sector administrative roles, corporate
+                support functions, and clerical positions across all industries, is facing the most direct current impact
+                from AI deployment. The EY Australian AI Workforce Blueprint (2025) found that <strong>84% of
+                office-based employees are now using AI on the job</strong>, with 68% having used it in the past month,
+                yet only 35% have received formal training. This training gap is itself a human impact issue: workers
+                are adapting to AI-augmented roles without institutional support, creating stress, inequity in capability
+                development, and a growing divide between those who thrive with AI tools and those who do not.
+            </p>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Administrative assistants and office support</li>
+                        <li>Data entry and document processing clerks</li>
+                        <li>Routine correspondence and scheduling roles</li>
+                        <li>Public sector processing and compliance clerks</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>AI-augmented executive assistants and coordinators</li>
+                        <li>Process improvement and workflow automation roles</li>
+                        <li>Digital transformation programme managers</li>
+                        <li>AI tool trainers and internal AI champions</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">The training gap identified by EY is the most immediate human impact issue in
+                Australian office work. Workers are being expected to adapt to AI-augmented roles without adequate support,
+                and the 33-percentage-point gap between AI usage (68%) and formal training (35%) represents a workforce
+                being left to figure out a significant transition individually. The Real Concerns Report 2025 found 59%
+                of Australian workers fear employers will downsize using AI, and 57% fear AI will replace their jobs,
+                reflecting an anxiety that is not irrational given observed patterns of deployment.</div>
+            </div>
+        </div>
+
+        <!-- OFFICE TECH -->
+        <div class="sector-panel" id="panel-office-tech">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Office Tech &amp; Creative</div>
+                    <div class="sector-snapshot">Full analysis · Technology, information and communication sectors</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-red">71</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">~750K</div><div class="score-pill-label">ICT Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-orange">Mixed</div><div class="score-pill-label">Net Impact</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Australia's technology and creative sector is simultaneously the primary adopter of AI tools and among the
+                most exposed to AI-driven restructuring. PwC data shows information and communication maintained strong
+                AI skills job postings at 6.9% growth in 2024, second only to financial services. However, the pattern
+                of AI code generation reducing junior developer demand, visible in US tech markets from 2023 onward,
+                is now clearly present in Australian hiring data. <strong>Professional, Scientific and Technical jobs
+                fell from 9% to 6.7% of all vacancies between 2022 and 2024</strong>, a meaningful structural shift.
+            </p>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Junior software developers and entry-level coders</li>
+                        <li>Content writers and digital copywriters</li>
+                        <li>Graphic designers for routine production tasks</li>
+                        <li>QA testers and manual testing roles</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>AI engineers and machine learning specialists</li>
+                        <li>AI product owners and solution architects</li>
+                        <li>Responsible AI and ethics specialists</li>
+                        <li>Senior developers working at AI system architecture level</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">The compression of junior technology roles is creating a graduate entry pipeline
+                problem in Australia that is beginning to be discussed in university computing departments. If AI absorbs
+                the junior tasks that previously built capability over 2-5 year career foundations, the next generation of
+                senior practitioners will have had less formative experience. This is a medium-term human impact that does
+                not show up in headline employment statistics but will affect the quality and depth of Australia's
+                technology workforce within a decade.</div>
+            </div>
+        </div>
+
+        <!-- RETAIL -->
+        <div class="sector-panel" id="panel-retail">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Retail</div>
+                    <div class="sector-snapshot">Full analysis · ~1.3M workers · Woolworths, Coles, and major chains leading AI deployment</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-orange">63</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">~1.3M</div><div class="score-pill-label">Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-red">High</div><div class="score-pill-label">Checkout Automation</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Australian retail is undergoing significant AI-driven transformation, concentrated in three areas:
+                automated checkout proliferation, AI-driven demand forecasting and inventory management, and customer
+                service automation through chatbots and AI assistants. Major retailers including Woolworths and Coles
+                have deployed AI across supply chain, pricing, and customer interaction functions. The retail workforce,
+                with a high proportion of casual and part-time workers, young people, and workers without post-secondary
+                qualifications, has limited institutional protection against deployment-driven role reduction.
+            </p>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Checkout operators (self-checkout and automated cashiers)</li>
+                        <li>Stock replenishment and inventory clerks</li>
+                        <li>Basic customer service and in-store support</li>
+                        <li>Loss prevention roles (AI monitoring systems)</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>Customer experience and service design roles</li>
+                        <li>Retail data and analytics specialists</li>
+                        <li>AI system maintenance and operations in store</li>
+                        <li>E-commerce fulfilment coordinators</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">Retail automation in Australia disproportionately affects young workers and women,
+                who are heavily represented in part-time retail roles. These workers have the least access to employer
+                retraining investment and the fewest alternatives in local labour markets. The casualisation of retail
+                work means that AI-driven role reduction can occur through simple non-renewal of casual contracts without
+                triggering redundancy obligations, making the human impact harder to observe in aggregate employment
+                statistics while being very visible at the individual level.</div>
+            </div>
+        </div>
+
+        <!-- CRE SERVICES -->
+        <div class="sector-panel" id="panel-cre-services">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Commercial Real Estate Services</div>
+                    <div class="sector-snapshot">Full analysis · Sydney, Melbourne, Brisbane, Perth · Global firms and domestic agencies</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-orange">60</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">~55K</div><div class="score-pill-label">CRE Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-orange">Medium</div><div class="score-pill-label">Displacement Risk</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Australia's commercial real estate services market is dominated by the same global firms present in the UK
+                and Germany: Cushman &amp; Wakefield, CBRE, JLL, and Knight Frank, alongside strong domestic players including
+                Colliers and Ray White Commercial. AI is transforming valuation, market research, due diligence, and
+                lease management functions across these organisations. The structural dynamic is similar to other
+                English-speaking markets: AI is compressing the junior analytical tiers of professional advisory teams,
+                while senior advisory and transaction roles remain more durable.
+            </p>
+            <div class="regional-table">
+                <table class="regional-table">
+                    <thead><tr><th>Market</th><th>Key Dynamic</th><th>AI Impact Level</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Sydney CBD</strong></td><td>Prime office market; AI-driven space efficiency reducing tenant footprints</td><td>High</td></tr>
+                        <tr><td><strong>Melbourne CBD</strong></td><td>Highest office vacancy of major cities; AI in lease restructuring</td><td>High</td></tr>
+                        <tr><td><strong>Brisbane</strong></td><td>Infrastructure-driven growth; AI in industrial and logistics valuations</td><td>Medium</td></tr>
+                        <tr><td><strong>Perth</strong></td><td>Resources-linked market; AI in asset management and facilities</td><td>Medium</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">CRE services disruption in Australia follows the same pattern as the UK: AI is
+                absorbing the research, modelling, and analytical tasks that previously occupied graduate-level practitioners
+                for the first 3-5 years of their careers. The result is a compression of the career pipeline and a reduction
+                in the number of entry positions available. For the Human Impact Index specifically, this market is relevant
+                because the senior leaders using the tool are operating in an industry whose own workforce is being affected
+                by the same AI forces it is analysing in other sectors.</div>
+            </div>
+        </div>
+
+        <!-- PROFESSIONAL SERVICES -->
+        <div class="sector-panel" id="panel-professional">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Professional Services</div>
+                    <div class="sector-snapshot">Full analysis · Legal, consulting, accounting · Among highest AI skill demand sectors</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-orange">70</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">~1.1M</div><div class="score-pill-label">Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-red">High</div><div class="score-pill-label">AI Exposure</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Professional services is the sector most clearly illustrating Australia's AI transformation in real time.
+                PwC's AI Jobs Barometer shows <strong>Financial and Insurance Activities led all sectors with 11.8%
+                of job postings requiring AI skills in 2024</strong>, while Professional, Scientific and Technical
+                activities, though declining as a share of vacancies overall, increasingly embed AI capability requirements
+                in new role specifications. Junior lawyers using AI tools for document review, accountants using AI
+                for compliance and reporting, and consultants using AI for data synthesis are already mainstream
+                in major Australian professional services firms.
+            </p>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Graduate lawyers in document review and research</li>
+                        <li>Junior consultants in data gathering and analysis</li>
+                        <li>Accountants in routine compliance preparation</li>
+                        <li>Paralegals and legal support functions</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>AI-augmented senior advisory and strategy roles</li>
+                        <li>Legal technology and LegalTech practitioners</li>
+                        <li>AI governance and responsible AI advisors</li>
+                        <li>Digital transformation consulting specialists</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">The professional services AI transition in Australia is generating a growing divide
+                between AI-skilled workers commanding the 56% global wage premium identified by PwC, and workers without
+                AI skills facing stagnant demand and increasing job insecurity. Without active intervention on training
+                and skills development, this premium will accrue disproportionately to already-advantaged workers with
+                formal qualifications and employer-sponsored development, deepening existing inequality within a sector
+                that is itself already highly stratified.</div>
+            </div>
+        </div>
+
+        <!-- FINANCIAL SERVICES -->
+        <div class="sector-panel" id="panel-financial">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Financial Services</div>
+                    <div class="sector-snapshot">Full analysis · Banking, insurance, superannuation · Highest AI skills demand of any sector</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-red">73</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">~450K</div><div class="score-pill-label">Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-orange">Transforming</div><div class="score-pill-label">Net Impact</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Australia's financial services sector leads the country in AI adoption and AI skills demand. The sector
+                accounts for a disproportionate share of the 1,532 Australian organisations actively recruiting AI-skilled
+                workers identified by PwC in 2024. Commonwealth Bank, ANZ, Westpac, and NAB are all deploying AI across
+                customer service, fraud detection, credit assessment, and compliance functions at scale.
+                AI-driven productivity gains in financial services have nearly quadrupled from 7% annually in 2018-2022
+                to 27% in 2018-2024, making this sector the clearest evidence of AI's transformative economic impact.
+            </p>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Branch bank tellers and customer service officers</li>
+                        <li>Compliance analysts in routine rule-checking functions</li>
+                        <li>Credit assessment officers for standardised products</li>
+                        <li>Insurance underwriters for personal lines</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>AI risk and model governance specialists</li>
+                        <li>Financial AI product managers</li>
+                        <li>Quantitative analysts and data scientists</li>
+                        <li>Complex client relationship managers</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">The Commonwealth Bank AI chatbot reversal following worker pushback illustrates that
+                workers retain some collective capacity to shape AI deployment in Australian financial services. However,
+                the overall trajectory is clear: branch networks are contracting, routine processing roles are being
+                automated, and the skills required for remaining roles are shifting rapidly. The superannuation sector,
+                which manages the retirement savings of virtually the entire Australian workforce, is itself deploying
+                AI at pace, creating an interesting dynamic where AI is simultaneously reshaping the sector and managing
+                the long-term financial security of the workers it is displacing.</div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Australia Financial Services: AI Skills Demand vs Overall Job Postings Growth (2019-2024)</div>
+                <canvas id="finChart" style="max-height:250px;"></canvas>
+            </div>
+        </div>
+
+        <!-- MANUFACTURING SNAPSHOT -->
+        <div class="sector-panel" id="panel-manufacturing">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Manufacturing <span class="snapshot-badge">Snapshot Coverage</span></div>
+                    <div class="sector-snapshot">Indicative analysis · Manufacturing represents a small share of Australian employment</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-orange">52</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">~850K</div><div class="score-pill-label">Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-orange">Medium</div><div class="score-pill-label">Automation Exposure</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Manufacturing represents approximately 6% of Australian employment, a relatively small share by advanced
+                economy standards following decades of deindustrialisation. AI and robotics adoption is occurring in
+                food manufacturing, pharmaceuticals, and defence-related production, but the sector lacks the scale
+                present in Germany, Japan, or South Korea to generate large-scale aggregate workforce impacts.
+                The human impact in Australian manufacturing is concentrated in specific subsectors and geographies
+                rather than being broadly distributed.
+            </p>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment (Snapshot)</div>
+                <div class="hit-body">Manufacturing automation in Australia disproportionately affects outer suburban
+                communities in Melbourne, Sydney, and Adelaide where food processing and light manufacturing employ
+                significant numbers of workers from migrant and low-income backgrounds. These workers have limited
+                access to retraining pathways and face significant barriers to transitioning into the technical roles
+                that automation creates. Full sector analysis will be included in a future edition of this index.</div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- REGIONAL BREAKDOWN -->
+    <section class="section">
+        <h2 class="section-title">Regional Employment Context</h2>
+        <p class="prose">
+            Australia's AI workforce transformation is geographically concentrated in a way that amplifies the equity
+            dimension. Sydney and Melbourne account for the overwhelming majority of AI-related job creation and
+            AI-skilled worker demand, while regional, rural and outer suburban communities face displacement with
+            fewer transition pathways available locally.
+        </p>
+        <div class="regional-table">
+            <table class="regional-table">
+                <thead><tr><th>City / Region</th><th>Dominant AI-Affected Sectors</th><th>AI Jobs Concentration</th><th>Human Impact Level</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Sydney CBD &amp; Metro</strong></td><td>Financial services, professional services, data centres, CRE</td><td>~34% of AI job postings</td><td>🟠 Medium-High (polarising)</td></tr>
+                    <tr><td><strong>Melbourne CBD &amp; Metro</strong></td><td>Professional services, retail, office traditional, CRE</td><td>~30% of AI job postings</td><td>🟠 Medium-High (polarising)</td></tr>
+                    <tr><td><strong>Brisbane</strong></td><td>Resources services, logistics, infrastructure-adjacent</td><td>~10% of AI job postings</td><td>🟡 Medium</td></tr>
+                    <tr><td><strong>Perth</strong></td><td>Resources sector services, logistics</td><td>~8% of AI job postings</td><td>🟡 Medium</td></tr>
+                    <tr><td><strong>Regional Australia</strong></td><td>Agriculture, logistics, retail, public services</td><td>Low, few AI jobs created</td><td>🔴 High displacement, low opportunity</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="prose" style="margin-top:16px;">
+            The concentration of 64% of AI jobs in Sydney, Melbourne, Brisbane and Perth identified by PwC means that
+            regional and rural communities face the displacement effects of AI adoption without access to the employment
+            opportunities it creates. This geographic polarisation is a significant human impact dimension that aggregate
+            national employment figures do not capture.
+        </p>
+    </section>
+
+    <!-- POLICY -->
+    <section class="section">
+        <h2 class="section-title">Regulatory Context and Policy Gaps</h2>
+        <p class="prose">
+            Australia is operating without binding AI-specific worker protection legislation. The voluntary AI Ethics
+            Framework and ongoing Safe and Responsible AI consultation process signal regulatory intent, but workers
+            facing AI-driven role changes currently have no statutory right to consultation, explanation, or transition
+            support that is specific to AI deployment.
+        </p>
+        <p class="prose">
+            The OECD analysis relevant to Australia notes a pronounced <strong>public trust deficit</strong>: only around
+            30% of Australians believe the benefits of AI exceed its risks, and approximately 78% express concern about
+            negative outcomes. This level of public anxiety is not reflected in the pace of regulatory development,
+            creating a legitimacy gap that responsible employers and policymakers should treat as a warning signal
+            rather than a communications challenge.
+        </p>
+        <div class="human-impact-box">
+            <div class="hit-label">Policy Gap: What Australian Regulation Does Not Yet Address</div>
+            <div class="hit-body">The 33-percentage-point gap between AI usage and formal training in Australian workplaces
+            (EY, 2025) is not being addressed by current regulation. Workers are adapting to AI-augmented roles without
+            employer obligation to train them, without consultation rights on AI deployment decisions, and without
+            statutory protections if AI-driven role changes result in redundancy. The OECD recommendation that Australia
+            use its National AI Strategy to explicitly address labour-market transitions through structured skills and
+            workforce programs has not yet been implemented at the scale the transition requires.</div>
+        </div>
+    </section>
+
+    <div class="source-note">
+        <strong>Data sources:</strong> Automation exposure (21% medium-to-high): Jobs and Skills Australia (JSA 2025), cited in Reserve Bank of Australia Bulletin, November 2025.
+        Roles needing transition (1.3M): McKinsey Global Institute via Learning People AU (January 2026).
+        AI job postings data: PwC 2025 Global AI Jobs Barometer (Australia edition).
+        EY training gap (68% AI usage / 35% formal training): EY Australian AI Workforce Blueprint, April 2025.
+        Worker anxiety data (59%, 57%): Real Insurance Real Concerns Report 2025.
+        Public trust deficit (30%, 78%): OECD-linked analysis cited in OECD AI frameworks document.
+        Commonwealth Bank reversal: Multiple Australian media sources, 2025.
+        Geographic AI job concentration (64% in four cities): PwC AI Jobs Barometer Australia 2025.
+        CRE market context: Cushman &amp; Wakefield APAC market reports 2024-2025.
+        Productivity growth in financial services (27%): PwC AI Jobs Barometer 2025.
+    </div>
+
+</main>
+
+<footer class="page-footer">
+    <div class="footer-text">
+        <strong>Human Impact Index</strong> &nbsp;|&nbsp; Andrew Phipps &nbsp;|&nbsp;
+        PhD Candidate, Philosophy (AI Ethics), University of Sussex &nbsp;|&nbsp;
+        Former Global Leader, Cushman &amp; Wakefield<br>
+        <span style="color:#364f6b;">Analysis provided for research and professional education purposes. Data reference period: 2024-2025. Sources cited throughout.</span>
+    </div>
+</footer>
+
+<script>
+    function showSector(id) {
+        document.querySelectorAll('.sector-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.sector-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('panel-' + id).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    const fCtx = document.getElementById('finChart').getContext('2d');
+    new Chart(fCtx, {
+        type: 'line',
+        data: {
+            labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+            datasets: [
+                {
+                    label: 'Financial Services AI Skills Demand (% of postings)',
+                    data: [6.2, 7.1, 15.7, 13.4, 12.1, 11.8],
+                    borderColor: '#64b5f6', backgroundColor: 'rgba(100,181,246,0.1)',
+                    tension: 0.4, fill: true, pointRadius: 4
+                },
+                {
+                    label: 'All Sectors AI Skills Demand (% of postings)',
+                    data: [2.1, 2.8, 4.9, 4.2, 3.8, 3.6],
+                    borderColor: '#ce93d8', backgroundColor: 'rgba(206,147,216,0.08)',
+                    tension: 0.4, fill: true, pointRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 11 } } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                y: { beginAtZero: true, ticks: { color: '#7a9bbf', callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.07)' } }
+            }
+        }
+    });
+</script>
+</body>
+</html>

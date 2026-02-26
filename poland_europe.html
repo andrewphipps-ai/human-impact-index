@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poland | Human Impact Index</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0e1a; color: #e0e6f0; font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; }
+  a { color: #64b5f6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .site-header { background: #0d1226; border-bottom: 1px solid #1e2a4a; padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-size: 1.1rem; font-weight: 700; color: #64b5f6; letter-spacing: 0.04em; }
+  .back-link { font-size: 0.85rem; color: #8899bb; }
+  .back-link:hover { color: #64b5f6; }
+
+  .hero { background: linear-gradient(135deg, #0d1226 0%, #111a35 60%, #0f2a1a 100%); padding: 48px 32px 36px; border-bottom: 1px solid #1e2a4a; }
+  .hero-inner { max-width: 1100px; margin: 0 auto; }
+  .region-badge { display: inline-block; background: #81c78420; border: 1px solid #81c78440; color: #81c784; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
+  .hero h1 { font-size: 2.6rem; font-weight: 800; color: #e0e6f0; margin-bottom: 6px; }
+  .hero .subtitle { font-size: 1.05rem; color: #8899bb; margin-bottom: 28px; }
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card { background: #0a0e1a; border: 1px solid #1e2a4a; border-radius: 8px; padding: 16px 18px; }
+  .stat-card .label { font-size: 0.72rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .stat-card .value { font-size: 1.55rem; font-weight: 700; color: #64b5f6; }
+  .stat-card .sub { font-size: 0.75rem; color: #8899bb; margin-top: 2px; }
+
+  .momentum-section { background: #0a0e1a; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px 22px; }
+  .momentum-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .momentum-label { font-size: 0.8rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; }
+  .momentum-score { font-size: 1.6rem; font-weight: 700; color: #64b5f6; }
+  .momentum-bar-bg { background: #1e2a4a; border-radius: 4px; height: 10px; width: 100%; }
+  .momentum-bar-fill { background: linear-gradient(90deg, #64b5f6, #81c784); border-radius: 4px; height: 10px; }
+  .momentum-note { font-size: 0.75rem; color: #8899bb; margin-top: 8px; }
+
+  .main { max-width: 1100px; margin: 0 auto; padding: 36px 32px; }
+
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 0; border-bottom: 1px solid #1e2a4a; }
+  .tab-btn { background: none; border: none; color: #8899bb; padding: 10px 16px; font-size: 0.82rem; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; white-space: nowrap; }
+  .tab-btn:hover { color: #e0e6f0; }
+  .tab-btn.active { color: #81c784; border-bottom-color: #81c784; }
+  .tab-content { display: none; padding: 28px 0 0; }
+  .tab-content.active { display: block; }
+
+  .sector-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .sector-title { font-size: 1.45rem; font-weight: 700; color: #e0e6f0; }
+  .sector-momentum { text-align: right; }
+  .sector-momentum .score { font-size: 1.8rem; font-weight: 700; color: #81c784; }
+  .sector-momentum .label { font-size: 0.72rem; color: #8899bb; text-transform: uppercase; }
+  .snapshot-badge { display: inline-block; background: #81c78420; border: 1px solid #81c78440; color: #81c784; font-size: 0.7rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-left: 10px; vertical-align: middle; }
+  .sector-desc { font-size: 0.95rem; color: #c0cfe0; margin-bottom: 22px; line-height: 1.7; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  @media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
+
+  .info-box { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 18px 20px; }
+  .info-box h4 { font-size: 0.78rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+  .info-box ul { list-style: none; }
+  .info-box ul li { font-size: 0.88rem; color: #c0cfe0; padding: 4px 0; border-bottom: 1px solid #1e2a4a20; }
+  .info-box ul li:before { content: "›"; color: #81c784; margin-right: 8px; }
+  .info-box ul li:last-child { border-bottom: none; }
+
+  .impact-box { background: #0f2214; border: 1px solid #81c78430; border-left: 3px solid #81c784; border-radius: 8px; padding: 18px 20px; margin-bottom: 20px; }
+  .impact-box h4 { font-size: 0.78rem; color: #81c784; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .impact-box p { font-size: 0.9rem; color: #c0cfe0; line-height: 1.65; }
+
+  .reg-box { background: #0d1226; border: 1px solid #64b5f630; border-left: 3px solid #64b5f6; border-radius: 8px; padding: 18px 20px; margin-bottom: 20px; }
+  .reg-box h4 { font-size: 0.78rem; color: #64b5f6; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .reg-box p { font-size: 0.9rem; color: #c0cfe0; line-height: 1.65; }
+
+  .chart-container { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+  .chart-container h4 { font-size: 0.82rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
+
+  .emp-table-section { margin-top: 40px; }
+  .emp-table-section h2 { font-size: 1.2rem; font-weight: 700; color: #e0e6f0; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #1e2a4a; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th { background: #0d1226; color: #8899bb; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 14px; text-align: left; border-bottom: 1px solid #1e2a4a; }
+  td { padding: 10px 14px; border-bottom: 1px solid #1e2a4a10; color: #c0cfe0; }
+  tr:hover td { background: #0d122620; }
+  .score-cell { font-weight: 700; color: #81c784; }
+  .est-note { font-size: 0.75rem; color: #8899bb; font-style: italic; }
+
+  .policy-section { margin-top: 40px; }
+  .policy-section h2 { font-size: 1.2rem; font-weight: 700; color: #e0e6f0; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #1e2a4a; }
+  .policy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .policy-card { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 18px 20px; }
+  .policy-card h4 { font-size: 0.88rem; font-weight: 700; color: #e0e6f0; margin-bottom: 8px; }
+  .policy-card p { font-size: 0.85rem; color: #8899bb; line-height: 1.6; }
+  .policy-card.gap { border-color: #81c78430; }
+  .policy-card.gap h4 { color: #81c784; }
+
+  .source-note { margin-top: 40px; background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px 22px; font-size: 0.78rem; color: #8899bb; line-height: 1.7; }
+  .source-note strong { color: #c0cfe0; }
+
+  footer { background: #0d1226; border-top: 1px solid #1e2a4a; padding: 22px 32px; text-align: center; font-size: 0.78rem; color: #8899bb; }
+  footer span { color: #64b5f6; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">Human Impact Index</div>
+  <a href="europe_overview.html" class="back-link">← Back to Europe Overview</a>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="region-badge">Europe Region</div>
+    <h1>Poland</h1>
+    <p class="subtitle">AI Workforce Transformation Analysis — Human-Centred Assessment</p>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="label">Total Employed</div>
+        <div class="value">~17.4M</div>
+        <div class="sub">GUS / Eurostat, 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Unemployment Rate</div>
+        <div class="value">~3.1%</div>
+        <div class="sub">One of EU's lowest; GUS 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">GDP Growth</div>
+        <div class="value">3.0%</div>
+        <div class="sub">2024; 3.6% in 2025 (GUS preliminary)</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">ICT Workforce</div>
+        <div class="value">650k+</div>
+        <div class="sub">Largest IT talent pool in CEE (2024)</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">AI Infrastructure Investment</div>
+        <div class="value">$6B+</div>
+        <div class="sub">Hyperscaler commitments in 2025 alone</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">AI-Exposed Occupations</div>
+        <div class="value">+235%</div>
+        <div class="sub">Growth since 2019; PwC EMEA Jobs Barometer 2024</div>
+      </div>
+    </div>
+
+    <div class="momentum-section">
+      <div class="momentum-header">
+        <div>
+          <div class="momentum-label">Overall AI Momentum Score</div>
+          <div class="momentum-note">European scores generally range 55–75; Poland calibrated at 66 to reflect exceptional data centre infrastructure growth (Warsaw ranked #3 European city for FDI), the EU's largest CEE ICT talent pool, and strong AI investment. Set above Germany (62) on infrastructure trajectory but tempered by structural dependency on migrant labour, manufacturing automation exposure, and early-stage domestic AI firm development relative to Western peers.</div>
+        </div>
+        <div class="momentum-score">66 / 100</div>
+      </div>
+      <div class="momentum-bar-bg"><div class="momentum-bar-fill" style="width:66%"></div></div>
+    </div>
+  </div>
+</section>
+
+<main class="main">
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('data-centres')">Data Centres</button>
+    <button class="tab-btn" onclick="showTab('office-tech')">Office Tech & Creative</button>
+    <button class="tab-btn" onclick="showTab('manufacturing')">Manufacturing <span class="snapshot-badge">Snapshot</span></button>
+    <button class="tab-btn" onclick="showTab('logistics')">Logistics</button>
+    <button class="tab-btn" onclick="showTab('financial')">Financial Services</button>
+    <button class="tab-btn" onclick="showTab('office-trad')">Office Traditional</button>
+    <button class="tab-btn" onclick="showTab('professional')">Professional Services</button>
+    <button class="tab-btn" onclick="showTab('cre-services')">CRE Services</button>
+    <button class="tab-btn" onclick="showTab('retail')">Retail</button>
+  </div>
+
+  <!-- DATA CENTRES -->
+  <div id="data-centres" class="tab-content active">
+    <div class="sector-header">
+      <div class="sector-title">Data Centres</div>
+      <div class="sector-momentum"><div class="score">78</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Poland is the fastest-growing data centre market in Central and Eastern Europe and is rapidly establishing itself as a Tier-2 hub rivalling some Western European markets on cost and connectivity. The Polish data centre market was valued at $1.16 billion in 2024 and is projected to reach $2.78 billion by 2030 at a 15.68% CAGR. Warsaw hosts approximately 30 facilities with 660 MW of live IT load capacity in 2025, commanding 69.3% of national spending. Microsoft committed $740 million for cloud and AI infrastructure expansion by June 2026, building on its Azure Poland Central region — the first hyperscale cloud region in CEE. Google signed a Memorandum of Understanding with the Polish Development Fund in February 2025. Amazon operates a substantial Warsaw footprint. Google committed $2 billion for Polish capacity. The European Commission selected Poznań for one of six EU AI Factories in March 2025, investing $143 million at the Poznań Supercomputing and Networking Center (PCSS). Intel committed $4.6 billion for Poland's largest greenfield semiconductor project, creating 2,000 jobs. Operators include Atman (whose WAW-3 campus opened in September 2025), Beyond.pl, Equinix, Data4, and Vantage. Poland offers 40–60% lower operational costs than Western European alternatives.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Manual server installation and hardware maintenance teams</li>
+          <li>Tier 1 helpdesk and remote hands operatives</li>
+          <li>Physical security and facility patrol staff</li>
+          <li>Legacy on-premises system administrators</li>
+          <li>Routine cooling and power infrastructure monitors</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI Factory engineers and GPU cluster administrators</li>
+          <li>Liquid and immersive cooling infrastructure specialists</li>
+          <li>Green data centre sustainability and PPA managers</li>
+          <li>Sovereign cloud compliance and security architects</li>
+          <li>CEE interconnection and peering specialists</li>
+          <li>Construction project managers (massive campus build-out)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Poland's data centre boom is capital-intensive, creating significant temporary construction employment (Microsoft's $740M expansion is projected to create 515 construction jobs and only 64 permanent operational positions). The structural reality is that hyperscale facilities employ modest permanent workforces relative to their economic and energy footprints. The Piast AI Factory at Poznań does, however, represent a genuinely employment-generative model: its research and development mandate requires human expertise. The wider risk is that Poland's data centre growth is primarily driven by foreign hyperscaler investment, meaning the high-value employment (engineering, strategy, product) remains concentrated in Microsoft, Google, and Amazon's home countries, while Poland captures construction, operations, and lower-level technical roles. Microsoft's commitment to train 1 million Polish workers in AI skills is a positive signal, but outcome verification and depth of training require monitoring.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>EU AI Act obligations (fully applicable August 2026) apply to all data centre operators serving EU-based AI systems. GDPR and Polish national data protection law apply to data processing infrastructure. The Polish Energy Regulatory Office (URE) issued guidance in March 2024 on grid connection conditions relevant to large data centre builds. The Polish Power Grid (PSE) has earmarked 1,200 MW of capacity for data centre development by 2034. The national cloud framework and Microsoft–Chmura Krajowa partnership embed sovereignty requirements for public-sector workloads. Power costs averaging EUR 120–133/MWh remain a challenge, with operators requiring long-term renewable PPAs to manage operating expenses. Poland's renewable energy target of 57 GW by 2030 supports the green energy credentials required by hyperscaler sustainability commitments.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>Poland Data Centre Market Growth & Investment (2020–2025)</h4>
+      <canvas id="chartDC" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- OFFICE TECH & CREATIVE -->
+  <div id="office-tech" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Office Tech & Creative</div>
+      <div class="sector-momentum"><div class="score">72</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Poland holds the largest ICT talent pool in Central and Eastern Europe, with over 650,000 IT professionals and 15,000+ tech graduates entering the industry annually. The IT services market generated approximately $9.75 billion in revenue in 2024 and is growing at 6.14% annually. Warsaw, Kraków, and Wrocław are the primary hubs; over 60,000 foreign tech companies — including Google, Microsoft, IBM, Apple, and Amazon — operate Polish tech centres, attracted by skilled talent at 33–40% lower cost than equivalent US roles. AI startups raised nearly $171 million in 2024. Poland's AI job exposure rose 235% between 2019 and 2024 (PwC EMEA Jobs Barometer), the highest growth rate in the EMEA region. AI-related postings represent 0.9% of all Polish job listings (2024), up from negligible levels in 2018. DXC Technology operates a 500-person AI Centre of Competence in Poland. The gaming industry (2nd in Europe by workforce size, 15,000 specialists, 65 university programmes) and creative digital sector are expanding their AI tooling integration rapidly.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior software developers (AI code generation tools)</li>
+          <li>Level 1 IT support and helpdesk operatives</li>
+          <li>Basic data entry, QA testing, and bug triage roles</li>
+          <li>Content moderation and data labelling staff</li>
+          <li>Game localisation and basic animation assistants</li>
+          <li>Junior IT security analysts and SOC Tier 1 operators</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI Factory research engineers (Piast, Poznań)</li>
+          <li>Machine learning and LLM fine-tuning specialists</li>
+          <li>EU AI Act compliance engineers and auditors</li>
+          <li>Cybersecurity architects for AI-native infrastructure</li>
+          <li>AI-powered game design and procedural content developers</li>
+          <li>Cloud architecture and MLOps platform engineers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Poland's 235% growth in AI-exposed occupations since 2019 is the highest in the EMEA region, reflecting both the speed of AI integration in Poland's tech sector and the particular vulnerability of Poland's predominantly services-oriented ICT workforce to productivity displacement. The structural risk is that Poland has largely developed its tech workforce as a lower-cost delivery hub for Western European and US companies: this creates excellent employment but concentrates workers in the most AI-automatable parts of the value chain (coding, testing, support) rather than in the strategic and creative roles that are more AI-complementary. Entry-level pathway compression is the most acute concern: junior developer roles are the first to be affected by AI code generation, and without them, the pipeline for senior engineers narrows. Rising wages (senior developers now earn up to $70,000) are creating pressure on the cost-competitive positioning that drives outsourcing inflows.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>EU AI Act high-risk obligations apply from August 2026, creating compliance demand for AI governance specialists. GDPR applies to AI training data use. Poland's $240 million government AI investment programme targets AI-driven automation, defence, and economic development. The Piast AI Factory (EU-funded, €143M) creates publicly-funded AI research employment at the Poznań Supercomputing and Networking Center. Intel's $4.6 billion semiconductor investment creates hardware-layer employment. No sector-specific reskilling programme targets AI-displaced junior tech workers; the government's approach is primarily supply-side (training graduates) rather than transition-support for displaced mid-career workers.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>AI-Exposed Job Postings as % of Total Polish Job Listings (2018–2024)</h4>
+      <canvas id="chartTech" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- MANUFACTURING (SNAPSHOT) -->
+  <div id="manufacturing" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Manufacturing <span class="snapshot-badge">Snapshot</span></div>
+      <div class="sector-momentum"><div class="score">62</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Manufacturing is the largest single employment sector in Poland, accounting for 22.8% of average paid employment (GUS 2023), equating to approximately 3.5–4.0 million workers (est.). Key sectors include automotive (Volkswagen, Fiat, Opel, Stellantis — Poland is the 6th largest car producer in the EU), machinery, electronics, chemicals, and food processing. Poland's role as a logistics and manufacturing hub has been reinforced by post-Ukraine supply chain reshoring. Intel's $4.6 billion greenfield semiconductor investment represents the sector's most significant AI-adjacent development. The EURES 2024 analysis confirms manufacturing workers (welders, machine operators, production technicians) as among Poland's most acutely shortage-affected occupations, meaning automation investment is partly driven by genuine labour scarcity rather than pure cost-cutting. Automation adoption in Polish manufacturing remains below Western European levels, creating a transition window that is narrowing as investment commitments accelerate.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Assembly line workers in automotive and electronics</li>
+          <li>Quality control and visual inspection operatives</li>
+          <li>Forklift operators and warehouse floor staff</li>
+          <li>Machine operators in food processing and packaging</li>
+          <li>Production scheduling clerks and planners</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Industrial robotics programming and maintenance</li>
+          <li>Smart factory and Industry 4.0 integration engineers</li>
+          <li>AI-driven predictive maintenance technicians</li>
+          <li>Intel semiconductor process engineers (Wrocław)</li>
+          <li>Digital twin and simulation specialists</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Polish manufacturing faces a paradox: acute labour shortages (particularly for skilled trades) are driving automation investment, yet the workers being displaced by automation are often the lower-skilled migrant and domestic workers with the fewest reskilling options. Over one million foreign workers (primarily Ukrainian and Belarusian) are now structurally embedded in Polish manufacturing and logistics, and these workers are among the most exposed to automation while having the least access to Polish government transition support. The Intel semiconductor investment creates ~2,000 high-skill positions, but this is a small offset against the scale of potential displacement across automotive and general manufacturing as Eurozone-linked firms accelerate Industry 4.0 investment.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>EU AI Act applies to AI systems used in manufacturing monitoring and workforce management. Poland's re-industrialisation policy supports domestic manufacturing capacity. EU structural funds (Recovery and Resilience Facility) finance some manufacturing digitalisation. The VBAR-equivalent Polish employment status legislation is under review but primarily addresses gig and platform work rather than manufacturing automation displacement. No sector-level obligation requires manufacturers to fund transition support for automation-displaced workers beyond statutory redundancy provisions.</p>
+    </div>
+  </div>
+
+  <!-- LOGISTICS -->
+  <div id="logistics" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Logistics</div>
+      <div class="sector-momentum"><div class="score">68</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Logistics is one of Poland's most structurally important sectors, employing an estimated 700,000–900,000 workers (est., GUS transport and storage classifications), with Poland serving as Central Europe's primary overland distribution hub. Transportation and logistics consistently rank among Poland's top sectors for job vacancies (6.0% of reported vacancies, EURES H1 2024). Poland's position astride major E-W and N-S European trade corridors has been reinforced by supply chain restructuring following Russia's invasion of Ukraine. Amazon, DHL, DPD, InPost (Poland's leading parcel delivery firm with over 25,000 smart lockers), and DB Schenker all operate major Polish logistics infrastructure. The AI-driven shift toward warehouse automation, autonomous vehicles, and smart routing is advancing rapidly, with Nomagic (Polish logistics robotics startup) raising $8.7M for intelligent warehouse automation. Post-pandemic e-commerce growth has created significant warehousing demand, but much of this employment is low-skilled and structurally exposed to automation.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Warehouse pickers, packers, and sorters</li>
+          <li>Truck drivers (long-haul autonomous vehicle development)</li>
+          <li>Customs documentation and freight forwarding clerks</li>
+          <li>Inventory management and stockroom operatives</li>
+          <li>Dispatch and route coordination staff</li>
+          <li>Last-mile delivery operatives (drone/autonomous pilots)</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Warehouse robotics integration and maintenance engineers</li>
+          <li>AI supply chain optimisation and demand planning analysts</li>
+          <li>Smart logistics platform and TMS administrators</li>
+          <li>Autonomous vehicle fleet operations managers</li>
+          <li>Cross-border data compliance and customs AI specialists</li>
+          <li>Cold chain and pharmaceutical logistics AI technicians</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Polish logistics is structurally dependent on migrant labour (Transport, logistics and warehousing accounts for 29.4% of immigrant worker demand, the highest of any sector per EURES November 2024 data). These workers — overwhelmingly Ukrainian and Belarusian — are among the most exposed to automation displacement and the least protected by Polish social safety nets. InPost's smart locker network is already displacing last-mile delivery labour at scale; warehouse robotics from companies like Nomagic are advancing rapidly. The sector's labour shortage paradox applies here too: genuine scarcity of truck drivers accelerates autonomous vehicle investment, but the workers who would eventually be displaced are mid-career professionals with limited transferable skills into the emerging AI-logistics roles that require significant technical upskilling.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>EU AI Act high-risk obligations may apply to AI used in worker performance monitoring and routing management systems in logistics. The EU Platform Work Directive (applicable from 2026) provides some protections for gig delivery workers. Polish Labour Code provides statutory redundancy but no specific AI transition support. GUS 2024 confirms logistics among the three most shortage-affected occupational groups (lorry drivers, freight forwarding), creating policy tension between addressing shortages through automation and managing resulting displacement. No sector-level agreement between logistics employers and trade unions addresses automation transition obligations.</p>
+    </div>
+  </div>
+
+  <!-- FINANCIAL SERVICES -->
+  <div id="financial" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Financial Services</div>
+      <div class="sector-momentum"><div class="score">67</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Polish financial services employ an estimated 350,000–430,000 workers (est., GUS finance and insurance sector classifications). Warsaw's Śródmieście district hosts Poland's major banks (PKO Bank Polski, Pekao, mBank, ING Bank Śląski) alongside the Warsaw Stock Exchange and a growing FinTech ecosystem — 368 active FinTech companies with a combined sector valuation of $952 million make Poland the CEE FinTech leader. The GUS economic situation report (March 2024) identified Finance and Insurance as one of only two sectors expressing optimism about near-term prospects (alongside ICT), reflecting AI-driven productivity gains. AI adoption in Polish financial services is advancing in fraud detection, credit scoring, customer service chatbots, and regulatory reporting. KakaoBank-equivalent digital-native banking is emerging through mBank and alior Bank's AI-first product strategies.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Retail branch tellers and counter service staff</li>
+          <li>Loan processing and credit assessment officers</li>
+          <li>Back-office reconciliation and data entry clerks</li>
+          <li>Call centre operatives and basic query handlers</li>
+          <li>Compliance documentation and monitoring assistants</li>
+          <li>Junior financial analysts in routine reporting roles</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>FinTech AI product managers and developers</li>
+          <li>EU AI Act financial sector compliance specialists</li>
+          <li>AML and fraud detection AI model validators</li>
+          <li>Algorithmic trading and quant analysts</li>
+          <li>Open banking and PSD3 integration architects</li>
+          <li>AI explainability and fairness auditors</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Polish financial services face the classic sector bifurcation: AI is a productivity amplifier for senior financial professionals and a displacement risk for the clerical and administrative workforce that historically provided entry points into the sector. Poland's FinTech ecosystem is growing rapidly, but FinTech firms are typically small (median team under 50), meaning they create high-quality but limited employment. The broader workforce impact of AI adoption across Poland's major banks — which collectively employ over 150,000 people — is likely to be felt in branch rationalisation and back-office consolidation over the next five years. The sector's structural optimism about AI (evidenced by GUS survey data) reflects the perspective of firms capturing productivity gains, not necessarily workers bearing adjustment costs.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>EU AI Act classifies AI used in credit scoring and recruitment in financial services as high-risk, requiring conformity assessments, transparency obligations, and human oversight from August 2026. DORA (Digital Operational Resilience Act) applies to financial institutions' ICT and AI risk management from January 2025. GDPR applies to AI training data. The Polish Financial Supervision Authority (KNF) issues AI guidance for domestic financial institutions. PSD3 (expected 2026) will reshape open banking obligations. No sector-level commitment requires Polish banks to fund transition support for AI-displaced branch and back-office workers.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>Financial Sector AI Adoption vs Branch Employment Index, Poland (2019–2024)</h4>
+      <canvas id="chartFin" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- OFFICE TRADITIONAL -->
+  <div id="office-trad" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Office Traditional</div>
+      <div class="sector-momentum"><div class="score">62</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Traditional office occupations — administrative support, public administration, secretarial, and clerical roles — employ an estimated 3.0–3.5 million workers in Poland (est., GUS admin activities, public administration, utilities classifications). Poland's shared services centre (SSC) sector is particularly significant: Warsaw, Kraków, and Wrocław host over 300 global business services centres (for companies including Google, Microsoft, IBM, Capgemini, and Accenture) employing approximately 350,000+ workers in centralised back-office and business process functions. These BSS/SSC workers represent the most concentrated pool of AI-displaceable administrative labour in Poland. EURES H1 2024 data confirms administrative and support service activities as the largest source of job vacancies (28.9%), reflecting both demand and high turnover in this segment. AI adoption in administrative tasks — document processing, scheduling, data analysis, reporting — is the fastest-growing application area in Polish enterprise AI deployment.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>SSC/BSS data entry and transaction processing staff</li>
+          <li>Administrative assistants and office managers</li>
+          <li>HR administration and payroll processing roles</li>
+          <li>Public sector administrative processing clerks</li>
+          <li>Customer service and query resolution agents</li>
+          <li>Report generation and data compilation analysts</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Intelligent automation and RPA governance specialists</li>
+          <li>AI-augmented business process redesign consultants</li>
+          <li>Digital workplace change management professionals</li>
+          <li>Data governance and quality management roles</li>
+          <li>AI translation and multilingual content coordinators</li>
+          <li>EU AI Act compliance coordinators across SSC hubs</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Poland's BSS/SSC sector is at the sharp end of AI displacement risk in Europe. The concentration of 350,000+ workers in Warsaw, Kraków, and Wrocław performing centralised back-office functions for global companies makes Poland uniquely exposed to decisions made by foreign corporate headquarters about AI automation investment. When a global company automates its accounts payable process, the workers affected are disproportionately in Poland's shared services centres. PwC's EMEA analysis notes that Poland's 235% growth in AI-exposed occupations is partly driven by the high concentration of AI-exposed white-collar roles in the SSC sector. Women are significantly over-represented in these roles. There is no mechanism ensuring that productivity gains captured by global firms using Polish SSC labour are shared with or invested in the displaced workers.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>EU AI Act high-risk classification applies to AI used in employment, hiring, and worker management — which covers AI deployed in BSS/SSC performance monitoring and role assignment systems. Polish Labour Code provides collective redundancy consultation obligations (20+ redundancies in 30 days require Works Council consultation), but these apply to the outcome of displacement, not its anticipation. The Polish government's Investment and Economic Development Agency supports SSC investment but provides no specific workforce transition mandate. EU Just Transition Fund mechanisms exist but are primarily targeted at energy sector displacement, not AI-driven services sector displacement.</p>
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL SERVICES -->
+  <div id="professional" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Professional Services</div>
+      <div class="sector-momentum"><div class="score">65</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Professional services employ an estimated 1.2–1.5 million workers in Poland (est., GUS professional, scientific, and technical activities classifications). Warsaw hosts the Polish offices of all Big Four accountancy firms, major global law firms, and international management consultancies, creating a substantial professional services ecosystem. The EU AI Act's compliance burden — falling on all AI operators serving EU markets — is generating significant demand for AI legal, compliance, and advisory work in Poland's professional services firms. Poland's tech-savvy professional workforce (particularly in legal tech and RegTech) is well-positioned to serve this demand. HR analytics is identified as a key in-demand skill in Poland's 2025 salary reports, reflecting the growing integration of AI into professional decision-making.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior lawyers in document review and legal research</li>
+          <li>Entry-level accountants in audit and compliance</li>
+          <li>Management consulting junior analysts and researchers</li>
+          <li>Market research and survey analysis operatives</li>
+          <li>Translation and legal localisation support staff</li>
+          <li>Basic technical writing and proposal generation roles</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>EU AI Act implementation counsel and advisors</li>
+          <li>AI governance and impact assessment specialists</li>
+          <li>Legal technology architects and LegalTech product managers</li>
+          <li>HR analytics and people data science professionals</li>
+          <li>AI-assisted forensic accounting specialists</li>
+          <li>ESG and sustainability reporting AI tools managers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Polish professional services face the same structural challenge identified across Europe: AI is a productivity multiplier for experienced professionals and a displacement risk for junior roles that provide the career development foundation. Poland's lower salary structure (relative to Western peers) means that AI's cost-reduction case for substituting junior professional work is somewhat reduced, providing a modest buffer. However, global law firms and consultancies are making AI adoption decisions at headquarters level and rolling them out to Polish offices, meaning the buffering effect is partial. The EU AI Act compliance wave does create genuine new work demand, particularly for lawyers and compliance professionals with both legal and technical AI literacy — a combination that Polish universities and law schools are only beginning to develop.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>EU AI Act creates direct demand for professional services through compliance obligations taking effect August 2026. GDPR continues to generate data protection legal and advisory work. EU CSRD (Corporate Sustainability Reporting Directive) creates demand for ESG assurance and advisory. Polish Bar Association and Polish Chamber of Auditors are developing AI competency and professional responsibility frameworks. No sector-level obligation mandates professional service firms to assess or report on AI-driven junior role displacement.</p>
+    </div>
+  </div>
+
+  <!-- CRE SERVICES -->
+  <div id="cre-services" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">CRE Services</div>
+      <div class="sector-momentum"><div class="score">64</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Commercial real estate services in Poland employ an estimated 80,000–110,000 workers (est., GUS real estate activities classifications). Warsaw ranked 3rd among European cities for foreign investment (Financial Times European Cities of the Future 2025), reflecting both strong occupier demand and active investor interest. The data centre and logistics real estate segments are Poland's highest-growth asset classes, driven by the same hyperscaler investment and supply chain reshoring dynamics. Global CRE firms (CBRE, JLL, Savills, Cushman & Wakefield, Colliers) maintain significant Polish operations. Proptech adoption — particularly AI-driven asset management, tenant analytics, and lease optimisation — is advancing in Warsaw's Grade A office market. Binaryx, a Polish fractional real estate investment proptech startup, exemplifies the digital-native disruption entering the sector.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior research analysts and market data compilers</li>
+          <li>Property administration and lease management clerks</li>
+          <li>Basic facilities management and inspection operatives</li>
+          <li>Routine valuation support and comparable data roles</li>
+          <li>Administrative support in brokerage and investment teams</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Data centre site acquisition and power infrastructure specialists</li>
+          <li>AI-driven portfolio analytics and fund management roles</li>
+          <li>ESG and green building certification managers</li>
+          <li>Proptech integration and digital twin operators</li>
+          <li>Logistics and last-mile real estate advisory specialists</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Polish CRE mirrors the global pattern: AI is eliminating junior research and administrative entry points while creating demand for senior specialists in high-growth asset classes. The data centre and logistics real estate boom creates opportunities for workers who can combine traditional CRE expertise with technical knowledge of power engineering, data connectivity, and environmental permitting. Warsaw's FDI position creates sustained demand for senior-level advisory and transactional work. The risk is that the sector's entry-level pipeline narrows as AI absorbs the research, comparable analysis, and administrative work that traditionally provided career development pathways.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>EU AI Act may apply to AI systems used in property valuation and tenant screening. GDPR governs tenant and buyer data management. Polish Real Estate Management Act governs professional licensing. EU Taxonomy Regulation and CSRD create ESG reporting obligations for real estate investment products. The Pomeranian Special Economic Zone attracted PLN 2.8 billion in 2024 investment pledges, creating regulatory-supported development context. No sector-specific AI governance framework applies to Polish commercial real estate.</p>
+    </div>
+  </div>
+
+  <!-- RETAIL -->
+  <div id="retail" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Retail</div>
+      <div class="sector-momentum"><div class="score">61</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Retail employs an estimated 1.8–2.2 million workers in Poland (est., GUS wholesale and retail trade classifications), with service and sales workers representing 14.7% of all job vacancies (EURES H1 2024). The sector is being disrupted by e-commerce growth, self-checkout expansion, and AI-driven inventory management. Major Polish retail chains (Żabka, Biedronka, Allegro, Empik) are integrating AI in demand forecasting, customer personalisation, and operational efficiency. Żabka has pioneered unmanned convenience store formats in Polish cities. Allegro — Poland's dominant e-commerce platform — processes millions of transactions daily through increasingly automated fulfilment infrastructure. The minimum wage increase to PLN 4,666 monthly (January 2025) is accelerating retail automation investment, particularly in high-labour-intensity formats.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Cashiers and point-of-sale service staff</li>
+          <li>Stock replenishment and shelf-stacking workers</li>
+          <li>Retail customer service and information desk roles</li>
+          <li>Visual merchandising and display assistants</li>
+          <li>Inventory counting and audit operatives</li>
+          <li>Part-time and seasonal retail floor staff</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>E-commerce operations and platform management roles</li>
+          <li>AI-powered personalisation and CRM analysts</li>
+          <li>Unmanned store operations and maintenance technicians</li>
+          <li>Retail data analytics and demand forecasting analysts</li>
+          <li>Customer experience design for AI-augmented retail</li>
+          <li>ESG compliance and sustainable sourcing analysts</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Polish retail employs a high share of part-time, female, younger, and migrant workers — the demographic groups consistently identified as most exposed to AI and automation displacement. The minimum wage increase, while essential for living standards, is creating measurable acceleration in self-checkout and unmanned store investment. Unlike manufacturing's acute shortage dynamic, retail has sufficient labour supply, meaning employers face little countervailing pressure to retain workers. Żabka's unmanned store expansion — operating across hundreds of locations — is a live demonstration of the sector's trajectory. Workers without post-secondary education concentrated in low-margin convenience and hypermarket formats face the greatest structural vulnerability.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>Polish Labour Code sets minimum employment standards. Minimum wage legislation (PLN 4,666/month from January 2025) provides a floor but also accelerates automation investment. EU AI Act high-risk classification may apply to AI used in biometric customer identification in unmanned stores. Consumer data protection under GDPR applies to retail AI personalisation. No sector-level agreement addresses automation transition in Polish retail. Trade union density in Polish retail is low, reducing collective bargaining leverage during structural change.</p>
+    </div>
+  </div>
+
+  <!-- EMPLOYMENT TABLE -->
+  <div class="emp-table-section">
+    <h2>Sector Employment Overview</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Sector</th>
+          <th>Est. Employment</th>
+          <th>Source / Notes</th>
+          <th>Coverage</th>
+          <th>Momentum</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Data Centres</td>
+          <td>~10–20k direct <span class="est-note">(est.)</span></td>
+          <td>Construction boom adds temporary employment; permanent roles modest</td>
+          <td>Full</td>
+          <td class="score-cell">78</td>
+        </tr>
+        <tr>
+          <td>Office Tech & Creative</td>
+          <td>~650k+ <span class="est-note">(est.)</span></td>
+          <td>Largest CEE ICT talent pool; 60k+ global tech firms</td>
+          <td>Full</td>
+          <td class="score-cell">72</td>
+        </tr>
+        <tr>
+          <td>Manufacturing</td>
+          <td>~3.5–4.0M <span class="est-note">(est.)</span></td>
+          <td>GUS 2023: 22.8% of paid employment; automotive, electronics, food</td>
+          <td>Snapshot</td>
+          <td class="score-cell">62</td>
+        </tr>
+        <tr>
+          <td>Logistics</td>
+          <td>~700k–900k <span class="est-note">(est.)</span></td>
+          <td>GUS transport and storage; Central European hub role</td>
+          <td>Full</td>
+          <td class="score-cell">68</td>
+        </tr>
+        <tr>
+          <td>Financial Services</td>
+          <td>~350k–430k <span class="est-note">(est.)</span></td>
+          <td>GUS finance and insurance; 368 FinTech companies</td>
+          <td>Full</td>
+          <td class="score-cell">67</td>
+        </tr>
+        <tr>
+          <td>Office Traditional</td>
+          <td>~3.0–3.5M <span class="est-note">(est.)</span></td>
+          <td>GUS admin activities + 350k+ BSS/SSC workers in Warsaw, Kraków, Wrocław</td>
+          <td>Full</td>
+          <td class="score-cell">62</td>
+        </tr>
+        <tr>
+          <td>Professional Services</td>
+          <td>~1.2–1.5M <span class="est-note">(est.)</span></td>
+          <td>GUS professional, scientific, technical activities</td>
+          <td>Full</td>
+          <td class="score-cell">65</td>
+        </tr>
+        <tr>
+          <td>CRE Services</td>
+          <td>~80k–110k <span class="est-note">(est.)</span></td>
+          <td>GUS real estate activities; Warsaw #3 European FDI city</td>
+          <td>Full</td>
+          <td class="score-cell">64</td>
+        </tr>
+        <tr>
+          <td>Retail</td>
+          <td>~1.8–2.2M <span class="est-note">(est.)</span></td>
+          <td>GUS wholesale and retail trade; Allegro e-commerce platform dominant</td>
+          <td>Full</td>
+          <td class="score-cell">61</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="est-note" style="margin-top:10px;">All employment figures are estimates derived from GUS national employment data (total employed ~17.4M), sector share analysis from GUS industry classifications, EURES Poland Labour Market data, and Eurostat. No single source provides the required sector granularity. Figures should be treated as indicative ranges for analysis purposes.</p>
+  </div>
+
+  <!-- POLICY GAPS -->
+  <div class="policy-section">
+    <h2>Human-Centred Policy Gaps</h2>
+    <div class="policy-grid">
+      <div class="policy-card gap">
+        <h4>BSS/SSC Sector AI Displacement — No Transition Framework</h4>
+        <p>Poland's 350,000+ business services centre workers are among Europe's most concentrated AI displacement risk. Automation decisions are made at global headquarters, not in Poland. No mechanism ensures productivity gains captured by foreign firms using Polish SSC labour are reinvested in displaced workers or communities.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Migrant Worker Exclusion from Reskilling</h4>
+        <p>Over one million foreign workers (primarily Ukrainian and Belarusian) are structurally embedded in Polish logistics, manufacturing, and construction. These workers face the highest automation exposure and have the least access to Polish government transition and reskilling programmes.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Collective Redundancy Consultation — Reactive, Not Predictive</h4>
+        <p>Polish Labour Code collective redundancy obligations apply once displacement has been decided. There is no requirement for firms to conduct prospective AI impact assessments, consult workers before automation investment decisions, or share transition plans with employee representatives in advance.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Entry-Level Tech Pathway Preservation</h4>
+        <p>Poland's 235% growth in AI-exposed occupations and the concentration of its ICT workforce in junior delivery roles creates acute risk of entry-level pathway compression. Government AI investment focuses on training new graduates (supply-side) without mechanisms to preserve the junior roles that enable career development for the existing workforce.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Demographic Headwinds — AI Transition Window Narrowing</h4>
+        <p>Poland's working-age population is projected to decrease by approximately two million by 2040 (GUS). This creates a narrow window in which automation investment could address genuine labour shortages without displacing workers onto an inadequate safety net. Policy coordination between demographic planning and AI transition support is currently absent.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>EU AI Act Implementation Capacity Gap</h4>
+        <p>The EU AI Act's compliance obligations (August 2026) require significant institutional capacity that Poland is still building. Regulatory bodies, legal professionals, and business compliance teams need substantial upskilling. Without an accelerated national implementation support programme, compliance burden will fall disproportionately on larger firms, with SMEs (which employ the majority of Polish workers) left behind.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="source-note">
+    <strong>Primary Sources:</strong> GUS (Statistics Poland): Average Paid Employment and Wages 2023/2024; EURES Poland Labour Market Information 2024; Eurostat: EU Labour Force Survey; US State Department: 2025 Poland Investment Climate Statement; Introl: "Poland's Emerging AI Infrastructure" (2025); Mordor Intelligence: Poland Data Centre Market 2025–2031; Data Center Dynamics: Microsoft Poland Investment (February 2025); PwC EMEA Jobs Barometer 2025: AI at Work; FocusEconomics: Poland Economy 2024; Alcor BPO: Poland Technology and IT Industry 2025; Business Services Sector in Poland 2024 (Malopolska); Yotru: Hiring Trends in Poland 2026; Hiring Trends in Poland 2026. <strong>Notes:</strong> All sector employment figures are estimates. GUS publishes national sector employment but not at the granularity required for this analysis. Figures are derived by applying sector share analysis to the total employed population of approximately 17.4 million, cross-referenced with EURES and Eurostat sector data. Estimates should be used for directional analysis only.
+  </div>
+
+</main>
+
+<footer>
+  Human Impact Index &mdash; <span>Andrew Phipps</span> | PhD Candidate, AI Ethics, University of Sussex | Former Global Leader, Cushman &amp; Wakefield
+</footer>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Data Centres chart
+const ctxDC = document.getElementById('chartDC').getContext('2d');
+new Chart(ctxDC, {
+  type: 'bar',
+  data: {
+    labels: ['2020','2021','2022','2023','2024','2025E'],
+    datasets: [
+      { label: 'Market Value (USD M)', data: [380,480,620,820,1160,1450], backgroundColor: 'rgba(129,199,132,0.6)', yAxisID: 'y' },
+      { label: 'Hyperscaler Investment Index', data: [20,30,45,60,80,100], type: 'line', borderColor: '#64b5f6', backgroundColor: 'transparent', pointRadius: 4, yAxisID: 'y1' }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#8899bb', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' }, title: { display: true, text: 'USD M', color: '#8899bb' } },
+      y1: { position: 'right', ticks: { color: '#64b5f6' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Index', color: '#64b5f6' } }
+    }
+  }
+});
+
+// Tech chart
+const ctxTech = document.getElementById('chartTech').getContext('2d');
+new Chart(ctxTech, {
+  type: 'bar',
+  data: {
+    labels: ['2018','2019','2020','2021','2022','2023','2024'],
+    datasets: [
+      { label: 'AI-Exposed Postings (% of total)', data: [0.1,0.2,0.25,0.35,0.5,0.7,0.9], backgroundColor: 'rgba(129,199,132,0.7)' }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#8899bb', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' }, title: { display: true, text: '% of all job postings', color: '#8899bb' } }
+    }
+  }
+});
+
+// Financial Services chart
+const ctxFin = document.getElementById('chartFin').getContext('2d');
+new Chart(ctxFin, {
+  type: 'line',
+  data: {
+    labels: ['2019','2020','2021','2022','2023','2024'],
+    datasets: [
+      { label: 'AI Adoption Index', data: [22,28,38,52,68,82], borderColor: '#64b5f6', backgroundColor: 'rgba(100,181,246,0.1)', pointRadius: 4 },
+      { label: 'Branch Employment Index', data: [100,97,94,90,86,83], borderColor: '#81c784', backgroundColor: 'rgba(129,199,132,0.1)', pointRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#8899bb', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' }, title: { display: true, text: 'Index (2019=100)', color: '#8899bb' } }
+    }
+  }
+});
+</script>
+
+</body>
+</html>

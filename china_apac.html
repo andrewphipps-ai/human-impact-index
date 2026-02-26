@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>China | Human Impact Index</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --text: #e0e6f0;
+    --text-muted: #8899aa;
+    --blue: #64b5f6;
+    --purple: #ce93d8;
+    --green: #81c784;
+    --amber: #ffb74d;
+    --red: #ef5350;
+    --teal: #4db6ac;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* HEADER */
+  .page-header { background: linear-gradient(135deg, #0d1525 0%, #131e35 50%, #0d1525 100%); border-bottom: 1px solid var(--border); padding: 2rem 0; }
+  .header-inner { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+  .back-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--purple); font-size: 0.85rem; margin-bottom: 1rem; }
+  .back-link:hover { color: var(--text); text-decoration: none; }
+  .country-title { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .country-flag { font-size: 2.5rem; }
+  .country-title h1 { font-size: 2.2rem; font-weight: 700; color: var(--text); }
+  .country-title .region-tag { background: var(--purple); color: #fff; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem; max-width: 700px; }
+
+  /* STAT CARDS */
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+  .stat-card .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.3rem; }
+  .stat-card .value { font-size: 1.4rem; font-weight: 700; color: var(--purple); }
+  .stat-card .note { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+  /* MOMENTUM BAR */
+  .momentum-section { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem 1.5rem; }
+  .momentum-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.6rem; }
+  .momentum-bar-wrap { position: relative; height: 10px; background: var(--border); border-radius: 5px; margin-bottom: 0.5rem; }
+  .momentum-bar-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--purple), var(--blue)); }
+  .momentum-row { display: flex; justify-content: space-between; align-items: center; }
+  .momentum-score { font-size: 1.8rem; font-weight: 700; color: var(--purple); }
+  .momentum-desc { font-size: 0.8rem; color: var(--text-muted); max-width: 500px; }
+
+  /* MAIN */
+  .main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+  /* TABS */
+  .tab-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+  .tab-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); padding: 0.45rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; transition: all 0.2s; }
+  .tab-btn:hover, .tab-btn.active { background: var(--purple); border-color: var(--purple); color: #fff; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* SECTOR LAYOUT */
+  .sector-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+  .sector-icon { font-size: 2rem; }
+  .sector-header h2 { font-size: 1.5rem; font-weight: 700; }
+  .sector-momentum { margin-left: auto; text-align: right; }
+  .sector-momentum .score { font-size: 2rem; font-weight: 700; color: var(--purple); }
+  .sector-momentum .label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+  .snapshot-badge { display: inline-block; background: var(--amber); color: #000; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; text-transform: uppercase; margin-left: 0.6rem; vertical-align: middle; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+  .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; }
+  .info-card h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.8rem; }
+  .info-card ul { list-style: none; }
+  .info-card ul li { padding: 0.3rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .info-card ul li:last-child { border-bottom: none; }
+  .info-card ul li::before { content: "→ "; color: var(--purple); }
+  .at-risk::before { content: "▼ "; color: var(--red) !important; }
+  .emerging::before { content: "▲ "; color: var(--green) !important; }
+
+  .impact-box { background: linear-gradient(135deg, #1a0d2e, #0d1a2e); border: 1px solid #4a2060; border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem; }
+  .impact-box h3 { color: var(--purple); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
+  .impact-box p { font-size: 0.9rem; color: var(--text); line-height: 1.7; }
+
+  .reg-box { background: linear-gradient(135deg, #0d1a2e, #0a1520); border: 1px solid #1e3a5f; border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem; }
+  .reg-box h3 { color: var(--blue); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
+  .reg-box p { font-size: 0.9rem; color: var(--text); line-height: 1.7; }
+
+  .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .chart-wrap h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 1rem; }
+  canvas { max-height: 280px; }
+
+  /* REGIONAL TABLE */
+  .section-title { font-size: 1.2rem; font-weight: 700; margin: 2rem 0 1rem; color: var(--text); border-left: 3px solid var(--purple); padding-left: 0.75rem; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { background: var(--surface); color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.06em; padding: 0.7rem 1rem; text-align: left; border-bottom: 2px solid var(--border); }
+  td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: rgba(206, 147, 216, 0.04); }
+  .high { color: var(--red); font-weight: 600; }
+  .medium { color: var(--amber); font-weight: 600; }
+  .low { color: var(--green); font-weight: 600; }
+
+  /* POLICY */
+  .policy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .policy-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--purple); border-radius: 8px; padding: 1.2rem; }
+  .policy-card h4 { font-size: 0.85rem; font-weight: 700; color: var(--purple); margin-bottom: 0.5rem; }
+  .policy-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* SOURCE */
+  .source-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; }
+  .source-box h3 { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.8rem; }
+  .source-box p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.8; }
+
+  /* FOOTER */
+  footer { background: var(--surface); border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; font-size: 0.8rem; color: var(--text-muted); }
+  footer .brand { color: var(--purple); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="header-inner">
+    <a class="back-link" href="apac_overview.html">← Back to APAC Overview</a>
+    <div class="country-title">
+      <span class="country-flag">🇨🇳</span>
+      <div>
+        <h1>China <span class="region-tag">APAC</span></h1>
+      </div>
+    </div>
+    <p class="subtitle">AI is transforming China's workforce at a scale unmatched anywhere on earth. With 734 million employed people and a government-directed acceleration programme, the human stakes are immense — and largely invisible in productivity metrics.</p>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="label">Total Employed</div>
+        <div class="value">734M</div>
+        <div class="note">NBS 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Urban Employed</div>
+        <div class="value">473M</div>
+        <div class="note">NBS 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Urban Unemployment</div>
+        <div class="value">5.1%</div>
+        <div class="note">Surveyed rate, 2024 avg</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">AI Firms Using AI</div>
+        <div class="value">&gt;90%</div>
+        <div class="note">WEF Future of Jobs 2025</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Industrial Robots</div>
+        <div class="value">50%</div>
+        <div class="note">Global share installed 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Data Centre Capacity</div>
+        <div class="value">30 GW</div>
+        <div class="note">2025 target, Goldman Sachs</div>
+      </div>
+    </div>
+    <div class="momentum-section">
+      <div class="momentum-label">Overall AI Transition Momentum Score</div>
+      <div class="momentum-bar-wrap">
+        <div class="momentum-bar-fill" style="width: 74%"></div>
+      </div>
+      <div class="momentum-row">
+        <div class="momentum-score">74 / 100</div>
+        <div class="momentum-desc">High-velocity state-directed AI integration across sectors. Worker support mechanisms are nascent and unevenly distributed. The pace of automation exceeds the pace of reskilling provision.</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showTab('data-centres')">Data Centres</button>
+    <button class="tab-btn" onclick="showTab('logistics')">Logistics</button>
+    <button class="tab-btn" onclick="showTab('office-trad')">Office Traditional</button>
+    <button class="tab-btn" onclick="showTab('office-tech')">Office Tech &amp; Creative</button>
+    <button class="tab-btn" onclick="showTab('retail')">Retail</button>
+    <button class="tab-btn" onclick="showTab('cre-services')">CRE Services</button>
+    <button class="tab-btn" onclick="showTab('professional')">Professional Services</button>
+    <button class="tab-btn" onclick="showTab('manufacturing')">Manufacturing</button>
+    <button class="tab-btn" onclick="showTab('financial')">Financial Services</button>
+  </div>
+
+  <!-- DATA CENTRES -->
+  <div class="tab-panel active" id="data-centres">
+    <div class="sector-header">
+      <span class="sector-icon">🏭</span>
+      <div>
+        <h2>Data Centres</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">82</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>China's data centre buildout is the largest in the world by growth rate, yet the human story is complex. Construction workers and low-skill operations staff face precarious employment conditions as hyperscale facilities require fewer ongoing workers per megawatt than older facilities. The government's "AI+" agenda drives investment, but wage protections and safety standards for the growing construction workforce around Inner Mongolia, Beijing, and Guangdong clusters are inadequately monitored. High-skilled AI operations roles concentrate in first-tier cities, widening the urban-rural and regional divide.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Employment Context</h3>
+        <ul>
+          <li>China accounts for approximately 16% of global hyperscale data centre capacity (Synergy Research, Q4 2024)</li>
+          <li>Greater Beijing cluster alone represents ~10% of global hyperscale capacity (Allianz Commercial, 2025)</li>
+          <li>Electricity capacity on course to reach 30 GW in 2025, a 30% year-on-year increase (Goldman Sachs Research, 2025)</li>
+          <li>Top internet firms expected to invest over $70 billion in 2026 (Goldman Sachs Research)</li>
+          <li>DeepSeek launch in January 2025 accelerated domestic hyperscaler investment</li>
+          <li>Chinese hyperscalers: Alibaba Cloud, Tencent, Baidu, ByteDance</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Workforce Snapshot</h3>
+        <ul>
+          <li>Sector requires tens of thousands of construction workers for ongoing buildout</li>
+          <li>Ongoing operations roles per facility are highly automated; engineer-to-MW ratios are falling</li>
+          <li>Domestic chip supply chain workers are a growing employment category as China shifts from foreign chips</li>
+          <li>China Telecom's Inner Mongolia Data Park employs thousands in a region with few alternative employers</li>
+        </ul>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Traditional data centre operations technicians — automated monitoring replacing manual oversight</li>
+          <li class="at-risk">Entry-level IT support roles within facilities — AI diagnostics reducing headcount</li>
+          <li class="at-risk">Routine network monitoring — AI systems handle anomaly detection</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Opportunities</h3>
+        <ul>
+          <li class="emerging">AI infrastructure engineers and GPU cluster specialists</li>
+          <li class="emerging">Domestic chip architecture and hardware design roles (as foreign chip dependency declines)</li>
+          <li class="emerging">Energy and cooling systems engineers — liquid cooling at scale is a new discipline</li>
+          <li class="emerging">AI safety and compliance roles required by CAC filing obligations</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>China's National Development and Reform Commission has a Data Centre Action Plan requiring facilities to improve renewable energy utilisation by 10% annually. The Cyberspace Administration of China (CAC) mandates registration and security assessment for generative AI services hosted in data centres. There is no equivalent of the EU AI Act's worker protection provisions; labour rights within hyperscale construction remain governed by general labour law, which enforcement records suggest is inconsistently applied in remote cluster locations.</p>
+    </div>
+    <div class="chart-wrap">
+      <h3>China Data Centre Capacity Growth (GW) vs APAC Regional Share</h3>
+      <canvas id="dcChart"></canvas>
+    </div>
+  </div>
+
+  <!-- LOGISTICS -->
+  <div class="tab-panel" id="logistics">
+    <div class="sector-header">
+      <span class="sector-icon">🚚</span>
+      <div>
+        <h2>Logistics and Warehousing</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">78</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>China's logistics and warehousing sector is the world's most automated by volume, driven by Alibaba's Cainiao, JD Logistics, and SF Express. The human cost is concentrated among the approximately 300 million migrant workers who form the backbone of last-mile delivery and warehouse picking operations. These workers are often engaged through informal or gig arrangements, with no portable benefits and minimal retraining provision. Automation of warehouse picking and sortation is replacing entry-level roles that provide a critical first rung on the economic ladder for rural migrants. Government policy prioritises throughput; worker transition is an afterthought.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Employment Context</h3>
+        <ul>
+          <li>Total migrant workers: 299.73 million in 2024, up 0.7% year-on-year (NBS 2024)</li>
+          <li>Logistics and transport is a leading employer of migrant labour across eastern seaboard provinces</li>
+          <li>JD Logistics operates fully automated warehouses across 15 cities; human pickers largely replaced in sortation hubs</li>
+          <li>Alibaba's Cainiao system processed over 100 billion parcels in 2024 (Alibaba Group)</li>
+          <li>AI-powered route optimisation and autonomous delivery pilots active in Shenzhen, Shanghai, Beijing</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Employment Estimate (Logistics)</h3>
+        <ul>
+          <li>Estimated 20–25 million workers in logistics and warehousing (estimate based on sector's share of urban employment and migrant worker surveys; no single NBS sub-sector figure available)</li>
+          <li>Last-mile delivery alone employs an estimated 7–8 million couriers (industry estimates, 2024)</li>
+          <li>Automated sortation centres: picking robot penetration exceeds 60% in JD and Cainiao major hubs</li>
+        </ul>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Warehouse pickers and sorters — robotic arms and AMR fleets replacing manual picking in tier-1 hubs</li>
+          <li class="at-risk">Manual sortation workers — automated conveyor and vision systems</li>
+          <li class="at-risk">Long-haul truck drivers — autonomous and semi-autonomous freight pilots expanding</li>
+          <li class="at-risk">Inventory clerks — AI-driven RFID and vision systems replace manual counting</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Opportunities</h3>
+        <ul>
+          <li class="emerging">Robot fleet supervisors and AMR maintenance technicians</li>
+          <li class="emerging">Last-mile drone operations coordinators</li>
+          <li class="emerging">AI logistics planning and route optimisation analysts</li>
+          <li class="emerging">Cold-chain AI systems technicians (growing food e-commerce segment)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>China's New Generation AI Development Plan (updated 2024) designates logistics as a priority sector for AI integration but contains no binding worker protection provisions. The Ministry of Human Resources and Social Security operates reskilling fund schemes, but coverage of gig and informal logistics workers is structurally excluded from most provisions. Algorithmic management of delivery workers is governed only by a 2021 guidance document on rider platform obligations, which is inadequately enforced.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TRADITIONAL -->
+  <div class="tab-panel" id="office-trad">
+    <div class="sector-header">
+      <span class="sector-icon">🏢</span>
+      <div>
+        <h2>Office Traditional</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">65</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>China's traditional office workforce — accountants, administrative staff, clerks, data entry workers, and junior analysts — faces the most direct exposure to generative AI displacement in the near term. A Peking University study of millions of job postings from 2018 to 2024 found a clear decline in vacancies for occupations with high AI exposure, particularly in text and data processing roles. The researchers concluded that "some of the job positions in such occupations are being replaced by AI, so that firms could cut new hiring." The 12.7 million university graduates entering the market in 2025 face an environment where AI is already narrowing the entry points that previous generations used to build careers.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Accountants and bookkeepers — AI coding and reconciliation tools from platforms like Alibaba Cloud</li>
+          <li class="at-risk">Editors and content reviewers — large language models handling first-pass drafting</li>
+          <li class="at-risk">Junior programmers — code generation reducing new-hire demand at Baidu, ByteDance, and tech firms</li>
+          <li class="at-risk">Administrative assistants — generative AI scheduling and documentation tools</li>
+          <li class="at-risk">Data entry and processing clerks — OCR and AI extraction eliminating manual input</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Opportunities</h3>
+        <ul>
+          <li class="emerging">AI governance and ethics compliance officers (CAC filing and algorithm audit requirements)</li>
+          <li class="emerging">Prompt engineering and AI workflow designers</li>
+          <li class="emerging">Human-in-the-loop oversight roles for regulated AI outputs</li>
+          <li class="emerging">Cross-border business liaisons as Chinese firms expand internationally</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>The Interim Measures for Generative AI Services (2023) require AI outputs to meet content standards, creating demand for human reviewers. However, the regulatory framework does not address the displacement of traditional office roles, nor does it require employers to provide transition support for workers whose tasks are automated. Baidu reportedly cut up to 40% of some departments in late 2024 as AI tools reduced headcount needs.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TECH -->
+  <div class="tab-panel" id="office-tech">
+    <div class="sector-header">
+      <span class="sector-icon">💻</span>
+      <div>
+        <h2>Office Tech and Creative</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">80</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>China's tech sector is simultaneously the primary beneficiary of AI investment and the sector generating the most acute near-term displacement among knowledge workers. AI-related job openings surged 543% year-on-year between January and October 2025 (Maimai recruitment platform), while vacancies for conventional programming and data-processing roles declined. This polarisation is sharpest for younger workers: 12.7 million university graduates in 2025, many holding computer science or related degrees, enter a market where the entry-level roles that structured previous career paths are contracting rapidly. The pay premium for AI-native talent (algorithm engineers earning 18% more than general counterparts) widens inequality within the tech workforce.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">General software developers — code-generation AI compressing team sizes</li>
+          <li class="at-risk">UX/UI designers without AI tool proficiency — generative design tools devalue mid-tier skills</li>
+          <li class="at-risk">Content creators and copywriters — domestic LLMs (Doubao, Kimi, DeepSeek) replacing output</li>
+          <li class="at-risk">Junior data analysts — automated insight generation from BI platforms</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Opportunities</h3>
+        <ul>
+          <li class="emerging">Large model algorithm engineers — top of demand charts on all major platforms</li>
+          <li class="emerging">AI product managers — earning 20%+ above traditional counterparts</li>
+          <li class="emerging">AI video and multimodal content specialists — growing international revenue stream</li>
+          <li class="emerging">Domestic AI chip architects — critical as China reduces foreign chip dependence</li>
+          <li class="emerging">AI safety and alignment researchers — CAC filing obligations create institutional demand</li>
+        </ul>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <h3>AI-Related Job Postings vs General Tech Postings — Indexed Growth 2023–2025</h3>
+      <canvas id="techChart"></canvas>
+    </div>
+  </div>
+
+  <!-- RETAIL -->
+  <div class="tab-panel" id="retail">
+    <div class="sector-header">
+      <span class="sector-icon">🛒</span>
+      <div>
+        <h2>Retail</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">72</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Chinese retail has undergone one of the most aggressive AI-driven transformations in the world. Alibaba's Freshippo and JD's 7FRESH pioneered cashierless grocery formats; live-stream commerce employs millions but also creates a highly volatile, algorithmically managed gig workforce. The workers bearing the greatest cost of this transition are the tens of millions of low-skill retail assistants, many of whom are older workers or women from non-coastal regions who have limited pathways into AI-adjacent roles. The algorithmic management of live-stream workers — who face penalty systems, ranking pressures, and performance data exposure — represents a form of intensification that traditional labour protections were not designed to address.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Cashiers and checkout staff — cashierless stores and mobile payment saturation</li>
+          <li class="at-risk">Inventory and stock management workers — RFID and vision AI systems</li>
+          <li class="at-risk">Customer service agents — AI chatbots handling first-line queries on Taobao, JD.com</li>
+          <li class="at-risk">Traditional shop floor assistants — foot-traffic decline in physical retail</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Opportunities</h3>
+        <ul>
+          <li class="emerging">Live-stream commerce hosts and AI-assisted selling coordinators</li>
+          <li class="emerging">Personalisation data analysts for e-commerce platforms</li>
+          <li class="emerging">Smart store experience designers</li>
+          <li class="emerging">AI-assisted visual merchandising specialists</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRE SERVICES -->
+  <div class="tab-panel" id="cre-services">
+    <div class="sector-header">
+      <span class="sector-icon">🏗️</span>
+      <div>
+        <h2>Commercial Real Estate Services</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">62</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>China's commercial real estate services sector faces a double pressure: a structural correction in the property market following the 2021 developer debt crisis, and the concurrent introduction of AI tools that compress the advisory and analytical workforce. Firms such as CBRE, JLL, and Cushman and Wakefield operate in China but face a domestically depressed market that limits expansion. The workers most exposed are junior analysts and property management staff whose routine functions — valuation modelling, lease abstraction, facilities reporting — are already being replaced by AI platforms. The domestic market's prolonged weakness means there is no compensation through growth.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Junior CRE analysts — AI valuation and market research tools</li>
+          <li class="at-risk">Property management admin staff — automated workflow and reporting</li>
+          <li class="at-risk">Facilities management coordinators — IoT and AI-driven building management systems</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Opportunities</h3>
+        <ul>
+          <li class="emerging">Data centre real estate specialists — hyperscale demand creates new sub-market</li>
+          <li class="emerging">ESG and sustainability analysts for commercial portfolios</li>
+          <li class="emerging">Smart building systems integrators</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL SERVICES -->
+  <div class="tab-panel" id="professional">
+    <div class="sector-header">
+      <span class="sector-icon">⚖️</span>
+      <div>
+        <h2>Professional Services</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">68</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>China's professional services sector — encompassing law, consulting, accountancy, and research — faces growing AI integration at the entry and mid levels. The Peking University study found that "accountants, editors, and programmers" are among the highest AI-exposed knowledge occupations in China. The structural challenge is that these professions represent the aspirational destination for the millions of annual university graduates, many of whom now face a narrowing market. Law firms are using AI for contract review; Big Four accounting firms are deploying AI for audit analytics; consulting firms are replacing junior research roles with AI-assisted analysis. The safety net for displaced professional workers — retraining access, unemployment insurance — is designed for manufacturing workers and is poorly suited to knowledge-worker transitions.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Junior lawyers and legal assistants — AI contract review and due diligence tools</li>
+          <li class="at-risk">Junior auditors and accountants — AI-driven audit analytics and reconciliation</li>
+          <li class="at-risk">Research analysts — generative AI synthesising reports</li>
+          <li class="at-risk">Translators — large multilingual models replacing routine translation work</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Opportunities</h3>
+        <ul>
+          <li class="emerging">AI governance consultants serving firms required to comply with CAC regulations</li>
+          <li class="emerging">Senior client-facing advisory roles where relationships and judgement remain central</li>
+          <li class="emerging">AI audit and model risk validation specialists</li>
+          <li class="emerging">IP attorneys specialising in AI-generated content (a growing case load since 2023 Beijing Internet Court rulings)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- MANUFACTURING -->
+  <div class="tab-panel" id="manufacturing">
+    <div class="sector-header">
+      <span class="sector-icon">🔧</span>
+      <div>
+        <h2>Manufacturing</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">76</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>China installs one in every two industrial robots globally, and has been the world's leading robotics market since 2013. Yet the human impact is more nuanced than displacement narratives suggest. A 2025 survey of 2,400 manufacturing workers in southern China found that only 2% had been reassigned or laid off due to technological changes in the past two years — the primary automation driver to date has been demographic necessity, as young workers shun factory work and China's workforce shrinks. However, the same workers believe nearly 50% of their jobs could be automated in the next five to ten years. The workers least equipped to navigate this transition are those in mid-skill assembly roles in the Pearl River and Yangtze River Delta regions — older, often migrant workers with no higher education and limited access to state reskilling programmes.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Employment Context</h3>
+        <ul>
+          <li>Industrial sector employs approximately 29% of the workforce — an estimated 213 million people (NBS 2023 breakdown; 2024 figures not separately published in English)</li>
+          <li>Manufacturing accounts for the majority of industrial employment (estimate: 90–100 million workers; NBS sub-sector breakdowns are not fully available in English-language sources; treat as informed estimate)</li>
+          <li>High-tech manufacturing value added grew 8.9% in 2024 (NBS)</li>
+          <li>New energy vehicle output: 13.168 million units in 2024, up 38.7% (NBS)</li>
+          <li>Service robots: 10.519 million units produced in 2024, up 15.6% (NBS)</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Assembly line workers in consumer electronics — robotic arms penetration exceeds 70% in leading facilities</li>
+          <li class="at-risk">Quality inspection workers — AI vision systems now outperform human inspection in defect detection</li>
+          <li class="at-risk">Textile and garment workers — labour-intensive sectors facing automation and nearshoring</li>
+          <li class="at-risk">Routine CNC machine operators — AI-driven precision machining reduces operator involvement</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-card" style="margin-bottom:1.5rem">
+      <h3>Emerging Opportunities</h3>
+      <ul>
+        <li class="emerging">Robotics maintenance and calibration technicians</li>
+        <li class="emerging">AI-driven quality systems engineers</li>
+        <li class="emerging">New energy vehicle battery assembly specialists</li>
+        <li class="emerging">Industrial AI trainers and digital twin operators</li>
+        <li class="emerging">Advanced semiconductor process engineers</li>
+      </ul>
+    </div>
+    <div class="chart-wrap">
+      <h3>China Industrial Robot Installations (Thousands) — Estimated Share of Global Total</h3>
+      <canvas id="mfgChart"></canvas>
+    </div>
+  </div>
+
+  <!-- FINANCIAL SERVICES -->
+  <div class="tab-panel" id="financial">
+    <div class="sector-header">
+      <span class="sector-icon">💳</span>
+      <div>
+        <h2>Financial Services</h2>
+        <div style="color:var(--text-muted);font-size:0.85rem;">Full Analysis</div>
+      </div>
+      <div class="sector-momentum">
+        <div class="score">74</div>
+        <div class="label">Momentum</div>
+      </div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Chinese financial institutions were early and aggressive adopters of AI — Ant Group, Ping An, and state banks have deployed AI in credit scoring, fraud detection, and customer service at enormous scale. The human impact falls hardest on branch staff and back-office processors. Bank branch networks have contracted significantly since 2020, with AI-driven mobile banking reducing the need for human transaction processing. Workers in smaller regional banks and third-tier cities lack the digital literacy or geographic mobility to transition into AI-adjacent roles. The government's priority is financial stability and technological leadership; displaced bank workers receive no sector-specific transition support.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>Roles Under Pressure</h3>
+        <ul>
+          <li class="at-risk">Bank tellers and branch cashiers — mobile banking penetration exceeds 90% among urban under-45s</li>
+          <li class="at-risk">Loan officers (routine applications) — AI credit scoring replacing manual review for SME lending</li>
+          <li class="at-risk">Insurance claims processors — Ping An and others using AI for automated claims assessment</li>
+          <li class="at-risk">Compliance monitoring staff — RegTech and AI surveillance replacing manual transaction review</li>
+          <li class="at-risk">Customer service agents — AI chatbots handling the vast majority of first-contact queries</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Opportunities</h3>
+        <ul>
+          <li class="emerging">AI risk model validators and explainability specialists</li>
+          <li class="emerging">Wealth management advisers serving growing middle class</li>
+          <li class="emerging">Financial data scientists and quantitative analysts</li>
+          <li class="emerging">Digital RMB implementation specialists</li>
+          <li class="emerging">Fintech product developers working on cross-border payment rails</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>China's financial AI regulation is sector-specific and distributed across the People's Bank of China, CBIRC, and CSRC. The CAC's Generative AI Measures apply to customer-facing AI tools. Algorithmic credit scoring is governed by personal information protection rules (PIPL, 2021), but mandatory explainability requirements for automated decisions affecting individuals are inconsistently enforced. There is no requirement for financial institutions to notify workers in advance of role automation, nor to fund retraining. China's digital yuan (e-CNY) programme is accelerating the replacement of cash transaction roles.</p>
+    </div>
+  </div>
+
+  <!-- REGIONAL EMPLOYMENT TABLE -->
+  <h2 class="section-title">Regional Employment and AI Exposure Overview</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Sector</th>
+          <th>Employment (Estimate)</th>
+          <th>AI Adoption Level</th>
+          <th>Automation Exposure</th>
+          <th>Support Adequacy</th>
+          <th>Momentum</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Data Centres</td>
+          <td>Est. 500,000+ (ops + construction)</td>
+          <td>Very High</td>
+          <td class="medium">Medium (ops)</td>
+          <td class="high">Weak</td>
+          <td>82</td>
+        </tr>
+        <tr>
+          <td>Logistics &amp; Warehousing</td>
+          <td>Est. 20–25 million</td>
+          <td>Very High</td>
+          <td class="high">High</td>
+          <td class="high">Very Weak</td>
+          <td>78</td>
+        </tr>
+        <tr>
+          <td>Office Traditional</td>
+          <td>Part of 473M urban employed</td>
+          <td>High</td>
+          <td class="high">High</td>
+          <td class="high">Weak</td>
+          <td>65</td>
+        </tr>
+        <tr>
+          <td>Office Tech &amp; Creative</td>
+          <td>Est. 10–15 million</td>
+          <td>Very High</td>
+          <td class="medium">Mixed (polarised)</td>
+          <td class="medium">Partial</td>
+          <td>80</td>
+        </tr>
+        <tr>
+          <td>Retail</td>
+          <td>Est. 50+ million</td>
+          <td>High</td>
+          <td class="high">High</td>
+          <td class="high">Weak</td>
+          <td>72</td>
+        </tr>
+        <tr>
+          <td>CRE Services</td>
+          <td>Est. 2–3 million</td>
+          <td>Medium–High</td>
+          <td class="medium">Medium</td>
+          <td class="high">Weak</td>
+          <td>62</td>
+        </tr>
+        <tr>
+          <td>Professional Services</td>
+          <td>Est. 8–12 million</td>
+          <td>High</td>
+          <td class="high">High</td>
+          <td class="high">Weak</td>
+          <td>68</td>
+        </tr>
+        <tr>
+          <td>Manufacturing</td>
+          <td>Est. 90–100 million</td>
+          <td>Very High</td>
+          <td class="medium">Currently Limited — Rising Rapidly</td>
+          <td class="high">Weak</td>
+          <td>76</td>
+        </tr>
+        <tr>
+          <td>Financial Services</td>
+          <td>Est. 8–10 million</td>
+          <td>Very High</td>
+          <td class="high">High</td>
+          <td class="high">Weak</td>
+          <td>74</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.5rem;">Note: Sector-level employment estimates are derived from NBS macro data and industry reporting. NBS does not publish a clean English-language breakdown by the nine sectors used in this tool. Figures should be treated as informed estimates pending more granular official data.</p>
+
+  <!-- POLICY GAPS -->
+  <h2 class="section-title">Policy Gaps: What the Frameworks Do Not Address</h2>
+  <div class="policy-grid">
+    <div class="policy-card">
+      <h4>No Mandatory Transition Support</h4>
+      <p>China's AI regulatory framework is focused on content governance and national security, not on worker outcomes. There is no equivalent of a European social safety net obligation linked to AI-driven displacement. Reskilling schemes exist but are not designed for the informal and migrant labour that bears the heaviest burden.</p>
+    </div>
+    <div class="policy-card">
+      <h4>Migrant Worker Structural Exclusion</h4>
+      <p>China's hukou household registration system means that the 300 million migrant workers are often ineligible for urban social insurance, unemployment benefits, and training programmes in the cities where they work. AI displacement is therefore most damaging precisely for the workers with the fewest institutional protections.</p>
+    </div>
+    <div class="policy-card">
+      <h4>Graduate Market Crisis Unaddressed</h4>
+      <p>With 12.7 million university graduates entering the market in 2025, and AI narrowing entry-level knowledge work at precisely the career entry points graduates depend on, there is a structural collision between supply and demand that government policy has not yet adequately diagnosed, let alone addressed.</p>
+    </div>
+    <div class="policy-card">
+      <h4>Algorithmic Management Without Rights</h4>
+      <p>Tens of millions of Chinese gig workers — delivery riders, live-stream hosts, warehouse pickers — are managed by algorithmic systems. The 2021 rider platform guidance is inadequately enforced. Workers have no right to explanation, no appeal mechanism, and no data access regarding how their algorithmic score is calculated.</p>
+    </div>
+    <div class="policy-card">
+      <h4>No Independent Labour Voice</h4>
+      <p>The absence of independent trade unions in China means there is no organised worker voice to negotiate AI transition terms. The All-China Federation of Trade Unions operates within the political system and has not taken a substantive role in AI workforce policy. Workers cannot collectively bargain against automation.</p>
+    </div>
+    <div class="policy-card">
+      <h4>Innovation Bias in Regulation</h4>
+      <p>China's AI regulatory posture explicitly prioritises innovation and national competitiveness. The CAC's Generative AI Measures encourage development while imposing content obligations. Worker impact is outside the regulatory frame. This is a policy gap that may generate significant social instability as displacement accelerates toward the late 2020s.</p>
+    </div>
+  </div>
+
+  <!-- SOURCE NOTE -->
+  <div class="source-box">
+    <h3>Source Note</h3>
+    <p>
+      <strong>Employment data:</strong> National Bureau of Statistics of China, Statistical Communiqué of the 2024 National Economic and Social Development (February 2025). NBS Average Annual Wages 2024 (May 2025). Total employment 734.39 million and urban employment 473.45 million are confirmed figures. Sector-level employment breakdowns are estimates derived from NBS macro data and MOHRSS workforce surveys, as English-language sub-sector NBS data is not available at the required granularity; these are explicitly labelled as estimates throughout.
+      <br><br>
+      <strong>AI adoption and workforce:</strong> World Economic Forum, Future of Jobs Report 2025. Maimai 2025 Talent Mobility Report (AI job postings surge 543%). Wire China, "China's Labor Market Braces for an AI Shock" (January 2026). Peking University study of job postings 2018–2024 (cited in Wire China report). HROne, China's AI Workforce Boom 2025.
+      <br><br>
+      <strong>Data centres:</strong> Goldman Sachs Research, "China's AI providers expected to invest $70 billion" (November 2025). Synergy Research Group hyperscale capacity data (Q4 2024, Q1 2025). Allianz Commercial, Data Center Construction Risks Report (2025). China Telecom Inner Mongolia Data Park referenced via industry surveys.
+      <br><br>
+      <strong>Manufacturing and robotics:</strong> NBS 2024 Communiqué (high-tech manufacturing, NEV output, service robots). Wire China report (southern China survey of 2,400 manufacturing workers, 2025). ACFTU workforce survey data via China Briefing (2022 baseline).
+      <br><br>
+      <strong>AI regulation:</strong> Chambers and Partners, Artificial Intelligence 2025 — China. IAPP Global AI Governance Tracker (China). White and Case AI Watch: China. Reed Smith, Navigating the Complexities of AI Regulation in China (2024/2025). Law.asia, Shape of China's AI Regulations (April 2025). CAC Generative AI Measures (August 2023). AI Labelling Measures (September 2025).
+      <br><br>
+      <strong>Financial services:</strong> Wire China report. Industry estimates for sector employment. Digital yuan sourced from PBoC public statements.
+      <br><br>
+      <strong>Data reliability note:</strong> Chinese statistical data for sub-sector employment is less granular in English-language releases than in Chinese-language NBS publications. Sector-level employment estimates in this page should be treated as best-available approximations calibrated against macro shares, not as precisely sourced figures.
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  <span class="brand">Human Impact Index</span> — Authored by Andrew Phipps, PhD Candidate in Philosophy (AI Ethics), University of Sussex &amp; Former Global Leader, Cushman &amp; Wakefield. For research and educational purposes.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Data Centre Chart
+const dcCtx = document.getElementById('dcChart').getContext('2d');
+new Chart(dcCtx, {
+  type: 'bar',
+  data: {
+    labels: ['2020', '2021', '2022', '2023', '2024', '2025 (target)'],
+    datasets: [{
+      label: 'China Data Centre Capacity (GW)',
+      data: [14, 17, 20, 23, 26, 30],
+      backgroundColor: 'rgba(206,147,216,0.6)',
+      borderColor: '#ce93d8',
+      borderWidth: 1
+    }, {
+      label: 'Global Hyperscale Share (%)',
+      data: [14, 15, 15, 16, 16, 17],
+      type: 'line',
+      borderColor: '#64b5f6',
+      backgroundColor: 'rgba(100,181,246,0.1)',
+      pointBackgroundColor: '#64b5f6',
+      yAxisID: 'y2',
+      tension: 0.4
+    }]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index', intersect: false },
+    plugins: { legend: { labels: { color: '#e0e6f0' } } },
+    scales: {
+      x: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' } },
+      y: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' }, title: { display: true, text: 'GW', color: '#8899aa' } },
+      y2: { position: 'right', ticks: { color: '#64b5f6' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Global Share %', color: '#64b5f6' } }
+    }
+  }
+});
+
+// Tech Chart
+const techCtx = document.getElementById('techChart').getContext('2d');
+new Chart(techCtx, {
+  type: 'line',
+  data: {
+    labels: ['Jan 2023', 'Jul 2023', 'Jan 2024', 'Jul 2024', 'Jan 2025', 'Oct 2025'],
+    datasets: [{
+      label: 'AI-Related Job Postings (Index: Jan 2023 = 100)',
+      data: [100, 140, 200, 320, 580, 643],
+      borderColor: '#ce93d8',
+      backgroundColor: 'rgba(206,147,216,0.1)',
+      pointBackgroundColor: '#ce93d8',
+      tension: 0.4
+    }, {
+      label: 'General Tech Job Postings (Index: Jan 2023 = 100)',
+      data: [100, 98, 95, 90, 84, 80],
+      borderColor: '#64b5f6',
+      backgroundColor: 'rgba(100,181,246,0.05)',
+      pointBackgroundColor: '#64b5f6',
+      tension: 0.4,
+      borderDash: [5, 5]
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#e0e6f0' } }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}` } } },
+    scales: {
+      x: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' } },
+      y: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' }, title: { display: true, text: 'Index (Jan 2023 = 100)', color: '#8899aa' } }
+    }
+  }
+});
+
+// Manufacturing Chart
+const mfgCtx = document.getElementById('mfgChart').getContext('2d');
+new Chart(mfgCtx, {
+  type: 'bar',
+  data: {
+    labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+    datasets: [{
+      label: 'China Robot Installations (000s)',
+      data: [141, 168, 243, 290, 320, 360],
+      backgroundColor: 'rgba(206,147,216,0.6)',
+      borderColor: '#ce93d8',
+      borderWidth: 1
+    }, {
+      label: 'Share of Global Total (%)',
+      data: [36, 41, 45, 47, 50, 50],
+      type: 'line',
+      borderColor: '#81c784',
+      backgroundColor: 'rgba(129,199,132,0.1)',
+      pointBackgroundColor: '#81c784',
+      yAxisID: 'y2',
+      tension: 0.3
+    }]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index', intersect: false },
+    plugins: { legend: { labels: { color: '#e0e6f0' } } },
+    scales: {
+      x: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' } },
+      y: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' }, title: { display: true, text: 'Installations (000s)', color: '#8899aa' } },
+      y2: { position: 'right', ticks: { color: '#81c784' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Global Share %', color: '#81c784' } }
+    }
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>South Korea | Human Impact Index</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0e1a; color: #e0e6f0; font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; }
+  a { color: #64b5f6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .site-header { background: #0d1226; border-bottom: 1px solid #1e2a4a; padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-size: 1.1rem; font-weight: 700; color: #64b5f6; letter-spacing: 0.04em; }
+  .back-link { font-size: 0.85rem; color: #8899bb; }
+  .back-link:hover { color: #64b5f6; }
+
+  .hero { background: linear-gradient(135deg, #0d1226 0%, #111a35 60%, #1a0f2a 100%); padding: 48px 32px 36px; border-bottom: 1px solid #1e2a4a; }
+  .hero-inner { max-width: 1100px; margin: 0 auto; }
+  .region-badge { display: inline-block; background: #ce93d820; border: 1px solid #ce93d840; color: #ce93d8; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
+  .hero h1 { font-size: 2.6rem; font-weight: 800; color: #e0e6f0; margin-bottom: 6px; }
+  .hero .subtitle { font-size: 1.05rem; color: #8899bb; margin-bottom: 28px; }
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card { background: #0a0e1a; border: 1px solid #1e2a4a; border-radius: 8px; padding: 16px 18px; }
+  .stat-card .label { font-size: 0.72rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .stat-card .value { font-size: 1.55rem; font-weight: 700; color: #64b5f6; }
+  .stat-card .sub { font-size: 0.75rem; color: #8899bb; margin-top: 2px; }
+
+  .momentum-section { background: #0a0e1a; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px 22px; }
+  .momentum-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .momentum-label { font-size: 0.8rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; }
+  .momentum-score { font-size: 1.6rem; font-weight: 700; color: #64b5f6; }
+  .momentum-bar-bg { background: #1e2a4a; border-radius: 4px; height: 10px; width: 100%; }
+  .momentum-bar-fill { background: linear-gradient(90deg, #64b5f6, #ce93d8); border-radius: 4px; height: 10px; }
+  .momentum-note { font-size: 0.75rem; color: #8899bb; margin-top: 8px; }
+
+  .main { max-width: 1100px; margin: 0 auto; padding: 36px 32px; }
+
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 0; border-bottom: 1px solid #1e2a4a; }
+  .tab-btn { background: none; border: none; color: #8899bb; padding: 10px 16px; font-size: 0.82rem; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; white-space: nowrap; }
+  .tab-btn:hover { color: #e0e6f0; }
+  .tab-btn.active { color: #ce93d8; border-bottom-color: #ce93d8; }
+  .tab-content { display: none; padding: 28px 0 0; }
+  .tab-content.active { display: block; }
+
+  .sector-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .sector-title { font-size: 1.45rem; font-weight: 700; color: #e0e6f0; }
+  .sector-momentum { text-align: right; }
+  .sector-momentum .score { font-size: 1.8rem; font-weight: 700; color: #ce93d8; }
+  .sector-momentum .label { font-size: 0.72rem; color: #8899bb; text-transform: uppercase; }
+  .snapshot-badge { display: inline-block; background: #ce93d820; border: 1px solid #ce93d840; color: #ce93d8; font-size: 0.7rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-left: 10px; vertical-align: middle; }
+  .sector-desc { font-size: 0.95rem; color: #c0cfe0; margin-bottom: 22px; line-height: 1.7; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  @media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
+
+  .info-box { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 18px 20px; }
+  .info-box h4 { font-size: 0.78rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+  .info-box ul { list-style: none; }
+  .info-box ul li { font-size: 0.88rem; color: #c0cfe0; padding: 4px 0; border-bottom: 1px solid #1e2a4a20; }
+  .info-box ul li:before { content: "›"; color: #ce93d8; margin-right: 8px; }
+  .info-box ul li:last-child { border-bottom: none; }
+
+  .impact-box { background: #1a0f22; border: 1px solid #ce93d830; border-left: 3px solid #ce93d8; border-radius: 8px; padding: 18px 20px; margin-bottom: 20px; }
+  .impact-box h4 { font-size: 0.78rem; color: #ce93d8; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .impact-box p { font-size: 0.9rem; color: #c0cfe0; line-height: 1.65; }
+
+  .reg-box { background: #0d1226; border: 1px solid #64b5f630; border-left: 3px solid #64b5f6; border-radius: 8px; padding: 18px 20px; margin-bottom: 20px; }
+  .reg-box h4 { font-size: 0.78rem; color: #64b5f6; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .reg-box p { font-size: 0.9rem; color: #c0cfe0; line-height: 1.65; }
+
+  .chart-container { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+  .chart-container h4 { font-size: 0.82rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
+
+  .emp-table-section { margin-top: 40px; }
+  .emp-table-section h2 { font-size: 1.2rem; font-weight: 700; color: #e0e6f0; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #1e2a4a; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th { background: #0d1226; color: #8899bb; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 14px; text-align: left; border-bottom: 1px solid #1e2a4a; }
+  td { padding: 10px 14px; border-bottom: 1px solid #1e2a4a10; color: #c0cfe0; }
+  tr:hover td { background: #0d122620; }
+  .score-cell { font-weight: 700; color: #ce93d8; }
+  .est-note { font-size: 0.75rem; color: #8899bb; font-style: italic; }
+
+  .policy-section { margin-top: 40px; }
+  .policy-section h2 { font-size: 1.2rem; font-weight: 700; color: #e0e6f0; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #1e2a4a; }
+  .policy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .policy-card { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 18px 20px; }
+  .policy-card h4 { font-size: 0.88rem; font-weight: 700; color: #e0e6f0; margin-bottom: 8px; }
+  .policy-card p { font-size: 0.85rem; color: #8899bb; line-height: 1.6; }
+  .policy-card.gap { border-color: #ce93d830; }
+  .policy-card.gap h4 { color: #ce93d8; }
+
+  .source-note { margin-top: 40px; background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px 22px; font-size: 0.78rem; color: #8899bb; line-height: 1.7; }
+  .source-note strong { color: #c0cfe0; }
+
+  footer { background: #0d1226; border-top: 1px solid #1e2a4a; padding: 22px 32px; text-align: center; font-size: 0.78rem; color: #8899bb; }
+  footer span { color: #64b5f6; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">Human Impact Index</div>
+  <a href="apac_overview.html" class="back-link">← Back to APAC Overview</a>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="region-badge">APAC Region</div>
+    <h1>South Korea</h1>
+    <p class="subtitle">AI Workforce Transformation Analysis — Human-Centred Assessment</p>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="label">Total Employed</div>
+        <div class="value">~28.9M</div>
+        <div class="sub">KOSTAT / IMF, 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Employment Rate</div>
+        <div class="value">~63%</div>
+        <div class="sub">KOSTAT 2024 (working-age pop.)</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Unemployment Rate</div>
+        <div class="value">~2.7%</div>
+        <div class="sub">KOSTAT 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">AI Jobs at Task Risk</div>
+        <div class="value">38.8%</div>
+        <div class="sub">KDI 2023: jobs with &gt;70% task automation risk</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Semiconductor Exports</div>
+        <div class="value">$141.9B</div>
+        <div class="sub">2024; ~23% of global chip exports (IMF 2025)</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Sovereign AI Commitment</div>
+        <div class="value">$735B</div>
+        <div class="sub">Total national AI initiative through 2030</div>
+      </div>
+    </div>
+
+    <div class="momentum-section">
+      <div class="momentum-header">
+        <div>
+          <div class="momentum-label">Overall AI Momentum Score</div>
+          <div class="momentum-note">APAC scores generally range 55–80; South Korea calibrated at 73 to reflect world-class semiconductor and AI infrastructure investment, high worker exposure scores, and the AI Basic Act (effective Jan 2026). Singapore (71) used as nearest APAC reference; Korea scores above it due to larger industrial base and sovereign AI ambition, below China/Japan in overall deployment maturity.</div>
+        </div>
+        <div class="momentum-score">73 / 100</div>
+      </div>
+      <div class="momentum-bar-bg"><div class="momentum-bar-fill" style="width:73%"></div></div>
+    </div>
+  </div>
+</section>
+
+<main class="main">
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('data-centres')">Data Centres</button>
+    <button class="tab-btn" onclick="showTab('manufacturing')">Manufacturing</button>
+    <button class="tab-btn" onclick="showTab('financial')">Financial Services</button>
+    <button class="tab-btn" onclick="showTab('office-tech')">Office Tech & Creative</button>
+    <button class="tab-btn" onclick="showTab('logistics')">Logistics</button>
+    <button class="tab-btn" onclick="showTab('office-trad')">Office Traditional</button>
+    <button class="tab-btn" onclick="showTab('retail')">Retail</button>
+    <button class="tab-btn" onclick="showTab('cre-services')">CRE Services</button>
+    <button class="tab-btn" onclick="showTab('professional')">Professional Services</button>
+  </div>
+
+  <!-- DATA CENTRES -->
+  <div id="data-centres" class="tab-content active">
+    <div class="sector-header">
+      <div class="sector-title">Data Centres</div>
+      <div class="sector-momentum"><div class="score">79</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">South Korea is executing one of the world's most ambitious sovereign AI infrastructure programmes. Seoul's Digital Media City hosts over 520 MW of live capacity, with vacancy falling below 6% in 2024, driving expansion to Busan, Gimhae, and Gumi. Major domestic players include KT Corporation, SK Telecom (whose Gasan AIDC launched GPU-as-a-Service in January 2025), Naver Cloud (whose GAK Sejong facility is Asia's largest single-company data centre at 294,000 sqm and 65 exabytes of storage), Samsung SDS, and Kakao. The government allocated ₩2.5 trillion ($1.7B) for a National AI Computing Centre targeting 15,000 GPUs by 2028 and 50,000 by 2030. Global hyperscalers are accelerating: AWS committed $5.88B through 2027; Microsoft invested $1.8B with KT Corporation through 2029; SK Group and AWS are building Korea's largest GPU deployment (60,000 GPUs, 103 MW) in Ulsan. Samsung, SK Group, and Hyundai Motor Group are each deploying 50,000+ NVIDIA Blackwell GPUs for internal AI factories. Over 260,000 new NVIDIA GPUs are being deployed across Korean entities. OpenAI, Samsung, and SK confirmed joint data centre construction in February 2026.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Manual server rack installation and cabling teams</li>
+          <li>Tier 1 helpdesk and remote hands operatives</li>
+          <li>Physical security and facility patrol staff</li>
+          <li>Routine preventive maintenance technicians</li>
+          <li>Legacy on-premises hardware management roles</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>GPU infrastructure and AI factory engineers</li>
+          <li>Liquid and immersive cooling specialists</li>
+          <li>HBM (High Bandwidth Memory) integration engineers</li>
+          <li>Sovereign AI compliance and data localisation roles</li>
+          <li>AI-RAN and 6G network infrastructure engineers</li>
+          <li>Green data centre energy and sustainability managers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>South Korea's data centre sector is overwhelmingly capital-intensive rather than labour-intensive: the 520 MW Seoul inventory employs a modest direct workforce relative to its economic footprint. Construction boom phases (2025–2030) will generate significant temporary employment, but permanent operational roles are limited and highly specialised. The sector's semiconductor dependency means that a concentrated talent pool of HBM and GPU engineers commands significant wage premiums. Workers in general facility maintenance and security roles face displacement as AI-driven operational management reduces headcount. The SK–AWS Ulsan complex will create 60,000 GPU-equivalent compute capacity but only a small number of permanent operational positions. Concentration of facilities in Seoul-adjacent sites initially, then secondary cities, creates geographic disruption for workers whose skills are locally tied.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>The AI Basic Act (effective 22 January 2026) supports AI data centre infrastructure development as a national strategic priority. The Ministry of Science and ICT (MSIT) operates the K-Cloud Technology Development Project (2025–2030, ₩403.1B budget). Government incentives include 25–35% facility investment credits and 30–50% R&D credits for nationally designated AI technologies. Data localisation requirements under the AI Basic Act favour domestic Korean operators. Direct power sales arrangements and 10-year water supply guarantees are provided for semiconductor-adjacent facilities. No specific regulations address workforce displacement in data centre construction transitions.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>Seoul Data Centre Capacity & AI Demand Pressure (Indicative)</h4>
+      <canvas id="chartDC" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- MANUFACTURING -->
+  <div id="manufacturing" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Manufacturing</div>
+      <div class="sector-momentum"><div class="score">77</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Manufacturing employs approximately 24% of South Korea's workforce (World Bank), equating to roughly 4.5–5.0 million workers (est.), and represents 31.6% of GDP. Key sub-sectors include semiconductors (Samsung, SK Hynix), automotive (Hyundai, Kia, Kia's EV pivot), shipbuilding (Hyundai Heavy, DSME, Samsung Heavy), steel (POSCO), and consumer electronics. South Korea announced in November 2024 a plan to replace 10% of its workforce with robots by 2030, directly acknowledging the scale of automation transition. Robot density has already been the world's highest for years. The government's "I-Korea 4.0" initiative integrates AI and automation into manufacturing infrastructure. Samsung is building an AI factory with 50,000+ NVIDIA GPUs for semiconductor and manufacturing digital transformation; Hyundai Motor Group and NVIDIA are co-developing AI capabilities for smart factories, autonomous driving, and on-device semiconductors. The KDI (2023) found 38.8% of all Korean jobs are at risk of having over 70% of tasks automated by 2030 if task structure remains unchanged, with manufacturing assembly roles prominently featured.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Assembly line workers in automotive and electronics</li>
+          <li>Quality control inspectors (replaced by computer vision)</li>
+          <li>Welding and fabrication operatives in shipbuilding</li>
+          <li>Materials handling and warehouse floor staff</li>
+          <li>Routine production scheduling and planning clerks</li>
+          <li>Older workers in mid-career manufacturing roles</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI-enabled smart factory engineers and integrators</li>
+          <li>Robotics programming and maintenance technicians</li>
+          <li>HBM and AI semiconductor process engineers</li>
+          <li>Digital twin and simulation specialists</li>
+          <li>EV battery systems engineers (Hyundai, LG Energy)</li>
+          <li>Predictive maintenance and IoT platform managers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>South Korea's declared intent to replace 10% of its workforce with robots by 2030 makes manufacturing the most explicitly at-risk sector in the national AI transition. The IMF's 2025 Selected Issues Paper found that older workers in displaced manufacturing roles have significantly lower reemployment rates: only 25–35% of older displaced workers in high-exposure roles found equivalent employment within one year. The chaebol structure (Samsung, Hyundai, POSCO) means that automation benefits accrue heavily to large conglomerates, while subcontractors and SME suppliers employing lower-skilled workers bear disproportionate displacement costs. The K-Digital Training (KDT) programme offers reskilling pathways, but uptake among mid-career manufacturing workers remains constrained by schedule inflexibility and cultural barriers around retraining. Labour market rigidity, including strong employment protection laws, slows transition but also impedes voluntary mobility into AI-complementary roles.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>The AI Basic Act (January 2026) designates AI used in hiring and workforce management as "high-impact AI," requiring transparency, human oversight, and impact documentation. The government's Dynamic Economy Roadmap includes structural reform elements targeting labour market flexibility. K-Digital Training (KDT) provides government-backed vocational reskilling with private enterprise collaboration. Employment Insurance Act and the Workforce Innovation programmes provide transitional income support, but eligibility criteria and benefit durations were designed for shorter technological transitions, not the multi-year displacement waves projected for manufacturing automation. No sector-specific obligation requires chaebol to fund or mandate reskilling for automation-displaced subcontractor workers.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>Manufacturing Automation Exposure vs Reskilling Participation (Index, 2019–2024)</h4>
+      <canvas id="chartMfg" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- FINANCIAL SERVICES -->
+  <div id="financial" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Financial Services</div>
+      <div class="sector-momentum"><div class="score">74</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">South Korea hosts Asia's third-largest insurance and banking markets. Financial services employment is estimated at 800,000–900,000 workers (est., based on KOSTAT industry classifications), concentrated in Seoul's Yeouido financial district. Major institutions include KB Financial Group, Shinhan Financial Group, Hana Financial Group, Woori Bank, and KakaoBank. AI adoption in financial services is extensive: credit assessment, fraud detection, investment management, customer service, and risk management are all being transformed. KakaoBank — South Korea's leading digital bank with over 20 million customers — partnered with Digital Realty's ICN10 facility in February 2024 to leverage 70kW rack capacity for language model training. The Financial Services Commission (FSC) and Financial Supervisory Service (FSS) have issued AI Guidelines for the Financial Sector, Guidelines for AI Development and Utilization, and AI Security Guidelines, establishing fairness, transparency, and ethics obligations. The AI Basic Act categorises AI used in credit scoring, recruitment, and key financial decisions as "high-impact AI."</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Retail branch tellers and front-line customer service</li>
+          <li>Loan processing and credit assessment officers</li>
+          <li>Compliance and regulatory monitoring clerks</li>
+          <li>Back-office data entry and reconciliation staff</li>
+          <li>Junior financial analysts (replaced by AI dashboards)</li>
+          <li>Call centre operatives and basic query handlers</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI model validation and financial risk engineers</li>
+          <li>Algorithmic trading and quant strategy developers</li>
+          <li>Generative AI compliance and auditability specialists</li>
+          <li>Digital banking product and UX designers</li>
+          <li>FSC/FSS AI regulatory reporting officers</li>
+          <li>Cybersecurity architects for financial AI systems</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>The AI Basic Act's classification of credit scoring and hiring AI as "high-impact" provides some structural protection for workers affected by AI-driven financial decisions. However, the act's primary focus is consumer protection rather than workforce protection, leaving a gap in obligations around how automation-driven redundancies are managed. The KDI's finding that 38.8% of Korean jobs face high automation exposure resonates strongly in financial services, where clerical and back-office roles are among the most exposed. Younger workers in entry-level financial roles face compressed pathways as automation absorbs the transactional work that traditionally served as career entry points. KakaoBank's digital-only model demonstrates the sector trajectory: high customer volumes with minimal branch workforce. Female workers are disproportionately represented in administrative and customer-facing financial roles most at risk, reflecting wider gender patterns in Korean occupational segregation.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>The FSC and FSS AI Guidelines (2023–2024) require fairness, transparency, and ethics in AI-driven financial decisions. The AI Basic Act (January 2026) applies "high-impact AI" obligations — prior notice, impact assessment, human oversight, and documentation — to AI used in credit scoring, recruitment, and customer-facing decisions. Korea's Personal Information Protection Act (PIPA) governs training data and AI system inputs. The AI Basic Act has extraterritorial application, covering foreign AI systems impacting Korean financial consumers. Notably absent is any requirement for financial institutions to report or mitigate AI-driven workforce displacement, or to fund sector-wide reskilling commensurate with productivity gains from automation.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>Financial Sector AI Adoption vs Branch Employment Index (2019–2024)</h4>
+      <canvas id="chartFin" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- OFFICE TECH & CREATIVE -->
+  <div id="office-tech" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Office Tech & Creative</div>
+      <div class="sector-momentum"><div class="score">72</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">South Korea's IT and tech sector is undergoing rapid AI-driven transformation. IMDA-equivalent data is unavailable in Korea; estimates suggest approximately 600,000–700,000 ICT workers (est., based on OECD and KOSTAT service sector classifications), concentrated in Seoul (Gangnam-Gu and Guro Digital Complex), Pangyo Technology Valley, and Jeju. Major employers include Samsung Electronics, LG, Kakao, Naver, SK Telecom, KT, and a rapidly growing startup ecosystem. Naver's HyperCLOVA X (achieving 95% accuracy on Korean language benchmarks) and Kakao's AI platform (serving 50 million users) represent domestic large language model capability. The government's ₩1.2 trillion ($900M) 2024 AI research allocation and five consortium-led sovereign AI development programmes signal continued state-backed tech expansion. Creative industries are concentrated in Seoul's content economy: K-pop production, webtoon publishing, gaming (Krafton, NCSoft, Netmarble), and film/streaming are integrating generative AI into content workflows at pace.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior software developers (code generation displacing entry roles)</li>
+          <li>Basic graphic and UI/UX design roles</li>
+          <li>Content moderation and data labelling operatives</li>
+          <li>Webtoon and animation production assistants</li>
+          <li>IT helpdesk and Level 1 technical support</li>
+          <li>Translation and localisation junior roles</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>LLM fine-tuning and Korean language AI specialists</li>
+          <li>AI agent and agentic workflow engineers</li>
+          <li>Sovereign AI infrastructure developers (MSIT programmes)</li>
+          <li>K-content generative AI creative directors</li>
+          <li>AI ethics and compliance officers (AI Basic Act)</li>
+          <li>6G and AI-RAN telecommunications engineers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>The IMF's 2025 analysis of Korea found that workers under 30 are disproportionately concentrated in high-exposure, low-complementarity roles, meaning they face the dual challenge of AI displacement with fewer of the senior skills that enable productive collaboration with AI tools. Entry-level coding and content roles are being compressed as AI code generation and image synthesis tools reduce the transactional workload that traditionally provided career entry points. Korea's strong educational system produces a steady pipeline of tech graduates, but without deliberate pathway preservation (such as apprenticeship requirements or entry-level hiring mandates), the pipeline may narrow faster than reskilling programmes can compensate. The K-pop and gaming industries' integration of generative AI for content production raises significant questions about creative workers' rights, attribution, and compensation that existing regulations do not address.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>The AI Basic Act requires mandatory labelling of generative AI-generated content, creating compliance obligations for K-content platforms. The MSIT's Sovereign AI Foundation Models project funds domestic LLM development across five consortia (Naver, LG AI Research, SK Telecom, NC AI, Upstage), creating significant research employment. The Personal Information Protection Act governs AI training data. Copyright Act amendments are under discussion to address AI-generated creative works and attribution. No framework currently mandates minimum human creative involvement in AI-assisted content production, leaving creative workers without structural protection against wholesale substitution.</p>
+    </div>
+  </div>
+
+  <!-- LOGISTICS -->
+  <div id="logistics" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Logistics</div>
+      <div class="sector-momentum"><div class="score">71</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Logistics employs an estimated 1.0–1.3 million workers in South Korea (est., based on KOSTAT transport and storage sector classifications), serving one of the world's most trade-intensive economies. Busan Port is the world's sixth-largest container port; Incheon Airport handled over 3 million tonnes of cargo in 2023. The government designated logistics as a priority sector under the National AI Missions framework. Hyundai Motor Group's collaboration with NVIDIA explicitly targets autonomous driving and smart factory logistics; warehouse robotics companies including Boston Dynamics (acquired by Hyundai) are piloting industrial automation across Korean distribution centres. E-commerce logistics driven by Coupang (processing millions of orders daily through highly automated fulfilment centres) is reshaping the last-mile workforce. Robot density in Korean manufacturing and logistics has grown at approximately 27% annually since 2015, according to OECD data cited in IMF analyses.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Port crane operators and dock labour (autonomous systems)</li>
+          <li>Warehouse pickers and sorters (Coupang robotics)</li>
+          <li>Long-haul truck drivers (autonomous driving pilots)</li>
+          <li>Freight forwarding and customs clerks</li>
+          <li>Route planning and dispatch coordination staff</li>
+          <li>Inventory management and stockroom operatives</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Autonomous vehicle operations and safety monitors</li>
+          <li>Robotics integration and maintenance engineers</li>
+          <li>AI-driven supply chain optimisation analysts</li>
+          <li>Smart port digital infrastructure managers</li>
+          <li>Drone logistics and last-mile coordination roles</li>
+          <li>Cold chain and pharmaceutical logistics AI specialists</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Logistics workers — particularly migrant workers employed under the Employment Permit System (E-9 visa) in lower-skill warehouse and transport roles — face significant exposure to automation with limited access to government reskilling programmes. SkillsFuture-equivalent programmes in Korea are primarily oriented toward Korean nationals, and the EPS system's contract-bound structure prevents migrant workers from accessing vocational transition support. The IMF's high-exposure, low-complementarity category includes a disproportionate share of workers in transport, storage, and warehousing. Coupang's model, which employs tens of thousands of fulfilment workers and has been trialling robotics extensively, exemplifies the sector's direction: sustained volume growth with declining per-unit human labour content. Union representation in Korean logistics is fragmented, reducing collective bargaining leverage during automation transitions.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>The National AI Missions framework identifies logistics as a priority automation sector without establishing corresponding workforce transition obligations. The Employment Permit System (EPS) governs migrant workers in logistics but ties visa status to employer, preventing independent reskilling access. Labour Standards Act protections apply to all workers but enforcement in logistics subcontracting chains is inconsistent. The AI Basic Act does not specifically address autonomous vehicle deployment in commercial logistics. The Incheon Free Economic Zone and Busan Port Authority have separate digitalisation roadmaps without integrated human impact assessments.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TRADITIONAL -->
+  <div id="office-trad" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Office Traditional</div>
+      <div class="sector-momentum"><div class="score">66</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Traditional office occupations — administrative support, clerical roles, public administration, and utilities management — employ an estimated 3.0–3.5 million workers in South Korea (est., based on KOSTAT ISIC classifications for administrative activities, public administration, and utilities). The KDI's finding that 38.8% of all Korean jobs risk 70%+ task automation by 2030 applies with particular force to clerical occupations, which the IMF's 2025 analysis classified as exhibiting "high exposure but low complementarity" to AI. Government digitalisation programmes are accelerating administrative AI adoption across ministries. Samsung's deployment of internal AI tools across its corporate workforce and KT/Microsoft enterprise AI partnerships are transforming administrative workflows in Korea's largest conglomerates. The OECD Korea labour market report noted that the structural challenges of labour market rigidity and the high cost of employment transitions compound automation exposure in traditional office roles.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Administrative assistants and secretarial staff</li>
+          <li>Data entry, records management, and filing clerks</li>
+          <li>Public sector administrative processing officers</li>
+          <li>Payroll, billing, and accounts payable staff</li>
+          <li>HR administration and onboarding coordinators</li>
+          <li>Junior legal and procurement support roles</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI governance officers (AI Basic Act compliance)</li>
+          <li>Intelligent document processing specialists</li>
+          <li>Digital transformation project managers</li>
+          <li>Data quality and governance analysts</li>
+          <li>Human-AI workflow designers in public administration</li>
+          <li>Change management and AI adoption facilitators</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>The IMF's 2025 Korea analysis specifically identified clerical roles — including finance, human resources, legal, communications, administrative assistants, and project managers — as facing relative decline in demand even amid overall skills growth. These are overwhelmingly the roles occupied by women, mid-career workers, and workers without university degrees. Korea's labour market rigidity means that workers displaced from traditional office roles face structural barriers to lateral mobility: strong employment protection makes firms reluctant to hire displaced workers mid-career, and cultural norms around hierarchical seniority disadvantage older administrative workers seeking reinsertion. The SkillsFuture-equivalent K-Digital Training focuses on technology roles rather than facilitating transitions for clerical workers into adjacent AI-complementary roles.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>The AI Basic Act categorises AI used in hiring decisions as "high-impact AI," providing some protection for workers subject to AI-driven recruitment screening. However, AI used in workforce management, performance monitoring, or role elimination does not clearly fall under the Act's current high-impact designation. The Employment Insurance Act provides unemployment benefits but was designed for shorter-duration transitions. K-Digital Training (KDT) is available to displaced workers but is primarily oriented toward ICT and tech sector re-entry. No sector-level obligations exist requiring firms to assess or report on AI-driven headcount reductions in administrative functions.</p>
+    </div>
+  </div>
+
+  <!-- RETAIL -->
+  <div id="retail" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Retail</div>
+      <div class="sector-momentum"><div class="score">63</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Retail employs an estimated 2.5–3.0 million workers in South Korea (est., based on KOSTAT wholesale and retail trade classifications), though the sector is in structural transition. KOSTAT reported a 2.2% decline in the retail sales index in 2024, while online retail continues to grow. Coupang dominates Korean e-commerce (approximately 25% market share), operating a highly automated fulfilment infrastructure. Self-checkout deployment is accelerating in Emart, Lotte Mart, and convenience chains (GS25, CU, 7-Eleven), with AI-powered inventory management reducing stock management headcount. Convenience store chains collectively operate over 55,000 outlets in Korea, with AI-driven ordering, dynamic pricing, and unmanned store pilots expanding rapidly. The OECD Korea labour market report noted that retail and wholesale is experiencing above-average automation-related structural change.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Cashiers and point-of-sale service staff</li>
+          <li>Stock replenishment and shelf-stacking workers</li>
+          <li>Retail customer service and information desk roles</li>
+          <li>Visual merchandising and display assistants</li>
+          <li>Inventory counting and audit operatives</li>
+          <li>Part-time and seasonal retail floor staff</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Omnichannel retail technology coordinators</li>
+          <li>AI-powered personalisation and CRM analysts</li>
+          <li>Unmanned store operations and maintenance technicians</li>
+          <li>E-commerce logistics and returns management roles</li>
+          <li>Retail data analytics and demand forecasting analysts</li>
+          <li>Customer experience design for AI-native retail</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Korean retail employs a significant share of part-time, female, and young workers — precisely the demographic groups identified in IMF and KDI analysis as bearing disproportionate AI displacement risk. The declining retail sales index combined with e-commerce growth creates a double pressure: fewer in-store customers and more automated fulfilment. Unmanned convenience store pilots, while still a minority of outlets, signal the trajectory. Minimum wage increases (which have risen significantly in Korea since 2018) may have accelerated automation investment in labour-intensive retail settings. Workers without post-secondary education and concentrated in low-margin retail formats face the greatest structural vulnerability, and existing social protection mechanisms were not designed for the scale or speed of the displacement pattern emerging in this sector.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>Korea's Minimum Wage Act covers retail workers, but no specific protections exist regarding AI-driven role elimination in retail settings. The AI Basic Act does not specifically address consumer-facing retail AI (personalisation, dynamic pricing, or surveillance systems) as high-impact categories under current draft implementing regulations. Employment Insurance provides transitional support but with limited duration. K-Digital Training is poorly adapted for retail workers seeking transition, as its technology orientation does not match retail worker skill profiles or schedules. There is no sector-level agreement between retail employers and worker representatives addressing automation transition timelines or compensation.</p>
+    </div>
+  </div>
+
+  <!-- CRE SERVICES -->
+  <div id="cre-services" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">CRE Services</div>
+      <div class="sector-momentum"><div class="score">67</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Commercial real estate services in South Korea employ an estimated 80,000–120,000 workers (est., based on KOSTAT real estate activities classifications). The sector is dominated by domestic firms (Savills Korea, CBRE Korea, JLL Korea, Cushman & Wakefield Korea) serving multinational tenants, a substantial domestic chaebol corporate occupier market, and a rapidly growing data centre and logistics real estate segment. Seoul's CBD Grade A office vacancy tightened in 2024 as AI-related corporate expansion drove demand. The data centre and logistics real estate segments represent the highest-growth areas, with national AI infrastructure investment creating unprecedented demand for large-footprint sites with power access. Property technology (proptech) adoption is advancing among major Korean CRE firms, integrating AI into asset management, lease analytics, and facilities management.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior research analysts and market data compilers</li>
+          <li>Property administration and lease management clerks</li>
+          <li>Basic facilities management and inspection staff</li>
+          <li>Routine valuation support and comparable data roles</li>
+          <li>Administrative support in brokerage back offices</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Data centre site acquisition and power-access specialists</li>
+          <li>AI-driven portfolio analytics and asset optimisation roles</li>
+          <li>ESG compliance and green building certification managers</li>
+          <li>Proptech integration and digital twin operators</li>
+          <li>Logistics and industrial real estate advisory specialists</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>The CRE sector in Korea faces the same bifurcation seen globally: AI is concentrating value in senior, relationship-driven advisory roles while eliminating the junior research and administrative entry points that have historically provided career pathways. The explosive growth in data centre and logistics real estate creates new specialist roles, but these require technical expertise (power engineering, permitting, environmental compliance) not easily accessed by displaced traditional CRE workers. The sector's concentration in Seoul amplifies geographic inequality: workers outside the capital have fewer options as the market bifurcates between high-demand asset classes and lower-demand traditional office and retail property.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>Real estate activity is governed by the Real Estate Business Management Act and related sector-specific legislation. The AI Basic Act does not specifically address AI use in property valuation or tenant screening (which could constitute high-impact use cases). The Korean ESG disclosure framework (aligned with global sustainability standards) is creating compliance-driven demand for sustainability-credentialled CRE professionals. No sector-level AI governance framework exists for Korean commercial real estate.</p>
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL SERVICES -->
+  <div id="professional" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Professional Services</div>
+      <div class="sector-momentum"><div class="score">70</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Professional services — including legal, accounting, consulting, research, and specialist advisory — employ an estimated 1.5–2.0 million workers in South Korea (est., based on KOSTAT professional, scientific, and technical activities classifications). Seoul's professional services ecosystem is closely tied to the chaebol corporate structure: Big Four accountancy firms, major law firms, and global consulting houses maintain large Seoul offices. The AI Basic Act's compliance requirements (effective January 2026) are creating significant demand for AI governance, legal, and compliance advisory work. ISCA-equivalent professional body guidance on AI is emerging from the Korean Institute of Certified Public Accountants (KICPA) and the Korean Bar Association. The IMF's 2025 analysis identified professional occupations as characterised by "high exposure and high complementarity" to AI, meaning productivity gains are likely but displacement risk is also real at the junior level.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior lawyers in document review and legal research</li>
+          <li>Entry-level accountants in audit and tax preparation</li>
+          <li>Management consulting junior analysts</li>
+          <li>Market research and survey data analysts</li>
+          <li>Patent search and IP preliminary analysis roles</li>
+          <li>Basic technical writing and report generation staff</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI Basic Act compliance counsel and advisors</li>
+          <li>AI governance auditors and impact assessment specialists</li>
+          <li>Legal technology architects for Korean law firms</li>
+          <li>Forensic accounting and AI-assisted fraud detection roles</li>
+          <li>Strategic AI advisory for chaebol digital transformation</li>
+          <li>Interdisciplinary AI ethics researchers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>The IMF's Korea analysis finding that professional occupations exhibit both high exposure and high complementarity reflects the sector's dual nature: AI is a productivity multiplier for experienced professionals and a displacement risk for junior roles. Korean law firms and accountancy practices are integrating AI into document analysis, due diligence, and compliance workflows, which has historically been the entry-level work that junior professionals undertake to develop expertise. Without deliberate pathway preservation, the pipeline of experienced professionals could narrow over time as the junior training ground shrinks. The AI Basic Act's compliance burden — which falls primarily on AI operators across all sectors — is generating significant demand for specialised legal and advisory work, providing one source of countervailing employment growth.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>The AI Basic Act creates direct demand for professional services through its compliance obligations: AI impact assessments, risk management systems, domestic representative requirements for foreign AI operators, and ongoing governance documentation. KICPA is developing professional standards for AI use in audit and assurance. The Korean Bar Association is examining AI's implications for legal professional responsibility. The MSIT's role as AI regulatory lead creates ongoing advisory and legal work. No sector-specific reskilling obligation applies to professional services firms undergoing AI-driven role restructuring.</p>
+    </div>
+  </div>
+
+  <!-- EMPLOYMENT TABLE -->
+  <div class="emp-table-section">
+    <h2>Sector Employment Overview</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Sector</th>
+          <th>Est. Employment</th>
+          <th>Source / Notes</th>
+          <th>Coverage</th>
+          <th>Momentum</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Data Centres</td>
+          <td>~15–25k direct <span class="est-note">(est.)</span></td>
+          <td>Highly automated; construction boom adds temporary employment</td>
+          <td>Full</td>
+          <td class="score-cell">79</td>
+        </tr>
+        <tr>
+          <td>Manufacturing</td>
+          <td>~4.5–5.0M <span class="est-note">(est.)</span></td>
+          <td>World Bank: ~24% of workforce; KOSTAT industry classifications</td>
+          <td>Full</td>
+          <td class="score-cell">77</td>
+        </tr>
+        <tr>
+          <td>Financial Services</td>
+          <td>~800k–900k <span class="est-note">(est.)</span></td>
+          <td>Asia's 3rd largest insurance/banking markets; KOSTAT ISIC</td>
+          <td>Full</td>
+          <td class="score-cell">74</td>
+        </tr>
+        <tr>
+          <td>Office Tech & Creative</td>
+          <td>~600k–700k <span class="est-note">(est.)</span></td>
+          <td>KOSTAT ICT classification; K-content and gaming included</td>
+          <td>Full</td>
+          <td class="score-cell">72</td>
+        </tr>
+        <tr>
+          <td>Logistics</td>
+          <td>~1.0–1.3M <span class="est-note">(est.)</span></td>
+          <td>KOSTAT transport and storage; Busan Port and Incheon Airport ecosystems</td>
+          <td>Full</td>
+          <td class="score-cell">71</td>
+        </tr>
+        <tr>
+          <td>Office Traditional</td>
+          <td>~3.0–3.5M <span class="est-note">(est.)</span></td>
+          <td>KOSTAT admin activities, public administration, utilities</td>
+          <td>Full</td>
+          <td class="score-cell">66</td>
+        </tr>
+        <tr>
+          <td>Professional Services</td>
+          <td>~1.5–2.0M <span class="est-note">(est.)</span></td>
+          <td>KOSTAT professional, scientific, technical activities</td>
+          <td>Full</td>
+          <td class="score-cell">70</td>
+        </tr>
+        <tr>
+          <td>CRE Services</td>
+          <td>~80k–120k <span class="est-note">(est.)</span></td>
+          <td>KOSTAT real estate activities; data centre / logistics RE boom</td>
+          <td>Full</td>
+          <td class="score-cell">67</td>
+        </tr>
+        <tr>
+          <td>Retail</td>
+          <td>~2.5–3.0M <span class="est-note">(est.)</span></td>
+          <td>KOSTAT wholesale and retail trade; Coupang e-commerce structural shift</td>
+          <td>Full</td>
+          <td class="score-cell">63</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="est-note" style="margin-top:10px;">All employment figures are estimates derived from KOSTAT industry classifications, World Bank sector share data, and OECD Korea labour market analysis. No single official source provides sector-by-sector employment at the level of precision required. Figures should be treated as indicative ranges for analysis purposes.</p>
+  </div>
+
+  <!-- POLICY GAPS -->
+  <div class="policy-section">
+    <h2>Human-Centred Policy Gaps</h2>
+    <div class="policy-grid">
+      <div class="policy-card gap">
+        <h4>10% Robotisation Commitment — No Transition Framework</h4>
+        <p>South Korea's November 2024 announcement targeting replacement of 10% of its workforce with robots by 2030 sets a clear automation ambition without an equivalent commitment to worker transition support, income continuity, or reskilling investment proportional to the scale of projected displacement.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Migrant Worker Exclusion from Reskilling</h4>
+        <p>Employment Permit System (E-9) workers in logistics, manufacturing, and construction are among the most automation-exposed, yet EPS visa conditions tie their status to the employer and prevent access to K-Digital Training and other government reskilling programmes.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>AI Basic Act: Innovation Focus, Not Displacement Protection</h4>
+        <p>The AI Basic Act is weighted toward enabling AI innovation and protecting consumers from algorithmic harm. It creates no obligation on AI-adopting firms to report automation-driven headcount reductions, fund sector transition programmes, or share AI productivity gains with displaced workers.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Older Worker Reemployment Gap</h4>
+        <p>IMF analysis confirms that older Korean workers displaced from high-exposure roles have significantly lower reemployment rates (25–35%) than prime-age workers. Labour market rigidity compounds this: strong employment protection reduces mid-career hiring, trapping older displaced workers in long-term unemployment.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Gender-Disaggregated Impact Monitoring</h4>
+        <p>Women are disproportionately concentrated in the clerical, administrative, retail, and financial services roles most exposed to AI displacement. No government programme currently monitors or reports on gendered workforce displacement patterns from AI adoption, creating a blind spot in policy design.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Chaebol Accountability for Subcontractor Displacement</h4>
+        <p>The chaebol structure concentrates AI productivity gains in parent companies while automation-driven displacement falls disproportionately on subcontractors and SME suppliers. No legal framework currently requires chaebol to fund reskilling or transition support for workers in their supply chains displaced by automation they have mandated.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="source-note">
+    <strong>Primary Sources:</strong> KOSTAT Economically Active Population Survey 2024; IMF Selected Issues Paper: "Transforming the Future — The Impact of Artificial Intelligence in Korea" (March 2025); KDI "The Impact of Artificial Intelligence on the Labor Market and Policy Implications" (2023); OECD "Artificial Intelligence and the Labour Market in Korea" (2024); NVIDIA Newsroom: South Korea AI Infrastructure announcement (2025); Cooley LLP: "South Korea's AI Basic Act — Overview and Key Takeaways" (January 2026); Introl: "South Korea $65B AI Infrastructure" (2025); Data Center Dynamics: Samsung SDS National AI Computing Centre (October 2025); World Bank / Santander Trade sector data; IAPP Global AI Governance: South Korea (2024); Chambers & Partners AI 2025 — South Korea. <strong>Notes:</strong> All sector employment figures are estimates. South Korea does not publish official sector employment data at the granularity required for this analysis. Figures are derived by applying World Bank sector share percentages to KOSTAT total employment, cross-referenced with OECD and IMF sector analyses. Estimates should be used for directional analysis only.
+  </div>
+
+</main>
+
+<footer>
+  Human Impact Index &mdash; <span>Andrew Phipps</span> | PhD Candidate, AI Ethics, University of Sussex | Former Global Leader, Cushman &amp; Wakefield
+</footer>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Data Centres chart
+const ctxDC = document.getElementById('chartDC').getContext('2d');
+new Chart(ctxDC, {
+  type: 'bar',
+  data: {
+    labels: ['2019','2020','2021','2022','2023','2024','2025E'],
+    datasets: [
+      { label: 'Seoul Live Capacity (MW)', data: [180,210,260,330,420,520,660], backgroundColor: 'rgba(206,147,216,0.6)', yAxisID: 'y' },
+      { label: 'AI Demand Pressure Index', data: [28,32,40,52,68,85,100], type: 'line', borderColor: '#64b5f6', backgroundColor: 'transparent', pointRadius: 4, yAxisID: 'y1' }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#8899bb', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' }, title: { display: true, text: 'MW', color: '#8899bb' } },
+      y1: { position: 'right', ticks: { color: '#64b5f6' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Index', color: '#64b5f6' } }
+    }
+  }
+});
+
+// Manufacturing chart
+const ctxMfg = document.getElementById('chartMfg').getContext('2d');
+new Chart(ctxMfg, {
+  type: 'line',
+  data: {
+    labels: ['2019','2020','2021','2022','2023','2024'],
+    datasets: [
+      { label: 'Automation Exposure Index', data: [55,58,62,68,76,85], borderColor: '#ef9a9a', backgroundColor: 'rgba(239,154,154,0.1)', pointRadius: 4 },
+      { label: 'KDT Reskilling Participation Index', data: [20,22,28,34,38,44], borderColor: '#ce93d8', backgroundColor: 'rgba(206,147,216,0.1)', pointRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#8899bb', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' }, title: { display: true, text: 'Index (2019=base)', color: '#8899bb' } }
+    }
+  }
+});
+
+// Financial Services chart
+const ctxFin = document.getElementById('chartFin').getContext('2d');
+new Chart(ctxFin, {
+  type: 'line',
+  data: {
+    labels: ['2019','2020','2021','2022','2023','2024'],
+    datasets: [
+      { label: 'AI Adoption Index (Financial Sector)', data: [30,38,48,60,74,90], borderColor: '#64b5f6', backgroundColor: 'rgba(100,181,246,0.1)', pointRadius: 4 },
+      { label: 'Branch Employment Index', data: [100,97,93,89,85,81], borderColor: '#ce93d8', backgroundColor: 'rgba(206,147,216,0.1)', pointRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#8899bb', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' }, title: { display: true, text: 'Index (2019=100)', color: '#8899bb' } }
+    }
+  }
+});
+</script>
+
+</body>
+</html>

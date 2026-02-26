@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Italy | Human Impact Index</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --text: #e0e6f0;
+    --text-muted: #8899aa;
+    --blue: #64b5f6;
+    --green: #81c784;
+    --purple: #ce93d8;
+    --amber: #ffb74d;
+    --red: #ef5350;
+    --teal: #4db6ac;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .page-header { background: linear-gradient(135deg, #0d1525 0%, #131e35 50%, #0d1525 100%); border-bottom: 1px solid var(--border); padding: 2rem 0; }
+  .header-inner { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+  .back-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--green); font-size: 0.85rem; margin-bottom: 1rem; }
+  .back-link:hover { color: var(--text); text-decoration: none; }
+  .country-title { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .country-flag { font-size: 2.5rem; }
+  .country-title h1 { font-size: 2.2rem; font-weight: 700; color: var(--text); }
+  .country-title .region-tag { background: var(--green); color: #000; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem; max-width: 700px; }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+  .stat-card .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.3rem; }
+  .stat-card .value { font-size: 1.4rem; font-weight: 700; color: var(--green); }
+  .stat-card .note { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+  .momentum-section { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem 1.5rem; }
+  .momentum-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.6rem; }
+  .momentum-bar-wrap { position: relative; height: 10px; background: var(--border); border-radius: 5px; margin-bottom: 0.5rem; }
+  .momentum-bar-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--green), var(--blue)); }
+  .momentum-row { display: flex; justify-content: space-between; align-items: center; }
+  .momentum-score { font-size: 1.8rem; font-weight: 700; color: var(--green); }
+  .momentum-desc { font-size: 0.8rem; color: var(--text-muted); max-width: 500px; }
+
+  .main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+  .tab-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+  .tab-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); padding: 0.45rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; transition: all 0.2s; }
+  .tab-btn:hover, .tab-btn.active { background: var(--green); border-color: var(--green); color: #000; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .sector-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+  .sector-icon { font-size: 2rem; }
+  .sector-header h2 { font-size: 1.5rem; font-weight: 700; }
+  .sector-momentum { margin-left: auto; text-align: right; }
+  .sector-momentum .score { font-size: 2rem; font-weight: 700; color: var(--green); }
+  .sector-momentum .label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+  .snapshot-badge { display: inline-block; background: var(--amber); color: #000; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; text-transform: uppercase; margin-left: 0.6rem; vertical-align: middle; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+  .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; }
+  .info-card h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.8rem; }
+  .info-card ul { list-style: none; }
+  .info-card ul li { padding: 0.3rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .info-card ul li:last-child { border-bottom: none; }
+  .info-card ul li::before { content: "→ "; color: var(--green); }
+  .at-risk::before { content: "▼ "; color: var(--red) !important; }
+  .emerging::before { content: "▲ "; color: var(--green) !important; }
+
+  .impact-box { background: linear-gradient(135deg, #0d2218, #0d1a2e); border: 1px solid #1e4530; border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem; }
+  .impact-box h3 { color: var(--green); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
+  .impact-box p { font-size: 0.9rem; color: var(--text); line-height: 1.7; }
+
+  .reg-box { background: linear-gradient(135deg, #0d1a2e, #0a1520); border: 1px solid #1e3a5f; border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem; }
+  .reg-box h3 { color: var(--blue); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
+  .reg-box p { font-size: 0.9rem; color: var(--text); line-height: 1.7; }
+
+  .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .chart-wrap h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 1rem; }
+  canvas { max-height: 280px; }
+
+  .section-title { font-size: 1.2rem; font-weight: 700; margin: 2rem 0 1rem; color: var(--text); border-left: 3px solid var(--green); padding-left: 0.75rem; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { background: var(--surface); color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.06em; padding: 0.7rem 1rem; text-align: left; border-bottom: 2px solid var(--border); }
+  td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: rgba(129,199,132,0.04); }
+  .high { color: var(--red); font-weight: 600; }
+  .medium { color: var(--amber); font-weight: 600; }
+  .low { color: var(--green); font-weight: 600; }
+
+  .policy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .policy-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--green); border-radius: 8px; padding: 1.2rem; }
+  .policy-card h4 { font-size: 0.85rem; font-weight: 700; color: var(--green); margin-bottom: 0.5rem; }
+  .policy-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+  .source-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; }
+  .source-box h3 { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.8rem; }
+  .source-box p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.8; }
+
+  footer { background: var(--surface); border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; font-size: 0.8rem; color: var(--text-muted); }
+  footer .brand { color: var(--green); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="header-inner">
+    <a class="back-link" href="europe_overview.html">← Back to Europe Overview</a>
+    <div class="country-title">
+      <span class="country-flag">🇮🇹</span>
+      <div>
+        <h1>Italy <span class="region-tag">Europe</span></h1>
+      </div>
+    </div>
+    <p class="subtitle">A rich industrial tradition and a high density of SMEs make Italy's AI transition distinctive within Europe. Milan is emerging as a Southern European hyperscale data hub, but AI adoption remains below the EU average and the country's structural weaknesses — real wage decline, youth unemployment and a fragmented business fabric — shape who bears the cost of transformation.</p>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="label">Total Employed</div>
+        <div class="value">~24M</div>
+        <div class="note">ISTAT/IMF, 2025 estimate</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Unemployment Rate</div>
+        <div class="value">6.5%</div>
+        <div class="note">OECD, May 2025</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">AI Adoption (Firms)</div>
+        <div class="value">8.2%</div>
+        <div class="note">ISTAT 2024; EU average 13.5%</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">AI Market Value</div>
+        <div class="value">€1.2B</div>
+        <div class="note">2024, Politecnico di Milano</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Data Centre Capacity</div>
+        <div class="value">~1.1 GW</div>
+        <div class="note">Installed IT load, 2025 est.</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Microsoft Italy AI Invest</div>
+        <div class="value">€4.3B</div>
+        <div class="note">Announced 2024-25</div>
+      </div>
+    </div>
+
+    <div class="momentum-section">
+      <div class="momentum-label">AI Transformation Momentum Score</div>
+      <div class="momentum-bar-wrap">
+        <div class="momentum-bar-fill" style="width: 59%"></div>
+      </div>
+      <div class="momentum-row">
+        <div class="momentum-score">59 / 100</div>
+        <div class="momentum-desc">Growing hyperscale investment and large-enterprise AI adoption, constrained by below-average SME uptake, skills gaps, and real wage decline. EU AI Act provides structural protection, but implementation capacity and workforce transition support remain underdeveloped.</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showTab('dc')">Data Centres</button>
+    <button class="tab-btn" onclick="showTab('log')">Logistics</button>
+    <button class="tab-btn" onclick="showTab('off')">Office Traditional</button>
+    <button class="tab-btn" onclick="showTab('tech')">Office Tech/Creative</button>
+    <button class="tab-btn" onclick="showTab('ret')">Retail</button>
+    <button class="tab-btn" onclick="showTab('cre')">CRE Services</button>
+    <button class="tab-btn" onclick="showTab('pro')">Professional Services</button>
+    <button class="tab-btn" onclick="showTab('mfg')">Manufacturing</button>
+    <button class="tab-btn" onclick="showTab('fin')">Financial Services</button>
+  </div>
+
+  <!-- DATA CENTRES -->
+  <div id="dc" class="tab-panel active">
+    <div class="sector-header">
+      <span class="sector-icon">🏢</span>
+      <h2>Data Centres</h2>
+      <div class="sector-momentum"><div class="score">72</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Italy's data centre market is growing rapidly, with Milan emerging as a primary Southern European alternative to the saturated FLAP-D cluster (Frankfurt, London, Amsterdam, Paris, Dublin). Installed IT load reached approximately 1.1 GW in 2025, forecast to rise to 4.1 GW by 2030. Milan holds around 54% of national capacity. Microsoft has invested €4.3 billion in Italian AI and cloud infrastructure, AWS has committed €1.2 billion over five years, and Oracle has partnered with TIM (Telecom Italia) to launch a second cloud region in Turin. Data4 is building a 100 MW campus in Vittuone, Milan. Italy has over 33 operational submarine cables, with four new systems (Blue-Raman, BlueMed, Medusa, Unitirreno) adding over 1 Pbps of capacity before 2027. This investment wave creates employment in construction, engineering and operations — but raises acute tensions around Italy's constrained power grid. Power connection requests jumped from 30 GW to 42 GW between December 2024 and March 2025. High electricity costs (averaging €133/MWh in 2024, 30–40% above France and Spain) affect operating economics and operator location decisions. As with other European markets, the construction jobs created are often filled by migrant or contract labour, while permanent technical operations roles require skills that local workers may not possess without targeted training.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Small enterprise data centre staff as consolidation proceeds</li>
+          <li class="at-risk">Traditional IT infrastructure managers as cloud migration accelerates</li>
+          <li class="at-risk">Manual facilities management at legacy Tier 1–2 sites</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">Hyperscale AI infrastructure and GPU cluster engineers</li>
+          <li class="emerging">Liquid cooling and power systems specialists</li>
+          <li class="emerging">Renewable energy and PPA procurement specialists</li>
+          <li class="emerging">Submarine cable and network infrastructure engineers</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>Italy's National Strategic Hub (Polo Strategico Nazionale) provides sovereign cloud infrastructure for public administration. The national AI Strategy 2024–2026 explicitly supports data infrastructure investment. EU AI Act provisions applicable to AI systems operating within data centres require transparency and conformity assessments for high-risk applications. Grid connection congestion — 42 GW of requests against constrained capacity — is being addressed through Terna's €23 billion Hypergrid plan, but commissioning extends into the 2030s. No specific worker protection framework exists for data centre construction and operations workforce.</p>
+    </div>
+    <div class="chart-wrap">
+      <h3>Italy Data Centre Capacity Growth (MW, IT Load) and Major Investment Milestones</h3>
+      <canvas id="dcChart"></canvas>
+    </div>
+  </div>
+
+  <!-- LOGISTICS -->
+  <div id="log" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">🚚</span>
+      <h2>Logistics &amp; Warehousing</h2>
+      <div class="sector-momentum"><div class="score">60</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Italy's logistics sector employs an estimated 1.0–1.3 million workers, with demand concentrated in transport, warehousing and last-mile delivery. EURES labour market data shows transport, logistics and warehousing accounted for 29.4% of migrant worker contract demand in late 2024, reflecting the sector's heavy reliance on foreign labour — particularly from Romania, Albania and Ukraine. Automated sorting and warehouse management systems are being deployed by large operators including Amazon, DHL and GXO, but the sector's fragmentation — dominated by SMEs alongside large multinationals — means AI adoption is uneven. Vacancy growth in logistics was among the strongest in Italy in 2024, yet automation is compressing headcount per unit of throughput at large facilities. Temporary and seasonal contracts are structurally embedded, making AI-driven reduction of roles particularly damaging to workers who lack tenure protections. The Riders Law (Decreto Legislativo 81/2015 as modified by sector agreements) improved conditions for platform delivery workers, but enforcement remains contested. Workers most at risk are manual pickers and sorters in automated warehouses, and gig-economy riders managed by algorithmic dispatch systems.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Manual warehouse pickers and sorters at automated facilities</li>
+          <li class="at-risk">Delivery riders under algorithmic dispatch management</li>
+          <li class="at-risk">Freight documentation and customs paperwork clerks</li>
+          <li class="at-risk">Inventory management and stock-control staff at SME operators</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">Automation systems technicians and maintenance engineers</li>
+          <li class="emerging">Supply chain data analysts and optimisation specialists</li>
+          <li class="emerging">Cold chain and pharmaceutical logistics managers</li>
+          <li class="emerging">Green logistics and e-cargo transition coordinators</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>EU AI Act provisions on AI systems used in worker management and evaluation (classified as high-risk in employment contexts) require transparency and human oversight from August 2026. Italy's labour law provides stronger worker protections than many non-EU peers, including works council consultation rights for significant workplace changes. The EU Platform Work Directive, adopted in 2024 and to be transposed by member states, will extend employment protections to platform workers. However, enforcement of algorithmic transparency obligations for gig employers remains a practical challenge.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TRADITIONAL -->
+  <div id="off" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">🏛️</span>
+      <h2>Office Traditional</h2>
+      <div class="sector-momentum"><div class="score">55</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Italy's office sector employs a large administrative and back-office workforce, including significant numbers in public administration, insurance back-office, banking operations and corporate services. AI tools are beginning to automate routine document processing, scheduling, basic correspondence and data entry functions. Italy's largest challenge in this sector is structural: the country has seen the largest fall in real wages of all major OECD economies since the 2021 inflation surge, with real wages still 7.5% below early 2021 levels by mid-2025. Workers in administrative roles have thus experienced both stagnant wages and increasing AI pressure on their job security simultaneously. Italy's youth unemployment is structurally elevated, with entry-level administrative roles historically serving as a first step into the workforce for young people without higher education. As AI automates these entry points, the consequence falls hardest on young workers in the South and on women, who are disproportionately represented in clerical and administrative roles. The public administration sector, a major employer, is actively pursuing AI adoption for efficiency but has not developed worker transition frameworks to accompany this shift.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Administrative assistants and data entry clerks</li>
+          <li class="at-risk">Back-office processing staff in insurance and banking</li>
+          <li class="at-risk">Document management and archiving roles</li>
+          <li class="at-risk">Public administration clerks performing routine case processing</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">AI implementation project managers in public sector</li>
+          <li class="emerging">Digital citizen services designers</li>
+          <li class="emerging">Complex case handlers freed from routine processing burden</li>
+          <li class="emerging">AI governance and compliance officers</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>EU AI Act classifies AI systems used for recruitment, task allocation and performance monitoring in employment as high-risk, requiring conformity assessment and human oversight from 2026. Italy's national AI Strategy 2024–2026 explicitly targets AI adoption in public administration but focuses primarily on efficiency rather than workforce transition. Italy's collective bargaining system — with 100% coverage by OECD-ICTWSS data — provides a framework for negotiating workplace AI impacts, but existing agreements have not addressed AI-driven role elimination systematically.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TECH/CREATIVE -->
+  <div id="tech" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">💻</span>
+      <h2>Office Tech / Creative</h2>
+      <div class="sector-momentum"><div class="score">64</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Italy's ICT sector employs an estimated 600,000–800,000 workers, with ICT specialists making up 4% of total employment in 2024 — below the EU average. The AI market grew 58% in 2024 to reach €1.2 billion, a signal of accelerating corporate interest. Politecnico di Milano's AI Observatory reports that 81% of large Italian companies have launched or evaluated AI projects. Adoption among SMEs, however, remains very low: only 7% of small businesses and 15% of medium-sized ones have AI initiatives. Italy's creative industries — fashion, design, advertising, architecture, film and luxury goods — are world-leading and employ significant numbers of creative professionals. These sectors are beginning to encounter generative AI tools that can replicate output functions previously requiring specialist human skill: image generation, preliminary design concepts, advertising copy, CGI and post-production. Italy's FAIR (Future Artificial Intelligence Research) Foundation involves over 400 senior and 380 junior researchers across a consortium including Intesa Sanpaolo, Leonardo and Lutech, positioning Italy for AI research leadership — but the gap between frontier research and SME adoption remains wide. Most at risk are junior creative workers and mid-level ICT staff whose roles don't require the tacit knowledge and relationship skills that currently resist automation.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Junior graphic designers and visual content producers</li>
+          <li class="at-risk">Routine copywriters and marketing content creators</li>
+          <li class="at-risk">Mid-level software testers and legacy code maintainers</li>
+          <li class="at-risk">Traditional CAD operators without AI workflow integration</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">AI-augmented creative directors and concept strategists</li>
+          <li class="emerging">Generative AI workflow specialists in fashion and design</li>
+          <li class="emerging">AI ethics and governance researchers (FAIR ecosystem)</li>
+          <li class="emerging">Digital twin and simulation engineers</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>Italy's AI Strategy 2024–2026 explicitly acknowledges the creative industries as a priority sector for AI adoption support. The FAIR Foundation's cascade-call mechanism extends AI research benefits through the wider ecosystem. EU AI Act provisions on AI-generated content labelling will affect creative industries from 2026. Italy's Agenzia per l'Italia Digitale (AgID) coordinates AI adoption policy across sectors. The country's below-EU-average ICT specialist share (4% vs EU average) creates a structural skills gap that limits the workforce's capacity to adapt to AI-integrated creative workflows.</p>
+    </div>
+    <div class="chart-wrap">
+      <h3>Italy AI Adoption: Enterprise vs EU Average, and AI Market Growth (€B)</h3>
+      <canvas id="adoptChart"></canvas>
+    </div>
+  </div>
+
+  <!-- RETAIL -->
+  <div id="ret" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">🛒</span>
+      <h2>Retail</h2>
+      <div class="sector-momentum"><div class="score">55</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Italy's retail sector employs an estimated 1.6–1.9 million workers across food, fashion, consumer electronics, homeware and tourism-related retail. The sector is dominated by SME operators alongside large domestic groups (Conad, Coop, Esselunga) and global fashion houses (Gucci, Prada, Zara, H&amp;M). AI is being deployed for demand forecasting, inventory optimisation and personalised customer marketing, and self-checkout expansion is visible in larger supermarkets and hypermarkets. Retail trade featured among the top hiring demand sectors in Italy's Q4 2024 labour forecasts (207,000 expected hires), but this reflects Italy's labour market structure rather than growth in permanent employment. Workers most at risk are cashiers, back-office inventory staff and routine customer service agents, many of whom are part-time, female and in the South — where alternative employment options are limited and regional inequality is stark. ISTAT data for November 2024 showed retail sales volume declining 0.4% on the year, even as value grew, suggesting cost-driven pressures that accelerate automation investment. Italy's luxury retail sector presents a different picture: human craftsmanship and personal service are core to brand value, creating partial protection for skilled artisan and concierge roles even as AI manages back-office functions.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Supermarket cashiers as self-checkout expands</li>
+          <li class="at-risk">Back-office inventory and stock management clerks</li>
+          <li class="at-risk">Routine customer service agents at non-luxury retailers</li>
+          <li class="at-risk">Visual merchandising staff at AI-automated format stores</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">Customer experience and personalisation specialists</li>
+          <li class="emerging">Omnichannel retail operations managers</li>
+          <li class="emerging">Luxury brand artisans and concierge service staff</li>
+          <li class="emerging">E-commerce and digital category managers</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>Italian retail workers benefit from strong collective bargaining coverage, with sector agreements setting minimum wages and conditions. The EU AI Act's high-risk classification for AI in worker management applies to retail AI systems managing task allocation, scheduling and performance monitoring. Italy's national AI Strategy notes retail as a priority sector for AI adoption support, particularly for SME competitiveness. Short-time work schemes (Cassa Integrazione Guadagni, CIG) — successfully used during the pandemic — could provide a template for supporting retail workers during AI-driven transition, but no proactive framework for this use has been developed.</p>
+    </div>
+  </div>
+
+  <!-- CRE SERVICES -->
+  <div id="cre" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">🏗️</span>
+      <h2>CRE Services</h2>
+      <div class="sector-momentum"><div class="score">58</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Italy's commercial real estate services sector is active in Milan and Rome, with growing demand driven by data centre construction, logistics real estate expansion, and corporate occupier decision-making around hybrid working. Major global firms — CBRE, JLL, Cushman &amp; Wakefield, BNP Paribas Real Estate — are deploying AI in their Italian operations for market analysis, portfolio management, lease optimisation and sustainability benchmarking. The data centre construction boom in the Milan corridor has created significant transactional and advisory demand that supports CRE services employment. However, junior analyst roles — historically the entry point for graduates into the profession — are increasingly automated, as market data aggregation, comparative analysis and first-draft reporting are handled by AI tools. Italy's CRE services workforce is small relative to Northern European counterparts, meaning absolute displacement numbers are modest, but the loss of career-development pathways into the profession is significant for young workers in a country where professional services remain a high-status entry route.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Junior market research analysts and data compilers</li>
+          <li class="at-risk">Property management administrators at smaller firms</li>
+          <li class="at-risk">Routine lease review and documentation staff</li>
+          <li class="at-risk">Facilities management coordinators at commoditised sites</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">Data centre real estate specialists and infrastructure advisors</li>
+          <li class="emerging">ESG and sustainability advisors for property portfolios</li>
+          <li class="emerging">Smart building and proptech implementation consultants</li>
+          <li class="emerging">Senior advisory roles requiring tacit market knowledge</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>Italian CRE professionals operate under EU AI Act requirements for AI transparency in high-risk applications. RICS (Royal Institution of Chartered Surveyors) AI governance standards apply to international firms operating in Italy. AgID's digitalisation programme for public administration is driving demand for smart building and sustainability advisory services. No Italy-specific CRE sector AI transition framework exists, though the profession's higher education profile provides some reskilling capacity relative to more vulnerable workforce segments.</p>
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL SERVICES -->
+  <div id="pro" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">⚖️</span>
+      <h2>Professional Services</h2>
+      <div class="sector-momentum"><div class="score">62</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Italy's professional services sector — law, accounting, management consulting and tax advisory — is integrating AI at an uneven pace. Large firms (Big Four, international law firms, top-tier consulting) are deploying AI for contract analysis, due diligence, regulatory monitoring and audit analytics. Italian tax administration has been highlighted by the OECD as a priority area for AI automation, with significant scope for reducing compliance friction. The legal profession is large and traditional, with many sole practitioners and small studios poorly positioned to adopt AI tools or absorb their competitive implications. Junior lawyers and trainees in large firms face the most acute displacement risk, as document review, contract drafting and regulatory research tasks are increasingly automated. Italy has an elevated proportion of professional service workers relative to its economy, creating a sector where incremental AI-driven role elimination across many firms aggregates to significant employment pressure. Most at risk are young professionals just entering the workforce, whose first years are typically spent on precisely the tasks most susceptible to AI: research, precedent analysis, template document preparation and data compilation.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Junior lawyers doing routine document review and research</li>
+          <li class="at-risk">Trainee accountants in process-heavy audit functions</li>
+          <li class="at-risk">Tax compliance clerks and VAT/IVA administrative staff</li>
+          <li class="at-risk">Entry-level consultants in research and benchmarking roles</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">Legal technology practitioners and LegalTech implementers</li>
+          <li class="emerging">AI ethics consultants and compliance advisors</li>
+          <li class="emerging">Senior advisory and relationship roles above AI automation threshold</li>
+          <li class="emerging">Tax technology and digital compliance specialists</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>EU AI Act high-risk classification covers AI used in legal interpretation and access to justice contexts, requiring human oversight and transparency. Ordine degli Avvocati (Bar Council) and Consiglio Nazionale dei Dottori Commercialisti (Accountants Council) have not issued substantive AI governance frameworks. Italy's national AI Strategy notes legal and professional services as a target for AI adoption in the public administration context. GDPR and Italy's data protection authority (Garante per la protezione dei dati personali) impose constraints on AI processing of client data, adding compliance complexity for professional service firms deploying AI tools.</p>
+    </div>
+  </div>
+
+  <!-- MANUFACTURING -->
+  <div id="mfg" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">🏭</span>
+      <h2>Manufacturing <span class="snapshot-badge">Snapshot</span></h2>
+      <div class="sector-momentum"><div class="score">62</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Italy is the second-largest manufacturing economy in the EU, with an estimated 3.6–3.9 million workers in the industrial sector representing approximately 26% of employment. The country is renowned for its high-value manufacturing in automotive, textiles, food and beverage, machinery and luxury goods. Stellantis (Fiat-Chrysler heritage), Lamborghini, Ferrari and a large automotive supply chain base in Piedmont and Emilia-Romagna are integrating AI into production monitoring, quality control and predictive maintenance. The National Industry 4.0 / Industria 4.0 programme established significant incentives for automation investment, with tax credits and hyper-depreciation for smart factory equipment. Italian industrial production declined 3.3% in the first nine months of 2024 (Confindustria), creating a cost-pressure environment that accelerates automation adoption. Workers most at risk are in routine assembly and machining, particularly in the North-East industrial districts, where mid-skill workers have limited alternative employment in their communities. Italy's manufacturing SME base — the backbone of industrial districts in regions like Veneto, Lombardy and Emilia-Romagna — faces competitive pressure from larger automated competitors but has limited capital for their own AI investment.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Assembly line operatives in automotive and machinery</li>
+          <li class="at-risk">Quality inspection staff replaced by machine vision systems</li>
+          <li class="at-risk">Routine machining and processing operators</li>
+          <li class="at-risk">SME manufacturing workers facing large-firm competition</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">Smart factory and cobotic integration technicians</li>
+          <li class="emerging">Predictive maintenance and IoT system operators</li>
+          <li class="emerging">Digital twin and process simulation engineers</li>
+          <li class="emerging">Mechatronics specialists (highest demand growth in 2024)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>Industria 4.0 / Piano Nazionale Transizione 4.0 provides tax incentives for smart manufacturing investment but no corresponding workforce transition obligation. EU Just Transition Fund provisions support industrial regions facing decarbonisation and automation-driven economic change. Italy's Cassa Integrazione Guadagni (short-time work scheme) is available for workers in restructuring situations and has been used during previous industrial downturns. Collective bargaining at sectoral level (metalworking, textiles) provides consultation rights for significant technological change, but agreements typically lag the pace of automation deployment.</p>
+    </div>
+  </div>
+
+  <!-- FINANCIAL SERVICES -->
+  <div id="fin" class="tab-panel">
+    <div class="sector-header">
+      <span class="sector-icon">💳</span>
+      <h2>Financial Services</h2>
+      <div class="sector-momentum"><div class="score">66</div><div class="label">Momentum</div></div>
+    </div>
+    <div class="impact-box">
+      <h3>Human Impact Assessment</h3>
+      <p>Italy's financial services sector is undergoing significant AI-driven transformation, led by major banking groups. Intesa Sanpaolo — Italy's largest bank — has been a prominent participant in FAIR Foundation AI research and has implemented AI across fraud detection, customer personalisation and process automation. UniCredit and Mediobanca are deploying AI in trading analytics, risk management and client advisory. Italy's banking sector is consolidating: branch networks have contracted significantly over the past decade as digital adoption accelerates, directly reducing employment for tellers, relationship managers for standard products and back-office processing staff. Italy's InsurTech and FinTech ecosystem, while smaller than London or Amsterdam, is growing — Milan's financial district has attracted AI-native challengers. Agos, Findomestic and other consumer credit providers are automating loan origination and collections. The workers most affected are contact centre staff, branch operatives and back-office processing clerks — roles that, in Italy, often represent stable formal employment for workers without higher education qualifications. The sector's real wage decline context means these workers have already experienced purchasing power erosion alongside job security pressure from automation.</p>
+    </div>
+    <div class="two-col">
+      <div class="info-card">
+        <h3>At-Risk Roles</h3>
+        <ul>
+          <li class="at-risk">Bank tellers and branch transaction processors</li>
+          <li class="at-risk">Consumer credit processing and document verification staff</li>
+          <li class="at-risk">Insurance claims handlers and back-office administrators</li>
+          <li class="at-risk">Contact centre agents for routine financial product queries</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Emerging Roles</h3>
+        <ul>
+          <li class="emerging">AI risk and model governance specialists</li>
+          <li class="emerging">FinTech product managers and UX designers</li>
+          <li class="emerging">Cybersecurity and financial fraud investigators</li>
+          <li class="emerging">Complex wealth management advisors above automation threshold</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reg-box">
+      <h3>Regulatory Context</h3>
+      <p>Banca d'Italia and CONSOB are incorporating EU AI Act requirements into financial sector supervision. The EU AI Act classifies credit scoring, insurance risk assessment and employment management AI systems as high-risk, requiring conformity assessments and transparency obligations from August 2026. The European Banking Authority (EBA) has issued AI governance guidelines for the banking sector. Italy's financial sector collective agreements provide for consultation on technological change, but specific AI transition provisions are not yet embedded. GDPR enforcement by the Garante applies to AI processing of customer financial data.</p>
+    </div>
+  </div>
+
+  <!-- REGIONAL TABLE -->
+  <h2 class="section-title">Regional Employment Snapshot</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Sector</th>
+          <th>Est. Workers</th>
+          <th>AI Exposure</th>
+          <th>Automation Risk</th>
+          <th>Transition Capacity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Data Centres</td>
+          <td>15K–25K (ops + active construction)</td>
+          <td>Medium</td>
+          <td class="medium">Medium</td>
+          <td>Moderate — Milan technical ecosystem supports upskilling</td>
+        </tr>
+        <tr>
+          <td>Logistics &amp; Warehousing</td>
+          <td>1.0M–1.3M (est.)</td>
+          <td>High</td>
+          <td class="high">High (operational roles)</td>
+          <td>Low-Moderate — strong collective bargaining but high temporary share</td>
+        </tr>
+        <tr>
+          <td>Office Traditional</td>
+          <td>3.5M–4.5M (est., incl. public admin)</td>
+          <td>High</td>
+          <td class="high">High</td>
+          <td>Low — real wage decline compounds automation risk for clerical workers</td>
+        </tr>
+        <tr>
+          <td>Office Tech / Creative</td>
+          <td>600K–800K (ICT) + creative sector est.</td>
+          <td>Medium-High</td>
+          <td class="medium">Medium</td>
+          <td>Moderate — FAIR ecosystem benefits larger firms; SMEs underserved</td>
+        </tr>
+        <tr>
+          <td>Retail</td>
+          <td>1.6M–1.9M (est.)</td>
+          <td>Medium</td>
+          <td class="medium">Medium</td>
+          <td>Low-Moderate — luxury sector protected; mass retail workers vulnerable</td>
+        </tr>
+        <tr>
+          <td>CRE Services</td>
+          <td>200K–350K (est., formal sector)</td>
+          <td>Medium</td>
+          <td class="medium">Medium (junior roles)</td>
+          <td>Moderate — professional workforce with upskilling capacity</td>
+        </tr>
+        <tr>
+          <td>Professional Services</td>
+          <td>1.2M–1.6M (est., law, accountancy, consulting)</td>
+          <td>High</td>
+          <td class="high">High (entry-level)</td>
+          <td>Moderate — high education but traditional professional culture limits adaptation speed</td>
+        </tr>
+        <tr>
+          <td>Manufacturing</td>
+          <td>3.6M–3.9M (ISTAT/World Bank, est.)</td>
+          <td>Medium</td>
+          <td class="medium">Medium-High</td>
+          <td>Low-Moderate — CIG provides short-term support; long-term industrial district workers at risk</td>
+        </tr>
+        <tr>
+          <td>Financial Services</td>
+          <td>600K–750K (est., banking + insurance)</td>
+          <td>High</td>
+          <td class="high">High (operational roles)</td>
+          <td>Moderate — strong regulatory framework; no workforce transition mandate yet</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:0.75rem; color: var(--text-muted); margin-top: 0.75rem; margin-bottom: 2rem;">Note: Sector employment estimates are derived from ISTAT structural employment data, World Bank sectoral employment shares (Industry 26.6% of total employment, 2023), EURES Italy Labour Market Information and Eurostat Structural Business Statistics. Figures marked "est." are informed approximations. Manufacturing is covered as a snapshot in this edition.</p>
+
+  <!-- POLICY GAPS -->
+  <h2 class="section-title">Key Policy Gaps</h2>
+  <div class="policy-grid">
+    <div class="policy-card">
+      <h4>SME AI Adoption and Transition Gap</h4>
+      <p>Only 7% of Italian small businesses have AI initiatives, against 25% of large firms with mature programmes. Italy's economy is dominated by SMEs, meaning the majority of workers are employed by firms not yet adapting to AI — and not yet receiving the transition support they will need. Italy's AI Strategy 2024–2026 includes SME support provisions but implementation depth remains limited relative to the scale of the structural challenge.</p>
+    </div>
+    <div class="policy-card">
+      <h4>No Mandatory Workforce Transition Framework</h4>
+      <p>Neither Italy's national AI Strategy nor EU AI Act provisions require employers to notify workers or provide transition support when AI deployment reduces headcount. Italy's CIG short-time work scheme exists but is reactive, not proactive. No AI-specific workforce impact assessment obligation exists for private sector employers. The gap between policy intent and binding obligation means most transition costs fall on individuals.</p>
+    </div>
+    <div class="policy-card">
+      <h4>Real Wage Decline Compounds Displacement Risk</h4>
+      <p>Italy has experienced the largest real wage decline among major OECD economies since 2021, with workers still 7.5% below their early-2021 purchasing power. Workers facing AI-driven role elimination are thus entering the transition already financially weakened. The combination of wage stagnation and job insecurity is particularly acute in Southern Italy, where alternative employment options are limited and regional inequality is deepest.</p>
+    </div>
+    <div class="policy-card">
+      <h4>Youth Unemployment and Entry-Level Erosion</h4>
+      <p>Italy's youth unemployment remains structurally elevated. Administrative, clerical and junior professional roles — historically the gateway to formal employment for young workers without degrees — are among the most AI-exposed. As AI narrows these entry points, the consequence falls disproportionately on young people, particularly women and those in the South. Italy's national AI Strategy contains no targeted provision addressing this dimension of AI-driven exclusion.</p>
+    </div>
+    <div class="policy-card">
+      <h4>ICT Skills Deficit Below EU Average</h4>
+      <p>Italy's ICT specialist share of employment (4%) is below the EU average, and the country faces a significant skills gap in AI-relevant professions. Over 2.48 million job vacancies went unfilled in 2024 due to skills shortages (Unioncamere data). The FAIR Foundation and national AI Strategy address research excellence but do not adequately translate into SME-accessible practical AI skills at the scale required.</p>
+    </div>
+    <div class="policy-card">
+      <h4>Gender Dimension: Administrative and Clerical Sector Exposure</h4>
+      <p>Roles most at risk from AI in Italy — administrative assistants, data entry clerks, back-office processors — are disproportionately held by women. Italy's gender employment gap is already significant, and the automation of entry-level clerical positions risks deepening it. Neither Italy's AI Strategy nor the EU AI Act specifically addresses gendered AI displacement risk, leaving women in low-wage administrative roles without targeted transition support.</p>
+    </div>
+  </div>
+
+  <!-- SOURCE NOTE -->
+  <div class="source-box">
+    <h3>Source Note</h3>
+    <p>
+      <strong>Employment data:</strong> ISTAT Labour Force Survey (LFS/RCFL) via Statista and Moody's Analytics — total employed ~24M (2025 IMF estimate). OECD Employment Outlook 2025: Italy — unemployment 6.5% May 2025; employment rate 62.6% November 2025. World Bank modelled ILO estimate: industry employment 26.64% of total employment (2023). EURES Italy Labour Market Information 2024 (sector vacancy data, foreign worker demand). Unioncamere/InfoJobs Excelsior data (2.48M unfilled vacancies 2024; Q4 2024 hiring forecasts).
+      <br><br>
+      <strong>AI adoption:</strong> ISTAT "Imprese e ICT Anno 2024" — 8.2% of Italian firms with 10+ employees adopt AI technologies (press release and PDF, Istat.it). Eurostat ICT Enterprise Survey 2025 — EU27 average 20% in 2025 (up from 13.5% in 2024). Italy 2025 Digital Decade Country Report (European Commission) — 8.2% Italian firm AI adoption; 4% ICT specialist employment share. Neodata Group / Politecnico di Milano AI Observatory — €1.2B AI market 2024 (+58%); 81% large firms launched AI projects; 25% mature widespread adoption; 53% GenAI tool adoption at large firms. OECD Progress in Implementing EU Coordinated Plan on AI: Italy (2025) — Italian AI Strategy 2024-2026.
+      <br><br>
+      <strong>Data centres:</strong> Mordor Intelligence Italy Hyperscale Data Center Market 2025-2031 — 621 MW to 2,387 MW at 36.1% CAGR; Microsoft €4.3B investment; AWS €1.2B. Mordor Intelligence Italy Data Center Market 2025-2030 — 1,080 MW installed IT load 2025; 4,090 MW by 2030. Arizton Italy Data Center Market 2025-2030 — $3.13B in 2024, $6.22B by 2030. CleanBridge Global Data Center Market Report 2025 Italy — 513 MW capacity end 2024 (+17% on 2023); Data4 100 MW Vittuone campus; Microsoft first Italian self-build. Reuters, power connection requests 42 GW March 2025. Terna HVDC Hypergrid plan €23B.
+      <br><br>
+      <strong>Manufacturing:</strong> Confindustria data — Italian industrial production -3.3% first nine months 2024. World Bank employment shares — 26.64% industry employment 2023. Lloyds Bank Trade / International Trade Portal Italy economic context — services sector 65% of GDP, 70% of employment. EURES 2024 hiring data — manufacturing sector hiring down 3.4% year-on-year.
+      <br><br>
+      <strong>Financial services:</strong> Intesa Sanpaolo participation in FAIR Foundation — Saikrishna/OECD reports. UniCredit and Italian banking AI integration — sector press and OECD Italy AI implementation note 2025. EBA AI governance guidelines. Banca d'Italia supervisory posture on EU AI Act.
+      <br><br>
+      <strong>AI regulation:</strong> EU AI Act (Regulation (EU) 2024/1689, published July 2024). Italian AI Strategy 2024-2026 (AgID/Presidency of the Council of Ministers). FAIR Foundation establishment (Intesa Sanpaolo, Leonardo, Lutech). Garante per la protezione dei dati personali (GDPR enforcement, AI). OECD Progress in Implementing EU Coordinated Plan on AI Volume 1: Italy. Edstellar Italy skills demand report 2026.
+      <br><br>
+      <strong>Data reliability note:</strong> Precise sub-sector employment figures for Italy at the granularity used in this tool require detailed ISTAT LFS sector tables. The employment estimates in the regional table are calibrated against World Bank sectoral employment shares, EURES sector data and Eurostat Structural Business Statistics. All sub-sector estimates should be treated as informed approximations.
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  <span class="brand">Human Impact Index</span> — Authored by Andrew Phipps, PhD Candidate in Philosophy (AI Ethics), University of Sussex &amp; Former Global Leader, Cushman &amp; Wakefield. For research and educational purposes.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Data Centre Chart
+const dcCtx = document.getElementById('dcChart').getContext('2d');
+new Chart(dcCtx, {
+  type: 'bar',
+  data: {
+    labels: ['2021', '2022', '2023', '2024', '2025 (est.)', '2026 (proj.)', '2030 (proj.)'],
+    datasets: [{
+      label: 'Italy Data Centre IT Load (MW)',
+      data: [280, 350, 440, 560, 1080, 1500, 4090],
+      backgroundColor: ['rgba(129,199,132,0.5)', 'rgba(129,199,132,0.5)', 'rgba(129,199,132,0.5)', 'rgba(129,199,132,0.6)', 'rgba(129,199,132,0.7)', 'rgba(129,199,132,0.4)', 'rgba(129,199,132,0.3)'],
+      borderColor: '#81c784',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { color: '#e0e6f0' } },
+      tooltip: { callbacks: { label: ctx => `IT Load: ${ctx.parsed.y} MW` } }
+    },
+    scales: {
+      x: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' } },
+      y: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' }, title: { display: true, text: 'MW (IT Load)', color: '#8899aa' } }
+    }
+  }
+});
+
+// AI Adoption Chart
+const adoptCtx = document.getElementById('adoptChart').getContext('2d');
+new Chart(adoptCtx, {
+  type: 'line',
+  data: {
+    labels: ['2021', '2022', '2023', '2024', '2025'],
+    datasets: [{
+      label: 'Italy AI Adoption — Firms (%)',
+      data: [4.2, 5.1, 6.5, 8.2, null],
+      borderColor: '#81c784',
+      backgroundColor: 'rgba(129,199,132,0.1)',
+      pointBackgroundColor: '#81c784',
+      tension: 0.4,
+      fill: true
+    }, {
+      label: 'EU27 Average (%)',
+      data: [7.7, 9.5, 11.2, 13.5, 20.0],
+      borderColor: '#64b5f6',
+      backgroundColor: 'rgba(100,181,246,0.05)',
+      pointBackgroundColor: '#64b5f6',
+      tension: 0.4,
+      borderDash: [6, 4]
+    }, {
+      label: 'Italy AI Market (€B, right axis)',
+      data: [null, null, null, 1.2, null],
+      borderColor: '#ffb74d',
+      backgroundColor: 'rgba(255,183,77,0.1)',
+      pointBackgroundColor: '#ffb74d',
+      pointRadius: 6,
+      tension: 0,
+      yAxisID: 'y2'
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { color: '#e0e6f0' } }
+    },
+    scales: {
+      x: { ticks: { color: '#8899aa' }, grid: { color: '#1e2d45' } },
+      y: { ticks: { color: '#8899aa', callback: v => v + '%' }, grid: { color: '#1e2d45' }, min: 0, max: 25, title: { display: true, text: 'AI Adoption Rate (%)', color: '#8899aa' } },
+      y2: { position: 'right', ticks: { color: '#ffb74d', callback: v => '€' + v + 'B' }, grid: { drawOnChartArea: false }, min: 0, max: 3, title: { display: true, text: 'AI Market (€B)', color: '#ffb74d' } }
+    }
+  }
+});
+</script>
+</body>
+</html>

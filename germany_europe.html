@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Germany | Human Impact Index</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0a0e1a; color: #e0e6f0; line-height: 1.7; }
+
+        .page-header { background: linear-gradient(135deg, #0d1b2a 0%, #1a2a4a 50%, #0d2035 100%); border-bottom: 1px solid rgba(64,180,255,0.2); }
+
+        .header-top { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .back-nav { color: #64b5f6; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+        .back-nav:hover { color: #90caf9; }
+        .region-badge { background: linear-gradient(135deg,#1a3a1a,#0d3d0d); border: 1px solid rgba(100,200,100,0.4); color: #81c784; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+        .brand-mark { font-size: 0.85rem; color: #4a6fa5; font-weight: 600; }
+
+        .header-content { padding: 40px 40px 36px; display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
+        .header-text { flex: 1; }
+        .region-label { font-size: 0.8rem; font-weight: 700; color: #81c784; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .region-label::before { content:''; display:inline-block; width:24px; height:2px; background:#81c784; }
+        .page-title { font-size: 2.8rem; font-weight: 800; color: #ffffff; line-height: 1.15; margin-bottom: 14px; }
+        .page-subtitle { font-size: 1.05rem; color: #9fb8d8; max-width: 680px; line-height: 1.7; }
+
+        .header-stats { display: flex; flex-direction: column; gap: 14px; min-width: 280px; }
+        .stat-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(100,181,246,0.15); border-radius: 12px; padding: 16px 20px; text-align: center; }
+        .stat-value { font-size: 1.9rem; font-weight: 800; color: #64b5f6; line-height: 1; }
+        .stat-value.warning { color: #ff9800; }
+        .stat-value.danger  { color: #ef5350; }
+        .stat-value.positive { color: #66bb6a; }
+        .stat-label { font-size: 0.78rem; color: #7a9bbf; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .momentum-bar-section { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 24px 40px; display: flex; align-items: center; gap: 30px; }
+        .momentum-label { font-size: 0.85rem; font-weight: 700; color: #7a9bbf; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .momentum-track { flex: 1; height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; }
+        .momentum-fill  { height: 100%; background: linear-gradient(90deg,#1565c0,#42a5f5,#ff9800); border-radius: 5px; }
+        .momentum-score { font-size: 1.5rem; font-weight: 800; color: #ff9800; white-space: nowrap; }
+        .momentum-descriptor { font-size: 0.82rem; color: #9fb8d8; white-space: nowrap; }
+
+        .content-wrapper { max-width: 1400px; margin: 0 auto; padding: 40px; }
+        .section { margin-bottom: 50px; }
+        .section-title { font-size: 1.4rem; font-weight: 700; color: #ffffff; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid rgba(100,181,246,0.25); display: flex; align-items: center; gap: 10px; }
+        .section-title::before { content:''; display:inline-block; width:4px; height:22px; background:linear-gradient(180deg,#64b5f6,#81c784); border-radius:2px; }
+
+        .prose { color: #b8cfe8; font-size: 0.97rem; line-height: 1.85; margin-bottom: 16px; }
+        .prose strong { color: #e0e6f0; font-weight: 600; }
+
+        /* sector tabs */
+        .sector-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+        .sector-tab { padding: 8px 18px; border-radius: 20px; font-size: 0.83rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: #7a9bbf; transition: all 0.2s; }
+        .sector-tab:hover { border-color: rgba(129,199,132,0.4); color: #e0e6f0; }
+        .sector-tab.active { background: rgba(129,199,132,0.15); border-color: rgba(129,199,132,0.5); color: #81c784; }
+
+        /* sector panels */
+        .sector-panel { display: none; }
+        .sector-panel.active { display: block; }
+
+        .sector-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 24px; flex-wrap: wrap; }
+        .sector-meta { flex: 1; }
+        .sector-name { font-size: 1.3rem; font-weight: 700; color: #ffffff; margin-bottom: 6px; }
+        .sector-snapshot { font-size: 0.88rem; color: #7a9bbf; }
+
+        .sector-scores { display: flex; gap: 14px; flex-wrap: wrap; }
+        .score-pill { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 18px; text-align: center; min-width: 110px; }
+        .score-pill-value { font-size: 1.5rem; font-weight: 800; }
+        .score-pill-label { font-size: 0.72rem; color: #7a9bbf; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+        .col-blue { color: #64b5f6; }
+        .col-orange { color: #ff9800; }
+        .col-red { color: #ef5350; }
+        .col-green { color: #66bb6a; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
+        .info-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 22px; }
+        .info-card-title { font-size: 0.9rem; font-weight: 700; color: #e0e6f0; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .info-card-body { font-size: 0.86rem; color: #7a9bbf; line-height: 1.75; }
+        .info-card-body li { margin-bottom: 6px; padding-left: 4px; }
+
+        .human-impact-box { background: linear-gradient(135deg,rgba(21,101,192,0.12),rgba(13,32,53,0.9)); border: 1px solid rgba(100,181,246,0.2); border-left: 4px solid #64b5f6; border-radius: 12px; padding: 22px 26px; margin-top: 20px; }
+        .hit-label { font-size: 0.78rem; font-weight: 700; color: #64b5f6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .hit-body { font-size: 0.9rem; color: #9fb8d8; line-height: 1.8; }
+
+        .eu-act-box { background: linear-gradient(135deg,rgba(26,58,26,0.6),rgba(13,61,13,0.4)); border: 1px solid rgba(129,199,132,0.2); border-left: 4px solid #81c784; border-radius: 12px; padding: 18px 22px; margin-top: 16px; }
+        .eu-act-label { font-size: 0.78rem; font-weight: 700; color: #81c784; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+        .eu-act-body { font-size: 0.86rem; color: #b2dfb4; line-height: 1.75; }
+
+        .snapshot-badge { display: inline-block; background: rgba(255,152,0,0.12); border: 1px solid rgba(255,152,0,0.25); color: #ff9800; padding: 3px 10px; border-radius: 4px; font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 8px; vertical-align: middle; }
+
+        .chart-container { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 22px; margin-top: 16px; }
+        .chart-title { font-size: 0.92rem; font-weight: 700; color: #e0e6f0; margin-bottom: 16px; }
+
+        .works-council-box { background: rgba(129,199,132,0.06); border: 1px solid rgba(129,199,132,0.15); border-radius: 10px; padding: 16px 20px; margin-top: 16px; font-size: 0.86rem; color: #b2dfb4; line-height: 1.7; }
+        .works-council-box strong { color: #81c784; }
+
+        /* regional table */
+        .regional-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.86rem; }
+        .regional-table th { background: rgba(255,255,255,0.06); color: #7a9bbf; text-transform: uppercase; letter-spacing: 0.7px; font-size: 0.74rem; padding: 10px 14px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .regional-table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #b8cfe8; }
+        .regional-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .source-note { font-size: 0.78rem; color: #4a6a8a; line-height: 1.7; margin-top: 14px; padding: 12px 16px; background: rgba(255,255,255,0.02); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); }
+        .source-note strong { color: #5a8aaa; }
+
+        .page-footer { background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.06); padding: 30px 40px; text-align: center; }
+        .footer-text { font-size: 0.82rem; color: #4a6fa5; line-height: 1.7; }
+        .footer-text strong { color: #7a9bbf; }
+
+        @media (max-width: 768px) {
+            .header-top { padding: 12px 20px; }
+            .header-content { flex-direction: column; padding: 24px 20px; }
+            .header-stats { min-width: unset; flex-direction: row; flex-wrap: wrap; }
+            .stat-card { flex: 1; min-width: 120px; }
+            .page-title { font-size: 2rem; }
+            .content-wrapper { padding: 20px; }
+            .momentum-bar-section { padding: 16px 20px; flex-wrap: wrap; }
+            .two-col { grid-template-columns: 1fr; }
+            .sector-scores { justify-content: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="page-header">
+    <div class="header-top">
+        <a href="europe_overview.html" class="back-nav">← Back to Europe Overview</a>
+        <span class="region-badge">🇩🇪 Germany</span>
+        <span class="brand-mark">Human Impact Index</span>
+    </div>
+    <div class="header-content">
+        <div class="header-text">
+            <div class="region-label">Europe · Country Analysis</div>
+            <h1 class="page-title">Germany: AI Workforce<br>Transformation</h1>
+            <p class="page-subtitle">
+                Germany is Europe's largest economy and the continent's industrial heartland, with 46 million workers across
+                manufacturing, logistics, financial services, professional services and a vast commercial real estate ecosystem.
+                AI adoption here is shaped by three forces found nowhere else in combination: acute demographic labour shortage,
+                among the world's strongest works council and codetermination rights, and an industrial base whose global
+                competitiveness depends on automation. The human impact story is consequently more nuanced than displacement
+                alone, but the distributional questions of who benefits and who bears the cost of transition remain acute.
+            </p>
+        </div>
+        <div class="header-stats">
+            <div class="stat-card">
+                <div class="stat-value">46M</div>
+                <div class="stat-label">Total Workforce (2025)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value warning">1.6M</div>
+                <div class="stat-label">Roles Facing AI Transition</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value danger">38%</div>
+                <div class="stat-label">Automation Exposure Est.</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value positive">€7Bn</div>
+                <div class="stat-label">AI Market Size 2024</div>
+            </div>
+        </div>
+    </div>
+    <div class="momentum-bar-section">
+        <span class="momentum-label">Overall AI Disruption Momentum</span>
+        <div class="momentum-track"><div class="momentum-fill" style="width:62%"></div></div>
+        <span class="momentum-score">62</span>
+        <span class="momentum-descriptor">High Disruption</span>
+    </div>
+</header>
+
+<main class="content-wrapper">
+
+    <!-- GERMANY CONTEXT -->
+    <section class="section">
+        <h2 class="section-title">The German Context</h2>
+        <p class="prose">
+            Germany's AI transformation is driven as much by necessity as by opportunity. <strong>Destatis confirms 46 million
+            persons in employment in 2024</strong>, the highest since unification, yet employment growth has all but stalled
+            at 0.1% and industry shed 143,000 jobs in 2025 alone. The labour market is simultaneously tight and contracting
+            in manufacturing, creating the paradox of skills shortages alongside structural redundancies in the same
+            economic sector.
+        </p>
+        <p class="prose">
+            The Institute for Employment Research (IAB) estimates <strong>approximately 1.6 million roles</strong> are facing
+            meaningful AI-driven transition by the end of the decade. Crucially, IAB research concludes that the total
+            number of jobs will remain broadly stable: what is happening is a reshuffling of tasks rather than wholesale
+            elimination of employment. But stability in aggregate masks profound instability for individuals, particularly
+            older workers in routine administrative and operational roles who cannot easily retrain into AI-adjacent positions.
+        </p>
+        <p class="prose">
+            Germany's <strong>works council system (Betriebsrat)</strong> is the most important structural factor shaping how
+            this transition unfolds. Works councils must be consulted on AI systems that affect working conditions, have
+            the right to bring in technical experts, and can block implementation until disputes are resolved. This creates
+            friction in deployment timelines that does not exist in comparable UK or US markets, but it also creates structured
+            channels through which worker concerns are heard and addressed. For the Human Impact Index, Germany represents
+            a case study in what managed AI transition can look like when institutional infrastructure exists to support it.
+        </p>
+        <div class="works-council-box">
+            <strong>Works Council Rights and AI:</strong> Under Germany's Works Constitution Act (Betriebsverfassungsgesetz),
+            works councils have codetermination rights over the introduction of technical equipment that monitors worker
+            behaviour or performance. AI systems used for workforce scheduling, performance monitoring, or task allocation
+            explicitly trigger these rights. New workplace AI regulations taking effect from October 2025 strengthen these
+            provisions further. This framework gives German workers procedural rights that are constitutionally grounded,
+            not merely voluntary.
+        </div>
+    </section>
+
+    <!-- SECTOR ANALYSIS -->
+    <section class="section">
+        <h2 class="section-title">Sector Analysis</h2>
+        <div class="sector-tabs">
+            <div class="sector-tab active" onclick="showSector('data-centres')">Data Centres</div>
+            <div class="sector-tab" onclick="showSector('logistics')">Logistics &amp; Warehousing</div>
+            <div class="sector-tab" onclick="showSector('office-traditional')">Office Traditional</div>
+            <div class="sector-tab" onclick="showSector('office-tech')">Office Tech &amp; Creative</div>
+            <div class="sector-tab" onclick="showSector('retail')">Retail</div>
+            <div class="sector-tab" onclick="showSector('cre-services')">CRE Services</div>
+            <div class="sector-tab" onclick="showSector('professional')">Professional Services</div>
+            <div class="sector-tab" onclick="showSector('manufacturing')">Manufacturing</div>
+            <div class="sector-tab" onclick="showSector('financial')">Financial Services</div>
+        </div>
+
+        <!-- DATA CENTRES -->
+        <div class="sector-panel active" id="panel-data-centres">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Data Centres</div>
+                    <div class="sector-snapshot">Full analysis · Germany is Europe's largest data centre market by capacity</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-red">88</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-orange">~28K</div><div class="score-pill-label">Direct Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">+High</div><div class="score-pill-label">Job Creation</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Germany hosts Europe's largest data centre market, anchored in Frankfurt's carrier hotel cluster, which ranks
+                among the top five global internet exchange points. <strong>Microsoft committed €3.3 billion to German AI and
+                cloud infrastructure in 2024</strong>, planning to double AI infrastructure in North Rhine-Westphalia and
+                Frankfurt. The sector is unique in the AI landscape: it is the infrastructure that enables AI deployment
+                everywhere else, and its own workforce dynamics are consequently positive in net employment terms.
+            </p>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Traditional data centre operations and manual monitoring roles</li>
+                        <li>Routine network administration tasks increasingly automated</li>
+                        <li>First-line IT support displaced by AI diagnostics</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>AI infrastructure engineers and GPU cluster specialists</li>
+                        <li>Sustainability and energy management roles (ESG-driven)</li>
+                        <li>AI model deployment and MLOps engineers</li>
+                        <li>Cooling systems specialists for high-density AI compute</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">Germany's data centre sector is a net job creator in the current cycle, but the jobs
+                being created require significantly higher technical qualifications than those being displaced. The transition
+                risk falls disproportionately on older workers in operational roles who lack pathways into the engineering
+                and technical positions opening up. Geographic concentration in Frankfurt and North Rhine-Westphalia means
+                benefits are not evenly distributed across the German workforce.</div>
+            </div>
+            <div class="eu-act-box">
+                <div class="eu-act-label">EU AI Act Relevance</div>
+                <div class="eu-act-body">Data centres are critical infrastructure under the EU AI Act's general-purpose AI
+                provisions. Operators hosting AI models classified as high-risk face downstream obligations regarding the
+                systems they host. This creates new compliance roles within German data centre operators.</div>
+            </div>
+        </div>
+
+        <!-- LOGISTICS -->
+        <div class="sector-panel" id="panel-logistics">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Logistics &amp; Warehousing</div>
+                    <div class="sector-snapshot">Full analysis · ~3.3M workers · Port of Hamburg: 7.7M TEU (2023)</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-red">74</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-orange">3.3M</div><div class="score-pill-label">Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-red">-380K</div><div class="score-pill-label">Projected Impact</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Germany's logistics sector employs approximately 3.3 million people and underpins an export economy that
+                depends on the Port of Hamburg, Rhine inland waterways, and Europe's most extensive road freight network.
+                The automation imperative here is driven not purely by AI economics but by an <strong>acute skilled labour
+                shortage</strong>: an ifo survey from August 2024 found almost two-thirds of German logistics companies
+                reported difficulty filling vacancies. Companies are investing in automation systems with ROI timelines
+                of 1.5 to 4 years, making the business case compelling even during economic slowdown.
+            </p>
+            <div class="chart-container">
+                <div class="chart-title">Germany Logistics: Automation Exposure by Role Category</div>
+                <canvas id="logisticsChart" style="max-height:260px;"></canvas>
+            </div>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Warehouse pickers and packers (AS/RS and robot-assisted picking)</li>
+                        <li>Forklift drivers in high-automation facilities</li>
+                        <li>Dispatchers and route planners (AI optimisation)</li>
+                        <li>Inventory management clerks (AI-driven WMS)</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>Automated system operators and robot maintenance technicians</li>
+                        <li>Logistics data analysts and AI system supervisors</li>
+                        <li>Last-mile delivery coordination (human-AI hybrid)</li>
+                        <li>Sustainability and nearshoring logistics specialists</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">The human impact in German logistics is complex. Demographic shortages mean that some
+                automation replaces roles that would otherwise go unfilled, softening the displacement effect. However,
+                the mismatch between displaced roles (warehouse operatives, drivers) and emerging roles (systems technicians,
+                data analysts) is substantial. Workers in eastern Germany, where logistics employment is higher as a share of
+                local economies, face particular geographic exposure with fewer alternative employment options nearby.</div>
+            </div>
+            <div class="eu-act-box">
+                <div class="eu-act-label">EU AI Act Relevance</div>
+                <div class="eu-act-body">AI systems used to allocate tasks in logistics and platform work contexts are
+                classified as high-risk under the EU AI Act. This directly affects automated task assignment systems in
+                warehouses and delivery platforms, requiring conformity assessments and worker notification obligations
+                from August 2026.</div>
+            </div>
+        </div>
+
+        <!-- OFFICE TRADITIONAL -->
+        <div class="sector-panel" id="panel-office-traditional">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Office Traditional</div>
+                    <div class="sector-snapshot">Full analysis · Administrative, clerical and support functions across all sectors</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-orange">58</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-orange">~6M</div><div class="score-pill-label">Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-red">High</div><div class="score-pill-label">AI Exposure</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Traditional office functions, encompassing administrative support, procurement processing, accounts payable,
+                document management, and clerical services, represent a large and structurally vulnerable segment of Germany's
+                service economy. <strong>IAB research identifies these roles as primary targets of AI-driven task automation</strong>,
+                with generative AI already handling document classification, invoice processing, and routine correspondence
+                in early-adopter organisations. The Linvelo/IAB analysis notes that from 2023 onward, AI has been increasingly
+                used in accounting, procurement, and administration, with OCR and NLP systems automatically classifying invoices
+                and feeding ERP systems directly.
+            </p>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Administrative assistants and office coordinators</li>
+                        <li>Accounts payable and receivable clerks</li>
+                        <li>Data entry and document processing operators</li>
+                        <li>Routine procurement and purchasing roles</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>AI system oversight and exception management roles</li>
+                        <li>Process automation specialists (RPA/AI)</li>
+                        <li>Office data quality and governance roles</li>
+                        <li>Human-AI workflow coordinators</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">Traditional office workers in Germany are among those most affected by generative AI,
+                but works council protections mean that large-scale rapid redundancy is less likely than in comparable UK
+                or US settings. The more likely pattern is attrition-based reduction: roles not filled as they become vacant.
+                The age profile of this workforce, skewing toward workers over 45 who entered careers before digital transformation,
+                creates a retraining challenge that employer-led AI academies are only beginning to address.</div>
+            </div>
+        </div>
+
+        <!-- OFFICE TECH -->
+        <div class="sector-panel" id="panel-office-tech">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Office Tech &amp; Creative</div>
+                    <div class="sector-snapshot">Full analysis · Information, communication, technology and creative sectors</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-orange">63</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">~1.7M</div><div class="score-pill-label">ICT Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-orange">Mixed</div><div class="score-pill-label">Net Impact</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                <strong>Destatis 2025 data shows the information and communication sector shed 10,000 jobs</strong>, ending nine
+                consecutive years of growth including through the pandemic. This is a meaningful signal: Germany's tech sector
+                is not immune to AI-driven restructuring, and the pattern of junior roles being most affected by AI code
+                generation and content automation is visible in hiring data. Germany's AI market reached approximately
+                €7 billion in 2024 and is forecast to exceed €32 billion by 2030, creating strong demand for AI-specialist
+                roles even as traditional developer and creative positions face pressure.
+            </p>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Junior software developers (code generation AI)</li>
+                        <li>Content writers and copywriters (generative AI)</li>
+                        <li>Graphic designers for routine production work</li>
+                        <li>QA testers and basic code review roles</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>AI engineers, ML engineers and LLM specialists</li>
+                        <li>Prompt engineers and AI product owners</li>
+                        <li>AI ethics and responsible AI officers</li>
+                        <li>Senior architects and systems designers (AI-augmented)</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">The tech and creative sector disruption in Germany disproportionately affects entry-level
+                workers and recent graduates, for whom AI tools are replacing the junior tasks that previously served as career
+                on-ramps. Microsoft's commitment to training 1.2 million people in AI capabilities addresses part of this
+                challenge, but the pace of capability change risks outrunning institutional training capacity.</div>
+            </div>
+        </div>
+
+        <!-- RETAIL -->
+        <div class="sector-panel" id="panel-retail">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Retail</div>
+                    <div class="sector-snapshot">Full analysis · Germany's retail sector employs approximately 3 million</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-orange">65</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">~3M</div><div class="score-pill-label">Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-red">-260K</div><div class="score-pill-label">Projected Impact</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                German retail is undergoing structural change driven by e-commerce growth, AI-driven demand forecasting, and
+                automated checkout technology. The sector employs approximately 3 million people, with a high proportion in
+                part-time roles and a workforce profile that makes retraining particularly challenging. AI is being deployed
+                in inventory management, personalisation, and increasingly in store-level customer interaction through
+                automated systems.
+            </p>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Checkout operators and cashiers (self-checkout expansion)</li>
+                        <li>Inventory and stock management clerks</li>
+                        <li>Basic customer service roles (AI chatbots)</li>
+                        <li>Visual merchandising for routine product placements</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>Customer experience and service design roles</li>
+                        <li>Retail data analysts and demand forecasting specialists</li>
+                        <li>Omnichannel logistics coordinators</li>
+                        <li>Technical support for in-store AI systems</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">Retail displacement in Germany falls heavily on part-time workers, disproportionately
+                women and workers with lower formal qualifications. These workers have limited access to employer-funded
+                retraining and face significant barriers to transitioning into the technical roles emerging in AI-adjacent
+                functions. The social cost of this transition is not captured in aggregate employment statistics.</div>
+            </div>
+        </div>
+
+        <!-- CRE SERVICES -->
+        <div class="sector-panel" id="panel-cre-services">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Commercial Real Estate Services</div>
+                    <div class="sector-snapshot">Full analysis · C&W, CBRE, JLL and German domestic firms across five major markets</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-orange">61</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">~95K</div><div class="score-pill-label">CRE Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-orange">Medium</div><div class="score-pill-label">Displacement Risk</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Germany's five major commercial real estate markets, <strong>Berlin, Munich, Frankfurt, Hamburg and
+                Düsseldorf</strong>, collectively represent Europe's most significant office, logistics and retail property
+                market outside London. C&W data shows Berlin office take-up at its weakest nine-month performance since 2013,
+                with vacancy rising above 8%. This market contraction is reducing transaction volumes and consequently the
+                deal-driven work that supports large broker and advisory teams. AI is simultaneously transforming the analytical,
+                valuation, and due diligence functions that underpin CRE advisory services.
+            </p>
+            <div class="regional-table">
+                <table>
+                    <thead><tr><th>Market</th><th>Key Dynamic</th><th>AI Impact Level</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Berlin</strong></td><td>Office vacancy rising; tech sector contraction reducing demand</td><td>High</td></tr>
+                        <tr><td><strong>Munich</strong></td><td>Prime rents resilient; AI in valuation analytics growing fast</td><td>Medium-High</td></tr>
+                        <tr><td><strong>Frankfurt</strong></td><td>Banking district anchors demand; fintech AI reshaping occupier base</td><td>High</td></tr>
+                        <tr><td><strong>Hamburg</strong></td><td>Port logistics driving industrial; residential spillover to CRE</td><td>Medium</td></tr>
+                        <tr><td><strong>Düsseldorf</strong></td><td>Corporate HQ market; AI-driven space efficiency reducing footprints</td><td>Medium-High</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">The CRE services workforce in Germany is relatively small but highly skilled and
+                well-compensated. AI's primary impact is in displacing the analytical and research functions performed by
+                junior professionals, compressing career pipelines and reducing the number of entry-level positions available
+                to graduates. Senior advisory and relationship roles are more durable, but the pathway to those roles is
+                narrowing as AI absorbs the tasks that previously built that experience.</div>
+            </div>
+        </div>
+
+        <!-- PROFESSIONAL SERVICES -->
+        <div class="sector-panel" id="panel-professional">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Professional Services</div>
+                    <div class="sector-snapshot">Full analysis · Legal, consulting, accounting and advisory sectors</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-orange">67</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">~4.2M</div><div class="score-pill-label">Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-red">High</div><div class="score-pill-label">AI Exposure</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Germany's professional services sector, encompassing legal services, management consulting, accounting, tax
+                advisory, and technical consulting, employs approximately 4.2 million people. These are knowledge-intensive,
+                qualification-heavy roles that have historically been considered resistant to automation. Generative AI is
+                challenging that assumption rapidly. Document review, contract analysis, regulatory research, financial
+                modelling, and report generation are all tasks where AI is demonstrably reducing the time required and,
+                consequently, the headcount needed.
+            </p>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Junior lawyers in document review and research</li>
+                        <li>Graduate-level consultants in data gathering and analysis</li>
+                        <li>Accountants in routine compliance and reporting</li>
+                        <li>Tax preparers for standardised corporate filings</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>AI-augmented senior advisory and judgement roles</li>
+                        <li>Legal technology specialists and LegalTech practitioners</li>
+                        <li>AI compliance and EU AI Act advisory specialists</li>
+                        <li>Strategic consultants in AI transformation and change</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">Professional services disruption in Germany is compressing the junior tier of knowledge
+                work careers. The EU AI Act itself is creating a new advisory market, with demand growing for specialists
+                who understand both AI technology and legal compliance, but this market cannot absorb the volume of junior
+                professionals whose career pathways are being disrupted. The Freie Berufe (liberal professions) regulatory
+                structure in Germany also creates specific complications for AI deployment in legal and medical advisory contexts.</div>
+            </div>
+            <div class="eu-act-box">
+                <div class="eu-act-label">EU AI Act Relevance</div>
+                <div class="eu-act-body">AI used in legal proceedings, administrative processes, and professional advisory
+                contexts may trigger high-risk classification obligations. German professional services firms are among the
+                most active in seeking EU AI Act compliance guidance, creating a significant new advisory revenue stream
+                even as AI displaces traditional advisory tasks.</div>
+            </div>
+        </div>
+
+        <!-- MANUFACTURING -->
+        <div class="sector-panel" id="panel-manufacturing">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Manufacturing</div>
+                    <div class="sector-snapshot">Full analysis · 7.9M workers · Automotive, industrial, chemical and precision engineering</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-red">72</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-orange">7.9M</div><div class="score-pill-label">Workers (2025)</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-red">-143K</div><div class="score-pill-label">Jobs Lost 2025</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Manufacturing is the sector where Germany's AI transition is most consequential and most complex.
+                <strong>Destatis data shows industry employment fell by 143,000 in 2025 alone</strong>, the largest single-year
+                decline outside the pandemic. The automotive sector restructuring driven by the electromobility transition
+                is amplifying the AI automation effect: both forces are simultaneously reducing headcount in traditional
+                manufacturing roles. Siemens' Industrial Copilot, deployed across more than 100 companies, exemplifies how
+                AI is enabling smaller teams to manage increasingly complex production environments.
+            </p>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Quality control inspectors (AI vision systems)</li>
+                        <li>Production line operators in high-automation plants</li>
+                        <li>Traditional skilled trades in automotive assembly</li>
+                        <li>Process engineers in standardised manufacturing contexts</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>AI system operators and industrial AI supervisors</li>
+                        <li>Predictive maintenance specialists</li>
+                        <li>Digital twin engineers and simulation specialists</li>
+                        <li>Battery technology and electromobility technicians</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">Manufacturing displacement in Germany has a distinct geographic dimension. Industrial
+                regions in North Rhine-Westphalia, Saxony, and parts of Bavaria face concentrated job losses in communities
+                where manufacturing has historically been the primary employment pathway. The demographic profile of affected
+                workers, predominantly male, aged 45-60, with craft qualifications that do not transfer easily to digital
+                roles, makes this the most acute human impact challenge in the German AI transition. Works councils are
+                actively negotiating transition agreements, but the retraining pathways available are not yet scaled to the
+                need.</div>
+            </div>
+        </div>
+
+        <!-- FINANCIAL SERVICES -->
+        <div class="sector-panel" id="panel-financial">
+            <div class="sector-header">
+                <div class="sector-meta">
+                    <div class="sector-name">Financial Services</div>
+                    <div class="sector-snapshot">Full analysis · Banking, insurance, asset management · Frankfurt anchors EU financial services</div>
+                </div>
+                <div class="sector-scores">
+                    <div class="score-pill"><div class="score-pill-value col-orange">69</div><div class="score-pill-label">Momentum</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">~1.1M</div><div class="score-pill-label">Workers</div></div>
+                    <div class="score-pill"><div class="score-pill-value col-blue">+16K</div><div class="score-pill-label">Net Change 2025</div></div>
+                </div>
+            </div>
+            <p class="prose">
+                Germany's financial services sector is unusual in the 2025 Destatis data: <strong>financial and insurance
+                activities added 16,000 jobs</strong>, a 1.5% increase, against the backdrop of broad industrial decline.
+                This reflects both Frankfurt's post-Brexit positioning as a European financial hub and the strong demand for
+                AI-skilled workers in financial services. However, this aggregate growth masks significant internal
+                restructuring: AI is rapidly automating compliance, fraud detection, customer service, and routine advisory
+                functions even as headcount grows in AI-specialist and relationship roles.
+            </p>
+            <div class="two-col">
+                <div class="info-card">
+                    <div class="info-card-title">🔴 Roles Under Pressure</div>
+                    <div class="info-card-body"><ul>
+                        <li>Compliance officers in routine rule-checking functions</li>
+                        <li>Credit analysts for standardised lending assessments</li>
+                        <li>Bank branch staff as physical footprints contract</li>
+                        <li>Insurance underwriters for personal and SME lines</li>
+                    </ul></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-title">🟢 Emerging Opportunities</div>
+                    <div class="info-card-body"><ul>
+                        <li>AI risk and model governance specialists</li>
+                        <li>Quantitative analysts working with AI-driven models</li>
+                        <li>Financial AI product managers</li>
+                        <li>Relationship managers for complex institutional clients</li>
+                    </ul></div>
+                </div>
+            </div>
+            <div class="human-impact-box">
+                <div class="hit-label">Human Impact Assessment</div>
+                <div class="hit-body">Financial services AI adoption in Germany is proceeding faster than works council
+                consultation processes can easily accommodate, partly because much AI deployment is framed as software
+                upgrade rather than workforce change. The sector's net job growth conceals a polarisation: strong demand
+                for AI-skilled workers at the top, structural reduction in mid-tier compliance and processing roles.
+                Workers in the middle of this distribution face the most precarious transition.</div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- REGIONAL BREAKDOWN -->
+    <section class="section">
+        <h2 class="section-title">Regional Employment Context</h2>
+        <p class="prose">
+            AI's impact in Germany is not uniform across its federal states. The concentration of manufacturing in
+            North Rhine-Westphalia and Bavaria, financial services in Frankfurt (Hesse), logistics along the Rhine
+            corridor and in Hamburg, and technology in Berlin and Munich creates distinct regional human impact profiles.
+        </p>
+        <div class="regional-table">
+            <table class="regional-table">
+                <thead><tr><th>Region / State</th><th>Dominant Sectors</th><th>Primary AI Impact</th><th>Human Impact Level</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>North Rhine-Westphalia</strong></td><td>Manufacturing, logistics, financial services</td><td>Industrial automation, data centre investment</td><td>🔴 High</td></tr>
+                    <tr><td><strong>Bavaria (Munich)</strong></td><td>Technology, automotive, professional services</td><td>AI product development, automotive restructuring</td><td>🟠 Medium-High</td></tr>
+                    <tr><td><strong>Hesse (Frankfurt)</strong></td><td>Financial services, data centres, CRE</td><td>Fintech AI, CRE advisory disruption</td><td>🟠 Medium-High</td></tr>
+                    <tr><td><strong>Berlin</strong></td><td>Technology, creative, public services</td><td>Tech sector contraction, startup AI ecosystem</td><td>🟠 Medium-High</td></tr>
+                    <tr><td><strong>Hamburg</strong></td><td>Logistics, port operations, media</td><td>Port automation, supply chain AI</td><td>🟠 Medium-High</td></tr>
+                    <tr><td><strong>Saxony / Eastern States</strong></td><td>Manufacturing, logistics</td><td>Industrial displacement, fewer transition pathways</td><td>🔴 High</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- POLICY -->
+    <section class="section">
+        <h2 class="section-title">Policy Context and Worker Protections</h2>
+        <p class="prose">
+            Germany's response to AI workforce transformation operates through two distinct but complementary frameworks:
+            the EU AI Act, which establishes regulatory obligations for AI deployment, and Germany's own domestic labour
+            law, which provides worker protections that in some respects exceed the AI Act's requirements.
+        </p>
+        <p class="prose">
+            New German workplace AI regulations effective <strong>October 2025</strong> strengthen transparency and
+            consultation requirements for employers deploying AI systems that affect working conditions. These provisions
+            complement works council rights and create a layered protection framework. The Federal Employment Agency
+            (Bundesagentur für Arbeit) is investing in retraining programmes, but observers note that the scale and pace
+            of required workforce transition exceeds current programme capacity.
+        </p>
+        <div class="human-impact-box">
+            <div class="hit-label">Policy Gap: What German Regulation Does Not Address</div>
+            <div class="hit-body">Germany's combination of works council rights and new AI workplace regulations is among
+            the strongest worker protection frameworks for AI deployment globally. However, it addresses process rather than
+            outcomes: it ensures workers are consulted, not that transitions are adequately funded or that retraining is
+            accessible. The distributional question of whether AI-driven productivity gains are shared with workers, rather
+            than captured entirely by employers and shareholders, remains largely outside the current regulatory framework.</div>
+        </div>
+    </section>
+
+    <div class="source-note">
+        <strong>Data sources:</strong> Employment baseline: Destatis Federal Statistical Office (January 2026, referencing 2025 annual figures). 
+        AI roles transition estimate (1.6M): IAB Institute for Employment Research / meinbavaria.de (November 2025). 
+        Works council AI rights: DLA Piper / Bird &amp; Bird German employment law analysis (2024-2025). 
+        Office market data: Cushman &amp; Wakefield Germany Top 5 Markets Q3 2024. 
+        AI market size (€7Bn): CareerBee/industry consensus (2024). 
+        Microsoft investment: Microsoft Germany blog (November 2024). 
+        Logistics skills shortage: ifo Business Survey August 2024 / lagerflaeche.de analysis. 
+        Automation exposure estimate (38%): Cross-referenced from OECD automation research and McKinsey Global Institute European workforce data; treat as indicative.
+    </div>
+
+</main>
+
+<footer class="page-footer">
+    <div class="footer-text">
+        <strong>Human Impact Index</strong> &nbsp;|&nbsp; Andrew Phipps &nbsp;|&nbsp;
+        PhD Candidate, Philosophy (AI Ethics), University of Sussex &nbsp;|&nbsp;
+        Former Global Leader, Cushman &amp; Wakefield<br>
+        <span style="color:#364f6b;">Analysis provided for research and professional education purposes. Data reference period: 2024-2025. Sources cited throughout.</span>
+    </div>
+</footer>
+
+<script>
+    // Sector tab switching
+    function showSector(id) {
+        document.querySelectorAll('.sector-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.sector-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('panel-' + id).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    // Logistics chart
+    const lCtx = document.getElementById('logisticsChart').getContext('2d');
+    new Chart(lCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Warehouse Pickers', 'Forklift Operators', 'Dispatchers/Planners', 'Inventory Clerks', 'Drivers (HGV)', 'Systems Technicians'],
+            datasets: [{
+                label: 'AI Automation Exposure (%)',
+                data: [82, 68, 71, 85, 45, 12],
+                backgroundColor: ['rgba(239,83,80,0.7)','rgba(239,83,80,0.65)','rgba(255,152,0,0.7)','rgba(239,83,80,0.75)','rgba(255,152,0,0.6)','rgba(102,187,106,0.65)'],
+                borderColor: ['#ef5350','#ef5350','#ff9800','#ef5350','#ff9800','#66bb6a'],
+                borderWidth: 1, borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: '#9fb8d8', font: { size: 11 } } } },
+            scales: {
+                x: { ticks: { color: '#7a9bbf', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                y: { beginAtZero: true, max: 100, ticks: { color: '#7a9bbf', callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.07)' } }
+            }
+        }
+    });
+</script>
+</body>
+</html>

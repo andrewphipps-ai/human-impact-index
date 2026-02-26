@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Japan | Human Impact Index</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg-card: #0f1628;
+    --bg-hover: #141c35;
+    --text: #e0e6f0;
+    --text-muted: #8899bb;
+    --blue: #64b5f6;
+    --purple: #ce93d8;
+    --green: #81c784;
+    --amber: #ffb74d;
+    --red: #ef9a9a;
+    --border: rgba(100,181,246,0.15);
+    --tab-active-bg: rgba(206,147,216,0.12);
+    --tab-active-border: #ce93d8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 15px; line-height: 1.6; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* HEADER */
+  .page-header { background: linear-gradient(135deg, #0a0e1a 0%, #0f1628 60%, #140e28 100%); border-bottom: 1px solid var(--border); padding: 24px 32px; }
+  .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .brand { font-size: 13px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .brand a { color: var(--purple); font-weight: 600; }
+  .back-link { font-size: 13px; color: var(--text-muted); }
+  .back-link:hover { color: var(--purple); }
+  .page-title { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .page-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
+
+  .stats-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+  .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 14px 20px; min-width: 160px; }
+  .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
+  .stat-value { font-size: 22px; font-weight: 700; }
+  .stat-value.blue { color: var(--blue); }
+  .stat-value.purple { color: var(--purple); }
+  .stat-value.amber { color: var(--amber); }
+  .stat-value.green { color: var(--green); }
+  .stat-note { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .momentum-bar-wrap { margin-top: 4px; }
+  .momentum-bar-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+  .momentum-bar-track { background: rgba(255,255,255,0.07); border-radius: 4px; height: 8px; width: 100%; overflow: hidden; }
+  .momentum-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #ce93d8 0%, #b39ddb 100%); }
+
+  /* MAIN */
+  .main-wrap { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+  /* TABS */
+  .tab-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 0; }
+  .tab-btn { background: none; border: none; border-bottom: 2px solid transparent; color: var(--text-muted); cursor: pointer; font-size: 13px; padding: 8px 14px; white-space: nowrap; transition: color 0.2s; margin-bottom: -1px; }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--purple); border-bottom-color: var(--purple); background: var(--tab-active-bg); border-radius: 6px 6px 0 0; }
+
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* SECTOR CONTENT */
+  .sector-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+  .sector-title { font-size: 22px; font-weight: 700; color: #fff; }
+  .sector-meta { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+  .momentum-pill { background: rgba(206,147,216,0.14); border: 1px solid rgba(206,147,216,0.4); border-radius: 20px; color: var(--purple); font-size: 13px; font-weight: 600; padding: 6px 16px; white-space: nowrap; }
+  .snapshot-pill { background: rgba(255,183,77,0.12); border: 1px solid rgba(255,183,77,0.4); border-radius: 20px; color: var(--amber); font-size: 12px; font-weight: 600; padding: 4px 12px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
+
+  .info-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; }
+  .info-card h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 10px; }
+  .info-card ul { list-style: none; }
+  .info-card ul li { padding: 5px 0; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .info-card ul li:last-child { border-bottom: none; }
+  .info-card ul li::before { content: "→ "; color: var(--purple); font-size: 12px; }
+  .info-card p { font-size: 14px; line-height: 1.7; color: #c8d4e8; }
+
+  .impact-box { background: linear-gradient(135deg, rgba(206,147,216,0.08), rgba(100,181,246,0.05)); border: 1px solid rgba(206,147,216,0.25); border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; }
+  .impact-box h4 { color: var(--purple); font-size: 13px; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+  .impact-box p { font-size: 14px; line-height: 1.7; color: #c8d4e8; }
+
+  .reg-box { background: rgba(100,181,246,0.05); border: 1px solid rgba(100,181,246,0.2); border-radius: 8px; padding: 16px 20px; margin-bottom: 16px; }
+  .reg-box h4 { color: var(--blue); font-size: 13px; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+  .reg-box p { font-size: 14px; line-height: 1.7; color: #c8d4e8; }
+
+  .chart-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+  .chart-wrap h4 { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; text-align: center; }
+  canvas { max-height: 260px; }
+
+  /* EMPLOYMENT TABLE */
+  .table-section { margin-top: 32px; }
+  .section-heading { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .emp-table { width: 100%; border-collapse: collapse; }
+  .emp-table th { background: rgba(206,147,216,0.08); color: var(--purple); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  .emp-table td { padding: 10px 14px; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; }
+  .emp-table tr:hover td { background: var(--bg-hover); }
+  .risk-high { color: var(--red); font-weight: 600; }
+  .risk-med { color: var(--amber); font-weight: 600; }
+  .risk-low { color: var(--green); font-weight: 600; }
+
+  /* POLICY SECTION */
+  .policy-section { margin-top: 32px; }
+  .policy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .policy-grid { grid-template-columns: 1fr; } }
+  .policy-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; }
+  .policy-card h4 { font-size: 13px; color: var(--amber); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
+  .policy-card p, .policy-card ul { font-size: 14px; line-height: 1.7; color: #c8d4e8; }
+  .policy-card ul { list-style: none; }
+  .policy-card ul li { padding: 4px 0; }
+  .policy-card ul li::before { content: "◆ "; color: var(--amber); font-size: 10px; }
+
+  .source-note { margin-top: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; }
+  .source-note h4 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
+  .source-note p { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+
+  .page-footer { margin-top: 48px; padding: 20px 32px; border-top: 1px solid var(--border); text-align: center; font-size: 12px; color: var(--text-muted); }
+  .page-footer strong { color: var(--purple); }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="header-top">
+    <div class="brand"><a href="index.html">Human Impact Index</a> &rarr; <a href="apac_overview.html">APAC</a> &rarr; Japan</div>
+    <a class="back-link" href="apac_overview.html">&larr; Back to APAC Overview</a>
+  </div>
+  <div class="page-title">Japan</div>
+  <div class="page-subtitle">AI Workforce Transformation Analysis &mdash; APAC Region | Updated Q1 2026</div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total Employed</div>
+      <div class="stat-value blue">67.8m</div>
+      <div class="stat-note">Record high, 2024 (Statistics Bureau Japan)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Unemployment Rate</div>
+      <div class="stat-value green">2.5%</div>
+      <div class="stat-note">Lowest in decades, 2024</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">AI Adoption Rate (Workplace)</div>
+      <div class="stat-value amber">11.6%</div>
+      <div class="stat-note">INTAGE survey, Oct–Nov 2024</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Overall Momentum Score</div>
+      <div class="stat-value purple">58</div>
+      <div class="stat-note">Out of 100</div>
+    </div>
+  </div>
+
+  <div class="momentum-bar-wrap">
+    <div class="momentum-bar-label">Overall AI Transition Momentum: 58 / 100</div>
+    <div class="momentum-bar-track"><div class="momentum-bar-fill" style="width:58%"></div></div>
+  </div>
+</header>
+
+<main class="main-wrap">
+
+  <!-- TAB NAVIGATION -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="showTab('data-centres',this)">Data Centres</button>
+    <button class="tab-btn" onclick="showTab('logistics',this)">Logistics</button>
+    <button class="tab-btn" onclick="showTab('office-trad',this)">Office Traditional</button>
+    <button class="tab-btn" onclick="showTab('office-tech',this)">Office Tech &amp; Creative</button>
+    <button class="tab-btn" onclick="showTab('retail',this)">Retail</button>
+    <button class="tab-btn" onclick="showTab('cre-services',this)">CRE Services</button>
+    <button class="tab-btn" onclick="showTab('professional',this)">Professional Services</button>
+    <button class="tab-btn" onclick="showTab('manufacturing',this)">Manufacturing</button>
+    <button class="tab-btn" onclick="showTab('financial',this)">Financial Services</button>
+  </nav>
+
+  <!-- DATA CENTRES -->
+  <div class="tab-pane active" id="data-centres">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Data Centres</div>
+        <div class="sector-meta">Infrastructure workforce, operations, cooling, construction | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 74 / 100</div>
+    </div>
+
+    <div class="chart-wrap">
+      <h4>Japan Data Centre Market Growth (USD Billion) — Market Intelligence Estimates</h4>
+      <canvas id="dcChart"></canvas>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Manual infrastructure monitoring technicians</li>
+          <li>Legacy hardware maintenance engineers</li>
+          <li>Traditional HVAC operators (pre-liquid cooling era)</li>
+          <li>General data entry and log-keeping roles</li>
+          <li>Routine network operations centre staff</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Liquid and immersion cooling engineers</li>
+          <li>GPU infrastructure and AI cluster specialists</li>
+          <li>Seismic-resilient facility design engineers</li>
+          <li>Renewable energy integration managers</li>
+          <li>Sovereign cloud compliance officers</li>
+          <li>Hyperscale construction project managers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Japan's data centre sector is in rapid expansion, with the market valued at approximately USD 12.76 billion in 2025 and projected to reach USD 38.92 billion by 2031 (Arizton, 2026). Hyperscaler investments from AWS (JPY 2.26 trillion through 2027), Microsoft (USD 2.9 billion), and Oracle (USD 8 billion) are reshaping the infrastructure workforce at pace. The critical question for workers is whether the construction and operations jobs being created are accessible to those being displaced from legacy roles. Japan's acute labour shortage context provides some protection — employers are actively seeking skilled infrastructure workers and AI-driven automation of data centre operations is more likely to augment than replace in the near term. However, the shift to liquid cooling, high-density AI racks, and GPU cluster management requires technical retraining that many incumbent workers will need support to access. Land scarcity and power grid constraints in Tokyo and Osaka are pushing facilities to peripheral locations, which may disadvantage workers in established urban roles. No specific worker transition support mechanism exists within Japan's data centre policy framework.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>Japan's Digital Agency is driving central-government cloud migration, creating anchor demand for domestic facilities and data sovereignty requirements that favour domestic operators. The Ministry of Economy, Trade and Industry (METI) has set a national Power Usage Effectiveness (PUE) target of 1.4, incentivising energy-efficient facility design. The AI Promotion Act (June 2025) identifies data centres as critical infrastructure, signalling long-term state support. Notably, the Act contains no specific provisions protecting workers during facility automation or restructuring, relying instead on existing Labour Standards Act provisions.</p>
+    </div>
+  </div>
+
+  <!-- LOGISTICS -->
+  <div class="tab-pane" id="logistics">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Logistics and Warehousing</div>
+        <div class="sector-meta">Transport, storage, fulfilment, last-mile delivery | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 62 / 100</div>
+    </div>
+
+    <div class="chart-wrap">
+      <h4>Automation Exposure Across Logistics Sub-Roles (Estimated %)</h4>
+      <canvas id="logChart"></canvas>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Sector Workforce Context</h4>
+        <p>Japan's combined transport and logistics sector employs an estimated 3.8 million workers (Statistics Bureau Japan, 2024 Labour Force Survey). The sector faces a structural tension: an acute driver shortage driven by Japan's shrinking working-age population coincides with accelerating AI-driven automation of warehousing functions. The 2024 "2024 logistics crisis" — referring to revised overtime caps reducing truck driver hours — has intensified pressure on operators to automate warehousing to compensate for constrained haulage capacity.</p>
+      </div>
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Manual warehouse pickers and packers</li>
+          <li>Inventory counter and stock-check roles</li>
+          <li>Routine quality inspection operatives</li>
+          <li>Traditional dispatch coordinators</li>
+          <li>Paper-based freight documentation clerks</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Robotics maintenance and repair technicians</li>
+          <li>AI route optimisation analysts</li>
+          <li>Autonomous vehicle safety supervisors</li>
+          <li>Cold chain AI systems operators</li>
+          <li>Last-mile drone operations coordinators</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>Human Impact Note</h4>
+        <p>Japan's Labour Standards Act revision capping driver overtime paradoxically accelerates warehouse automation pressure on lower-wage operatives, while truck drivers themselves face growing scrutiny. Workers displaced from manual warehousing are older on average and face significant retraining barriers. The Ministry of Land, Infrastructure, Transport and Tourism has launched reskilling programmes, but take-up among older workers remains low (OECD Employment Outlook 2025). The demographic dimension is acute: with 25.7% of those aged 65 and over now in work, automation that removes entry-level and repetitive roles strikes at the employment base of Japan's most economically vulnerable older workers.</p>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>The logistics sector presents Japan's most acute human cost narrative. AI-driven warehouse automation is being adopted fastest precisely where labour shortages are greatest, meaning the jobs disappearing are those that workers with limited formal qualifications depend upon. The 2024 logistics crisis has given operators political and commercial cover to accelerate automation, but the workers whose roles are disappearing rarely receive the targeted retraining needed to transition into supervisory, technical, or coordination roles. Japan's traditionally low unemployment rate obscures this structural displacement: workers are finding work, but not necessarily comparable work. There is no sectoral just-transition mechanism, and the existing vocational training system is not yet calibrated to the pace of change.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TRADITIONAL -->
+  <div class="tab-pane" id="office-trad">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Office Traditional</div>
+        <div class="sector-meta">Administrative, clerical, back-office, support functions | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 55 / 100</div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Hanko (seal) stamp administrative officers</li>
+          <li>Paper-based document processing clerks</li>
+          <li>Reception and telephonist roles</li>
+          <li>Data entry and spreadsheet maintenance staff</li>
+          <li>Payroll processing operatives</li>
+          <li>Translation support roles (Japanese-English)</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Digital transformation coordinators</li>
+          <li>AI-assisted document compliance reviewers</li>
+          <li>Hybrid workplace experience managers</li>
+          <li>Data governance and privacy officers</li>
+          <li>Process automation supervisors</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Japan's traditional office sector carries a distinctive cultural burden. The country's famously bureaucratic administrative culture — characterised by physical stamp (hanko) processes, in-person document handling, and hierarchical approval chains — has delayed AI adoption. This creates a paradox: Japan's office workers have faced less immediate disruption than counterparts in other APAC economies, but face a sharper cliff when digital transformation accelerates. The OECD finds that only 23.5% of Japanese SMEs use generative AI, the lowest share among surveyed countries (OECD, 2025), suggesting that when adoption does arrive, it may be rapid and poorly anticipated. The OECD also notes that Japanese workplaces with hierarchical structures may create an "algorithmic cage" effect, limiting worker autonomy when AI tools are introduced into top-down management systems. Women are disproportionately concentrated in clerical and support roles and face higher automation exposure.</p>
+    </div>
+
+    <div class="chart-wrap">
+      <h4>Generative AI Exposure Among Office Occupations — Estimated % of Tasks Automatable</h4>
+      <canvas id="offTradChart"></canvas>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>Japan's AI Promotion Act (2025) sets no specific obligations for employers regarding worker consultation ahead of AI deployment. The Act relies on existing Labour Standards Act provisions, which do not require employers to consult workers before deploying automating technologies. The Digital Agency's DX (digital transformation) push is government-driven and productivity-focused, with limited attention to worker welfare during transition. The Cabinet's "Basic Policy on Economic and Fiscal Management 2025" expands AI skills courses eligible for Educational Training Benefits, a positive but inadequate response to structural displacement.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TECH & CREATIVE -->
+  <div class="tab-pane" id="office-tech">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Office Tech and Creative</div>
+        <div class="sector-meta">Technology companies, creative industries, media, digital services | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 65 / 100</div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Sector Workforce Context</h4>
+        <p>Japan's information and communications sector employs approximately 2.78 million workers (Statistics Bureau Japan, 2024), adding 60,000 jobs in 2024. The sector is characterised by strong domestic demand but relatively low AI adoption by international standards. METI data suggests Japan's AI workforce (workers with substantive AI skills) numbers over 50,000, placing it sixth globally behind the US, India, UK, Germany, Canada, and France (CBRE Global Tech Talent Guidebook, 2025). Tokyo and Osaka are the primary tech and creative hubs; regional digital activity remains limited.</p>
+      </div>
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior software developers (code generation tools)</li>
+          <li>UI/UX designers relying on manual tooling</li>
+          <li>Copywriters and content producers</li>
+          <li>Translation and localisation specialists</li>
+          <li>Quality assurance testers (automated testing)</li>
+          <li>Basic data analysts</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI product managers and prompt engineers</li>
+          <li>LLM fine-tuning and evaluation specialists</li>
+          <li>Creative directors overseeing AI-assisted production</li>
+          <li>AI ethics and compliance officers</li>
+          <li>Robotics-AI integration developers</li>
+          <li>AI-assisted anime and media production roles</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>Japan-Specific Context</h4>
+        <p>Japan's creative industries — anime, gaming, manga — are globally significant and facing AI-specific disruption. AI image generation tools trained on anime-style artwork have triggered intense copyright debates (Agency for Cultural Affairs consultation, 2024). Japan's Article 30-4 Copyright Act exception, permitting AI training on works without rights-holder consent, is a source of significant tension between creative workers and AI developers. The impact on illustrators, voice actors, and concept artists has been severe, with reported income losses in freelance creative sectors.</p>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Japan's tech and creative sectors present a bifurcated picture. Software engineering and AI development roles are expanding rapidly, with hyperscaler investment and domestic digital transformation creating genuine opportunity for workers with AI-relevant skills. However, creative workers — particularly in Japan's world-leading anime, gaming, and illustration sectors — face existential disruption from generative AI tools that were, in part, trained on their work without consent or compensation. The human cost is not evenly distributed: well-resourced technology firms can absorb and retrain, while freelance creative workers typically cannot. Japan's copyright framework, designed to promote AI innovation, has effectively transferred value from individual creators to AI developers with no compensation mechanism. This is a policy failure with significant human consequences.</p>
+    </div>
+  </div>
+
+  <!-- RETAIL -->
+  <div class="tab-pane" id="retail">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Retail</div>
+        <div class="sector-meta">Physical retail, convenience stores, e-commerce, consumer services | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 57 / 100</div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Sector Workforce Context</h4>
+        <p>Japan's accommodation and food services sector — which closely reflects retail-adjacent consumer-facing employment — employs 3.98 million, a gain of 170,000 in 2024 (Statistics Bureau Japan). Total retail employment is estimated at approximately 7–8 million. Japan's convenience store (konbini) network of approximately 55,000 stores is a key employer and a focus of automation investment, with operators including Seven-Eleven Japan and Lawson trialling AI-assisted restocking, cashier automation, and demand forecasting.</p>
+      </div>
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Cashiers and checkout operatives</li>
+          <li>Stock counters and manual inventory managers</li>
+          <li>Customer service centre agents</li>
+          <li>Manual demand forecasting roles</li>
+          <li>Price-change and promotions staff</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Smart store technology supervisors</li>
+          <li>AI-driven personalisation analysts</li>
+          <li>Customer experience designers</li>
+          <li>E-commerce fulfilment coordinators</li>
+          <li>Robotics-assisted restocking supervisors</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>Human Impact Note</h4>
+        <p>Japan's OECD report (2025) specifically highlights convenience stores as a test case for AI-labour substitution, noting that restocking heavy beverages in cold environments is a physically demanding task targeted for robot automation. This framing positions AI as labour-saving in the context of demographic decline, obscuring that the workers performing these roles are often older, lower-paid, or foreign nationals who depend on these roles for income. Labour shortage framing risks normalising displacement without adequate support frameworks.</p>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Japan's retail automation story is frequently told through the lens of necessity: a shrinking workforce compels automation. This framing has merit, but it systematically understates the human cost for those currently employed in entry-level retail roles. Convenience store workers, part-time checkout staff, and customer service operatives — many of whom are women, older workers, or foreign nationals — face income and employment loss without adequate transition mechanisms. Japan's low unemployment rate masks underemployment and precarity in part-time retail work. The question is not whether automation is happening, but whether those bearing the cost of transition are receiving any share of the productivity gains it generates. Currently, there is little evidence that they are.</p>
+    </div>
+  </div>
+
+  <!-- CRE SERVICES -->
+  <div class="tab-pane" id="cre-services">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Commercial Real Estate Services</div>
+        <div class="sector-meta">Property management, valuation, brokerage, facilities management | Snapshot Analysis</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="momentum-pill">Momentum: 58 / 100</div>
+        <div class="snapshot-pill">Snapshot</div>
+      </div>
+    </div>
+
+    <div class="info-card" style="margin-bottom:16px;">
+      <h4>Snapshot Assessment</h4>
+      <p>Japan's commercial real estate services sector — comprising property brokerage, valuation, facilities management, and property consultancy — employs an estimated 0.8–1.2 million workers (estimate; comprehensive disaggregated data is limited for this sub-sector in Japanese Labour Force Survey categories). The sector is experiencing rapid AI adoption in data-driven functions: automated valuation models (AVMs), AI-assisted lease analysis, and smart building management systems are increasingly standard among major operators. Japanese branches of global CRE firms (CBRE, JLL, Cushman and Wakefield) are deploying AI platforms including Ellis AI and JLL GPT, compressing analyst and research roles. Facilities management AI is driving efficiency in building operations, with pressure on junior property management roles. The relationship-driven, trust-intensive nature of Japanese real estate transactions provides a degree of insulation for senior brokers and client-facing advisors. Detailed sector headcount data with AI exposure mapping is not available for Japan in primary sources consulted; this assessment is treated as indicative.</p>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>CRE services in Japan shares the sector's global trajectory: AI is most disruptive to junior, analytical, and process-heavy roles, while experienced brokers and relationship managers retain value. The distinctly Japanese context — where personal relationships (ningen kankei) and long-term trust are central to deal-making — may slow automation of client-facing roles. However, back-office displacement is real and junior workers entering the sector face a structurally narrower pathway than their predecessors. The impact on facilities management workers, who are often contracted and lower-paid, is proportionally greater.</p>
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL SERVICES -->
+  <div class="tab-pane" id="professional">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Professional Services</div>
+        <div class="sector-meta">Legal, accounting, consulting, HR, advisory | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 60 / 100</div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior lawyers and legal researchers</li>
+          <li>Document review and due diligence paralegals</li>
+          <li>Basic bookkeeping and accounts payable/receivable</li>
+          <li>Tax return preparation roles</li>
+          <li>Junior management consultants (slide production)</li>
+          <li>HR administration officers</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI governance and compliance consultants</li>
+          <li>Human-AI collaboration designers</li>
+          <li>ESG data analysts and sustainability advisors</li>
+          <li>Algorithmic auditing specialists</li>
+          <li>Legal AI product developers</li>
+          <li>Workforce transition specialists</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Japan's professional services sector faces the same generative AI pressure as counterparts globally, but with distinctive structural features. The country's seniority-based employment system means junior professionals — those most exposed to AI task automation in document production, research, and analysis — have traditionally been protected by long-term employment norms. As AI erodes the value of early-career work, firms face a difficult question: how to develop the next generation of experienced senior advisors if the foundational junior roles are automated. OECD data (2024) shows that in Japan, 30.9% of workers are exposed to generative AI — 4.9 percentage points above the OECD average — with disproportionate exposure in the Ile-de-France equivalent: Tokyo. The human cost for young professionals entering the workforce is significant and poorly acknowledged in current policy discourse. Japan's AI Promotion Act makes no provision for managing this pipeline disruption.</p>
+    </div>
+
+    <div class="chart-wrap">
+      <h4>Generative AI Exposure by Professional Services Sub-Sector (Indicative Estimates)</h4>
+      <canvas id="profChart"></canvas>
+    </div>
+  </div>
+
+  <!-- MANUFACTURING -->
+  <div class="tab-pane" id="manufacturing">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Manufacturing</div>
+        <div class="sector-meta">Automotive, electronics, precision engineering, industrial production | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 63 / 100</div>
+    </div>
+
+    <div class="chart-wrap">
+      <h4>Manufacturing Employment and Automation Risk (2024 — Statistics Bureau Japan / OECD)</h4>
+      <canvas id="mfgChart"></canvas>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Sector Workforce</h4>
+        <p>Japan's manufacturing sector employs 10.55 million workers (Statistics Bureau Japan, 2024 Labour Force Survey), up 110,000 from the prior year. This makes manufacturing the country's largest single sector by employment. Automotive (Toyota, Honda, Nissan) and electronics (Sony, Panasonic, Hitachi) dominate. Foreign nationals make up approximately 25% of the manufacturing foreign workforce, concentrated in assembly and production roles.</p>
+      </div>
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Assembly line operatives (AI-guided robotics)</li>
+          <li>Quality control inspectors (computer vision)</li>
+          <li>Routine machine maintenance technicians</li>
+          <li>Inventory and materials handling operatives</li>
+          <li>Production scheduling clerks</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Collaborative robot (cobot) operators and programmers</li>
+          <li>Predictive maintenance AI system supervisors</li>
+          <li>Digital twin modellers</li>
+          <li>AI-assisted precision engineering roles</li>
+          <li>Smart factory integration specialists</li>
+          <li>Industrial AI ethics compliance managers</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>Worker Anxiety Data</h4>
+        <p>OECD (2025) finds that 71.3% of Japanese manufacturing workers in AI-adopting companies are worried about job loss over the next ten years — higher than the 65.8% OECD average for manufacturing. This elevated anxiety is notable in a sector where visible displacement is currently limited, suggesting that workers perceive the pace of coming change more acutely than headline figures suggest. Training access is markedly lower than in peer countries: male AI users in manufacturing report company-provided training 36.5 percentage points below the OECD average.</p>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Japan's manufacturing sector is the central arena for the country's AI-and-labour debate. Its 10.55 million workers constitute the most numerically exposed workforce to AI-enabled robotics, with assembly lines, quality control, and materials handling all facing rapid automation. The OECD finding that manufacturing workers show higher AI anxiety than peers in other countries, despite Japan's current low adoption rate, reveals a workforce acutely aware of what is coming. The human cost lies not only in displacement risk but in the asymmetric training gap: manufacturing workers receive substantially less company-funded AI reskilling than their counterparts in finance or professional services, despite facing higher automation exposure. Japan's government has identified AI-manufacturing integration as a strategic priority, but the policy machinery for worker transition — vocational retraining, income support, pathway development — is not calibrated to the scale or speed of the disruption ahead.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context</h4>
+      <p>Japan's AI Promotion Act (2025) explicitly cites manufacturing as a priority sector for AI deployment. The Act promotes innovation and infrastructure but contains no sector-specific worker protection provisions for manufacturing. Existing industrial relations frameworks — company-level unions, seniority employment norms — were designed for incremental change, not the pace of AI-driven automation now under way. The Ministry of Economy, Trade and Industry's "Digital Transformation in Manufacturing" initiative focuses on productivity and competitiveness, with worker welfare provisions remaining secondary.</p>
+    </div>
+  </div>
+
+  <!-- FINANCIAL SERVICES -->
+  <div class="tab-pane" id="financial">
+    <div class="sector-header">
+      <div>
+        <div class="sector-title">Financial Services</div>
+        <div class="sector-meta">Banking, insurance, securities, investment | Full Analysis</div>
+      </div>
+      <div class="momentum-pill">Momentum: 64 / 100</div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Sector Workforce</h4>
+        <p>Japan's finance and insurance sector employs approximately 1.55 million workers (Statistics Bureau Japan, 2024 Labour Force Survey), a decline of 50,000 from the prior year. Major employers include MUFG, SMBC, Mizuho, Japan Post Insurance, and Nomura Securities. JILPT case studies cover AI deployment in four major finance firms, providing rare granular evidence of workplace AI impact in Japan.</p>
+      </div>
+      <div class="info-card">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Branch teller and counter service roles</li>
+          <li>Loan processing and credit assessment officers</li>
+          <li>Back-office settlement clerks</li>
+          <li>Compliance document review staff</li>
+          <li>Insurance claims processing operatives</li>
+          <li>Routine risk reporting analysts</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="info-card">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI model risk and model governance officers</li>
+          <li>Algorithmic trading supervisors</li>
+          <li>Financial AI ethics auditors</li>
+          <li>Digital banking product managers</li>
+          <li>RegTech and SupTech specialists</li>
+          <li>Fraud detection AI system managers</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>Worker Anxiety and Training Data</h4>
+        <p>OECD (2025) finds that 73.8% of Japanese finance and insurance workers in AI-adopting companies are worried about job loss — higher than the 68% OECD average. Female AI users in finance report company training access that is 22.4 percentage points below the OECD average (OECD, 2025). The Financial Services Agency (FSA) issued an AI Discussion Paper in 2024–25 noting the importance of ethical standards and risk management, but stopping short of worker protection requirements.</p>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <h4>Financial Services AI Adoption Indicators — Selected Data (OECD/JILPT 2024)</h4>
+      <canvas id="finChart"></canvas>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Japan's financial services sector is at an inflection point. The 50,000-job decline in 2024 precedes the full deployment wave of generative AI tools capable of automating complex document review, compliance, and analytical work. The JILPT case studies of Japanese finance firms reveal a pattern: AI is being introduced primarily through management-led initiatives with limited worker consultation, in hierarchical organisations where workers have few formal mechanisms to influence deployment decisions. The disparity in training access — particularly for women, who are over-represented in back-office and administrative finance roles — means that AI is amplifying rather than reducing existing workplace inequalities. Japan's FSA is developing an audit methodology for financial AI systems, but this is framed around systemic risk rather than worker welfare. The AI Promotion Act's sector-specific reliance on existing laws provides no additional protection for workers in this rapidly transforming sector.</p>
+    </div>
+  </div>
+
+  <!-- EMPLOYMENT TABLE -->
+  <div class="table-section">
+    <h2 class="section-heading">Regional Employment Overview by Sector</h2>
+    <div style="overflow-x:auto;">
+      <table class="emp-table">
+        <thead>
+          <tr>
+            <th>Sector</th>
+            <th>Est. Employment (2024)</th>
+            <th>Data Source</th>
+            <th>Automation Exposure</th>
+            <th>Momentum</th>
+            <th>Coverage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Data Centres</td>
+            <td>~50,000–80,000 (est.)</td>
+            <td>Market intelligence; no primary SBJ disaggregation available</td>
+            <td class="risk-low">Low–Medium</td>
+            <td>74</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>Logistics &amp; Warehousing</td>
+            <td>~3.8 million</td>
+            <td>Statistics Bureau Japan, Labour Force Survey 2024</td>
+            <td class="risk-high">High</td>
+            <td>62</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>Office Traditional</td>
+            <td>~6–7 million (est.)</td>
+            <td>SBJ clerical/admin categories; estimate</td>
+            <td class="risk-high">High</td>
+            <td>55</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>Office Tech &amp; Creative</td>
+            <td>2.78 million</td>
+            <td>Statistics Bureau Japan, ICT sector 2024</td>
+            <td class="risk-med">Medium</td>
+            <td>65</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>Retail</td>
+            <td>~7–8 million (est.)</td>
+            <td>SBJ accommodation/food/retail combined; estimate</td>
+            <td class="risk-high">High (entry-level)</td>
+            <td>57</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>CRE Services</td>
+            <td>~0.8–1.2 million (est.)</td>
+            <td>Estimate; no precise SBJ sub-sector disaggregation</td>
+            <td class="risk-med">Medium</td>
+            <td>58</td>
+            <td>Snapshot</td>
+          </tr>
+          <tr>
+            <td>Professional Services</td>
+            <td>~3–4 million (est.)</td>
+            <td>OECD/JILPT; SBJ professional/scientific combined</td>
+            <td class="risk-med">Medium–High</td>
+            <td>60</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>Manufacturing</td>
+            <td>10.55 million</td>
+            <td>Statistics Bureau Japan, Labour Force Survey 2024</td>
+            <td class="risk-high">High</td>
+            <td>63</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>Financial Services</td>
+            <td>1.55 million</td>
+            <td>Statistics Bureau Japan, Labour Force Survey 2024</td>
+            <td class="risk-high">High</td>
+            <td>64</td>
+            <td>Full</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- POLICY SECTION -->
+  <div class="policy-section">
+    <h2 class="section-heading">Policy Gaps and Human-Centred Recommendations</h2>
+    <div class="policy-grid">
+      <div class="policy-card">
+        <h4>Critical Policy Gaps</h4>
+        <ul>
+          <li>AI Promotion Act (2025) contains no worker consultation requirements before AI deployment</li>
+          <li>No sectoral just-transition fund for workers displaced by AI</li>
+          <li>Training support for AI-displaced workers (Educational Training Benefits) is underfunded relative to the pace of change</li>
+          <li>Female workers' disproportionate training access gap in finance and manufacturing is unaddressed</li>
+          <li>Copyright exception (Article 30-4) provides no compensation mechanism for creative workers whose work trains AI</li>
+          <li>Labour Standards Act does not require worker consultation on technology deployment</li>
+          <li>Regional disparities in AI training access are acknowledged but not addressed in the AI Basic Plan</li>
+        </ul>
+      </div>
+      <div class="policy-card">
+        <h4>Recommended Priority Actions</h4>
+        <ul>
+          <li>Legislate mandatory worker consultation rights before large-scale AI deployment in firms over 250 employees</li>
+          <li>Establish a sectoral AI transition fund, financed by a levy on productivity gains from AI deployment</li>
+          <li>Reform Educational Training Benefits to be universal, proactive, and responsive — not application-based</li>
+          <li>Create a fair-use licensing framework for creative works used in AI training, with mandatory compensation</li>
+          <li>Require gender-disaggregated AI training participation data from large employers</li>
+          <li>Include worker welfare metrics in the AI Basic Plan review criteria</li>
+          <li>Extend the AI Strategic Headquarters mandate to include a standing Labour Impact Advisory Panel</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOURCE NOTE -->
+  <div class="source-note">
+    <h4>Source Note and Data Methodology</h4>
+    <p>Employment figures are drawn primarily from the Statistics Bureau of Japan Labour Force Survey 2024 (Annual Report), published by the Ministry of Internal Affairs and Communications. AI adoption data is sourced from OECD (2025), "Artificial Intelligence and the Labour Market in Japan" (doi: 10.1787/b825563e-en), including JILPT worker surveys conducted in 2024. Additional AI adoption data from INTAGE Inc. survey (October–November 2024, n=20,498). Data centre market figures are drawn from market intelligence providers Arizton Advisory and Intelligence (2026) and Mordor Intelligence (2025); these are commercial estimates and are presented as indicative. Regulatory context draws on Bird &amp; Bird AI Regulatory Horizon Tracker (Japan, 2025), Future Privacy Forum analysis of the AI Promotion Act (June 2025), and White &amp; Case AI Watch global tracker (Japan). Workforce estimates marked "(est.)" are author estimates derived from proportional mapping of available SBJ sector categories and OECD employment composition data; they should be treated as indicative rather than authoritative. CRE market data from Cushman &amp; Wakefield APAC Data Centre Update H2 2024. OECD Employment Outlook 2025 country note for Japan used for labour market context. All figures are the most recently available at time of publication (Q1 2026). This analysis is produced for research and advisory purposes; readers requiring precise regulatory or investment-grade data should consult primary sources directly.</p>
+  </div>
+
+</main>
+
+<footer class="page-footer">
+  <strong>Human Impact Index</strong> | Authored by Andrew Phipps, PhD Candidate in Philosophy (AI Ethics), University of Sussex &amp; Former Global Leader, Cushman &amp; Wakefield | APAC Edition Q1 2026
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const cPurple = '#ce93d8';
+const cBlue = '#64b5f6';
+const cGreen = '#81c784';
+const cAmber = '#ffb74d';
+const cRed = '#ef9a9a';
+const cGrid = 'rgba(255,255,255,0.07)';
+const cText = '#8899bb';
+
+Chart.defaults.color = cText;
+Chart.defaults.borderColor = cGrid;
+
+// DATA CENTRES
+new Chart(document.getElementById('dcChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2024 (actual)', '2025 (est.)', '2027 (proj.)', '2029 (proj.)', '2031 (proj.)'],
+    datasets: [{
+      label: 'Market Size (USD Bn)',
+      data: [9.9, 12.76, 19.5, 28.0, 38.92],
+      backgroundColor: ['rgba(206,147,216,0.4)','rgba(206,147,216,0.55)','rgba(206,147,216,0.65)','rgba(206,147,216,0.75)','rgba(206,147,216,0.85)'],
+      borderColor: cPurple,
+      borderWidth: 1,
+      borderRadius: 4
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'USD Billion' } } } }
+});
+
+// LOGISTICS
+new Chart(document.getElementById('logChart'), {
+  type: 'horizontalBar',
+  type: 'bar',
+  data: {
+    labels: ['Freight documentation', 'Manual picking/packing', 'Inventory counting', 'Dispatch coordination', 'Route optimisation', 'Last-mile delivery', 'Robotics supervision'],
+    datasets: [{
+      label: 'Automation Exposure (%)',
+      data: [82, 76, 70, 55, 45, 35, 15],
+      backgroundColor: [cRed, cRed, cRed, cAmber, cAmber, cBlue, cGreen],
+      borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { x: { max: 100, title: { display: true, text: '% Tasks Automatable (Indicative Estimate)' } } }
+  }
+});
+
+// OFFICE TRADITIONAL
+new Chart(document.getElementById('offTradChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Data entry', 'Payroll processing', 'Document filing', 'Scheduling', 'Reception/telephony', 'Translation', 'Compliance review', 'Client management'],
+    datasets: [{
+      label: 'Estimated Automation Exposure (%)',
+      data: [88, 80, 75, 65, 58, 55, 40, 18],
+      backgroundColor: 'rgba(206,147,216,0.5)',
+      borderColor: cPurple,
+      borderWidth: 1,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { x: { max: 100, title: { display: true, text: '% Tasks Automatable (Indicative Estimate)' } } }
+  }
+});
+
+// PROFESSIONAL SERVICES
+new Chart(document.getElementById('profChart'), {
+  type: 'radar',
+  data: {
+    labels: ['Legal Research', 'Accounting', 'Consulting', 'HR Admin', 'Tax Preparation', 'Strategic Advisory'],
+    datasets: [{
+      label: 'AI Exposure Score (0–100)',
+      data: [70, 68, 55, 65, 72, 22],
+      backgroundColor: 'rgba(206,147,216,0.15)',
+      borderColor: cPurple,
+      pointBackgroundColor: cPurple
+    }]
+  },
+  options: { responsive: true, scales: { r: { min: 0, max: 100, ticks: { stepSize: 25 } } } }
+});
+
+// MANUFACTURING
+new Chart(document.getElementById('mfgChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Assembly line', 'Quality inspection', 'Materials handling', 'Machine operation', 'Maintenance', 'Engineering design', 'Production planning', 'R&D'],
+    datasets: [
+      {
+        label: 'Workers Worried About AI Job Loss (%)',
+        data: [75, 73, 70, 65, 50, 35, 40, 20],
+        backgroundColor: 'rgba(239,154,154,0.5)',
+        borderColor: cRed,
+        borderWidth: 1,
+        borderRadius: 4
+      },
+      {
+        label: 'Automation Exposure (Estimated %)',
+        data: [80, 76, 74, 60, 40, 25, 45, 15],
+        backgroundColor: 'rgba(255,183,77,0.3)',
+        borderColor: cAmber,
+        borderWidth: 1,
+        borderRadius: 4
+      }
+    ]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { max: 100, title: { display: true, text: '%' } } } }
+});
+
+// FINANCIAL
+new Chart(document.getElementById('finChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Workers worried\nabout AI job loss', 'Female AI users\nwith training access\n(gap vs OECD avg)', 'Male AI users\nwith training access\n(gap vs OECD avg)', 'SMEs using\ngenerative AI'],
+    datasets: [{
+      label: 'Japan (%)',
+      data: [73.8, 22.4, 36.5, 23.5],
+      backgroundColor: [cRed, cAmber, cAmber, cBlue].map(c => c + '88'),
+      borderColor: [cRed, cAmber, cAmber, cBlue],
+      borderWidth: 1,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { title: { display: true, text: '% (higher is worse for negative indicators)' } } }
+  }
+});
+
+// TAB SWITCHING
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

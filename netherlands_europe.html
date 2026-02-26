@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Netherlands | Human Impact Index</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0e1a; color: #e0e6f0; font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; }
+  a { color: #64b5f6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .site-header { background: #0d1226; border-bottom: 1px solid #1e2a4a; padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-size: 1.1rem; font-weight: 700; color: #64b5f6; letter-spacing: 0.04em; }
+  .back-link { font-size: 0.85rem; color: #8899bb; }
+  .back-link:hover { color: #64b5f6; }
+
+  .hero { background: linear-gradient(135deg, #0d1226 0%, #111a35 60%, #0f2a1a 100%); padding: 48px 32px 36px; border-bottom: 1px solid #1e2a4a; }
+  .hero-inner { max-width: 1100px; margin: 0 auto; }
+  .region-badge { display: inline-block; background: #81c78420; border: 1px solid #81c78440; color: #81c784; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
+  .hero h1 { font-size: 2.6rem; font-weight: 800; color: #e0e6f0; margin-bottom: 6px; }
+  .hero .subtitle { font-size: 1.05rem; color: #8899bb; margin-bottom: 28px; }
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card { background: #0a0e1a; border: 1px solid #1e2a4a; border-radius: 8px; padding: 16px 18px; }
+  .stat-card .label { font-size: 0.72rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .stat-card .value { font-size: 1.55rem; font-weight: 700; color: #64b5f6; }
+  .stat-card .sub { font-size: 0.75rem; color: #8899bb; margin-top: 2px; }
+
+  .momentum-section { background: #0a0e1a; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px 22px; }
+  .momentum-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .momentum-label { font-size: 0.8rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; }
+  .momentum-score { font-size: 1.6rem; font-weight: 700; color: #64b5f6; }
+  .momentum-bar-bg { background: #1e2a4a; border-radius: 4px; height: 10px; width: 100%; }
+  .momentum-bar-fill { background: linear-gradient(90deg, #64b5f6, #81c784); border-radius: 4px; height: 10px; }
+  .momentum-note { font-size: 0.75rem; color: #8899bb; margin-top: 8px; }
+
+  .main { max-width: 1100px; margin: 0 auto; padding: 36px 32px; }
+
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 0; border-bottom: 1px solid #1e2a4a; }
+  .tab-btn { background: none; border: none; color: #8899bb; padding: 10px 16px; font-size: 0.82rem; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; white-space: nowrap; }
+  .tab-btn:hover { color: #e0e6f0; }
+  .tab-btn.active { color: #81c784; border-bottom-color: #81c784; }
+  .tab-content { display: none; padding: 28px 0 0; }
+  .tab-content.active { display: block; }
+
+  .sector-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .sector-title { font-size: 1.45rem; font-weight: 700; color: #e0e6f0; }
+  .sector-momentum { text-align: right; }
+  .sector-momentum .score { font-size: 1.8rem; font-weight: 700; color: #81c784; }
+  .sector-momentum .label { font-size: 0.72rem; color: #8899bb; text-transform: uppercase; }
+  .snapshot-badge { display: inline-block; background: #81c78420; border: 1px solid #81c78440; color: #81c784; font-size: 0.7rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-left: 10px; vertical-align: middle; }
+  .sector-desc { font-size: 0.95rem; color: #c0cfe0; margin-bottom: 22px; line-height: 1.7; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  @media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
+
+  .info-box { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 18px 20px; }
+  .info-box h4 { font-size: 0.78rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+  .info-box ul { list-style: none; }
+  .info-box ul li { font-size: 0.88rem; color: #c0cfe0; padding: 4px 0; border-bottom: 1px solid #1e2a4a20; }
+  .info-box ul li:before { content: "›"; color: #81c784; margin-right: 8px; }
+  .info-box ul li:last-child { border-bottom: none; }
+
+  .impact-box { background: #0f2214; border: 1px solid #81c78430; border-left: 3px solid #81c784; border-radius: 8px; padding: 18px 20px; margin-bottom: 20px; }
+  .impact-box h4 { font-size: 0.78rem; color: #81c784; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .impact-box p { font-size: 0.9rem; color: #c0cfe0; line-height: 1.65; }
+
+  .reg-box { background: #0d1226; border: 1px solid #64b5f630; border-left: 3px solid #64b5f6; border-radius: 8px; padding: 18px 20px; margin-bottom: 20px; }
+  .reg-box h4 { font-size: 0.78rem; color: #64b5f6; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .reg-box p { font-size: 0.9rem; color: #c0cfe0; line-height: 1.65; }
+
+  .chart-container { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+  .chart-container h4 { font-size: 0.82rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
+
+  .emp-table-section { margin-top: 40px; }
+  .emp-table-section h2 { font-size: 1.2rem; font-weight: 700; color: #e0e6f0; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #1e2a4a; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th { background: #0d1226; color: #8899bb; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 14px; text-align: left; border-bottom: 1px solid #1e2a4a; }
+  td { padding: 10px 14px; border-bottom: 1px solid #1e2a4a10; color: #c0cfe0; }
+  tr:hover td { background: #0d122620; }
+  .score-cell { font-weight: 700; color: #81c784; }
+  .est-note { font-size: 0.75rem; color: #8899bb; font-style: italic; }
+
+  .policy-section { margin-top: 40px; }
+  .policy-section h2 { font-size: 1.2rem; font-weight: 700; color: #e0e6f0; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #1e2a4a; }
+  .policy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .policy-card { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 18px 20px; }
+  .policy-card h4 { font-size: 0.88rem; font-weight: 700; color: #e0e6f0; margin-bottom: 8px; }
+  .policy-card p { font-size: 0.85rem; color: #8899bb; line-height: 1.6; }
+  .policy-card.gap { border-color: #81c78430; }
+  .policy-card.gap h4 { color: #81c784; }
+
+  .source-note { margin-top: 40px; background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px 22px; font-size: 0.78rem; color: #8899bb; line-height: 1.7; }
+  .source-note strong { color: #c0cfe0; }
+
+  footer { background: #0d1226; border-top: 1px solid #1e2a4a; padding: 22px 32px; text-align: center; font-size: 0.78rem; color: #8899bb; }
+  footer span { color: #64b5f6; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">Human Impact Index</div>
+  <a href="europe_overview.html" class="back-link">← Back to Europe Overview</a>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="region-badge">Europe Region</div>
+    <h1>Netherlands</h1>
+    <p class="subtitle">AI Workforce Transformation Analysis — Human-Centred Assessment</p>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="label">Total Employed</div>
+        <div class="value">9.8M</div>
+        <div class="sub">CBS / IMF, 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Employment Rate</div>
+        <div class="value">73%+</div>
+        <div class="sub">Highest ever recorded, CBS 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Unemployment Rate</div>
+        <div class="value">~3.7%</div>
+        <div class="sub">CBS 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">AI Company Adoption</div>
+        <div class="value">23%</div>
+        <div class="sub">CBS AI Monitor 2024 (firms ≥10 employees)</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">AI Revenue Share</div>
+        <div class="value">51%</div>
+        <div class="sub">Revenue from AI-using firms, CBS 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">SME Employment Share</div>
+        <div class="value">~65%</div>
+        <div class="sub">McKinsey; higher than EU peers</div>
+      </div>
+    </div>
+
+    <div class="momentum-section">
+      <div class="momentum-header">
+        <div>
+          <div class="momentum-label">Overall AI Momentum Score</div>
+          <div class="momentum-note">European scores generally range 55–75; Netherlands calibrated to reflect strong digital infrastructure, active AI governance, and notable SME adoption lag. Germany (62) used as European reference point.</div>
+        </div>
+        <div class="momentum-score">67 / 100</div>
+      </div>
+      <div class="momentum-bar-bg"><div class="momentum-bar-fill" style="width:67%"></div></div>
+    </div>
+  </div>
+</section>
+
+<main class="main">
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('data-centres')">Data Centres</button>
+    <button class="tab-btn" onclick="showTab('logistics')">Logistics</button>
+    <button class="tab-btn" onclick="showTab('office-trad')">Office Traditional</button>
+    <button class="tab-btn" onclick="showTab('office-tech')">Office Tech & Creative</button>
+    <button class="tab-btn" onclick="showTab('retail')">Retail</button>
+    <button class="tab-btn" onclick="showTab('cre-services')">CRE Services</button>
+    <button class="tab-btn" onclick="showTab('professional')">Professional Services</button>
+    <button class="tab-btn" onclick="showTab('financial')">Financial Services</button>
+    <button class="tab-btn" onclick="showTab('manufacturing')">Manufacturing <span class="snapshot-badge">Snapshot</span></button>
+  </div>
+
+  <!-- DATA CENTRES -->
+  <div id="data-centres" class="tab-content active">
+    <div class="sector-header">
+      <div class="sector-title">Data Centres</div>
+      <div class="sector-momentum"><div class="score">75</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Amsterdam is Europe's leading data centre hub, home to AMS-IX, one of the world's largest internet exchange points, and over 52 major facilities operated by Equinix, Digital Realty (12 sites), Iron Mountain, EdgeConneX, Switch Datacenters, and others. The Schiphol corridor and Amsterdam Southeast form the primary cluster. Total operational capacity in the Amsterdam Metropolitan Area exceeds 1 GW. AI compute demand is driving unprecedented facility development: Digital Realty reports over 435 customers across 79,800 sqm of colocation space; Iron Mountain's 13.1 MW Amsterdam facility is expanding by 30 MW through 2028. The Netherlands ranks among Europe's top three data centre markets and serves as gateway infrastructure for the EMEA region.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Manual infrastructure monitoring operatives</li>
+          <li>Tier 1 remote hands and helpdesk technicians</li>
+          <li>Physical facility patrol and security guards</li>
+          <li>Routine preventive maintenance staff</li>
+          <li>Legacy hardware and cabling installation workers</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI-specific GPU infrastructure engineers</li>
+          <li>Liquid and immersive cooling specialists</li>
+          <li>Sustainable data centre energy managers</li>
+          <li>AMS-IX and peering interconnect specialists</li>
+          <li>AI security and compliance engineers (ISO 27001, SOC 2)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <h4></h4>
+      <p>Data centres are capital-intensive, not labour-intensive. Amsterdam's facilities generate enormous economic activity but employ modest direct workforces relative to their scale. The transition from traditional managed hosting to AI hyperscale compute creates demand for a different skills profile — and the workers who maintain legacy infrastructure do not automatically possess it. The Netherlands has a strong union tradition and works council system, which should in principle provide avenues for workforce consultation on restructuring. In practice, major data centre operators are multinational firms headquartered outside the EU, and the works council framework has limited reach over strategic workforce decisions taken at group level. The EU AI Act does not address data centre workforce impacts directly.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context: EU AI Act and Dutch Digital Infrastructure Policy</h4>
+      <p>The EU AI Act (fully applicable from August 2026) does not regulate data centre workforce practices. Dutch national policy has focused on energy efficiency, environmental permits, and data sovereignty rather than on the employment implications of AI infrastructure. The Amsterdam metropolitan planning authority has imposed local restrictions on new data centre construction, citing land use and energy concerns. These restrictions may slow expansion but do not create any worker protection framework. The Netherlands' strong GDPR enforcement culture is relevant to data governance but does not extend to labour rights in AI infrastructure.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>Amsterdam Data Centre Capacity Growth vs AI Compute Demand Index</h4>
+      <canvas id="chartDC" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- LOGISTICS -->
+  <div id="logistics" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Logistics &amp; Warehousing</div>
+      <div class="sector-momentum"><div class="score">69</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">The Netherlands is Europe's logistics gateway: the Port of Rotterdam, Europe's largest, handles over 465 million tonnes of cargo annually, and Schiphol Airport is a major air cargo hub. The sector employs an estimated 800,000–900,000 workers across transportation, warehousing, and supply chain management (CBS estimate, based on transport and storage industry classification). Transport and logistics consistently records the tightest labour market shortages of any Dutch sector — more than half of companies report staff shortages — which partly reflects existing automation already having reduced employment density. AI-driven route optimisation, warehouse robotics, autonomous terminal vehicles in Rotterdam, and predictive freight platforms are advancing rapidly. McKinsey's 2024 analysis of Dutch GenAI adoption explicitly identifies logistics as a sector where automation is likely to reduce total hours worked substantially.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Warehouse pickers, packers, and sorters</li>
+          <li>Freight forwarders and documentation clerks</li>
+          <li>Road haulage and delivery drivers (medium-term, with EV/AV)</li>
+          <li>Port loading and crane operators (terminal automation)</li>
+          <li>Logistics administration and planning assistants</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Autonomous vehicle fleet supervisors and telematics analysts</li>
+          <li>AI supply chain optimisation specialists</li>
+          <li>Smart port and terminal automation engineers</li>
+          <li>Green logistics and sustainable supply chain managers</li>
+          <li>Last-mile delivery innovation coordinators</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>The Dutch logistics workforce is structurally exposed. Low-skill vacancies in transport and warehousing are the most numerous unfilled roles in the Netherlands, which may be interpreted positively — demand remains high — but masks a transition already underway. Automation is gradually eliminating the entry-level and routine roles that provided accessible employment for workers without higher qualifications. The workers most at risk are those in level 1 occupations (EURES classification): replenishment assistants, warehouse staff, cleaners attached to logistics operations. These workers are least likely to hold formal qualifications and most likely to face long-term unemployment if displaced. Dutch trade unions in the transport sector (FNV Transport and Logistics) have been active in negotiating automation agreements, providing more worker voice than in comparable markets, but the pace of automation is outrunning the speed of collective bargaining cycles.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context: EU AI Act and Dutch Labour Law</h4>
+      <p>The EU AI Act classifies AI systems used for managing and monitoring workers in transport as high-risk (Annex III), requiring transparency, human oversight, and conformity assessments. This is relevant to fleet management and worker monitoring systems. However, the Act's provisions address how AI manages existing workers, not the displacement of workers by AI. Dutch works council law (Wet op de Ondernemingsraden) gives employee representatives the right to be consulted on major organisational changes, which in principle includes AI-driven restructuring. In practice, the threshold for consultation is often interpreted narrowly, and the speed of operational AI integration frequently outpaces formal consultation procedures.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TRADITIONAL -->
+  <div id="office-trad" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Office — Traditional Sectors</div>
+      <div class="sector-momentum"><div class="score">63</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">The Netherlands has one of the most active office markets in Europe, centred on Amsterdam's Zuidas business district, Rotterdam, and the Randstad conurbation. AI adoption in traditional office sectors — public administration, utilities, corporate back-office, and generalist services — is accelerating, with 23% of firms with ten or more employees using at least one AI technology in 2024, up from 15% in 2023 (CBS). The most common applications are in administrative processes and management tasks (30% of AI-using firms) and marketing and sales (36%). McKinsey estimates that even in a slower scenario, GenAI could reduce total hours worked in Dutch office functions by 15%. The Netherlands' large SME sector (65% of employment) creates a structural lag: small firms are slower to adopt AI, but when they do, the scale of disruption at the individual business level can be acute and abrupt.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Administrative assistants and office managers</li>
+          <li>Data entry and document processing clerks</li>
+          <li>Customer service and call centre agents</li>
+          <li>Financial administrators and payroll processors</li>
+          <li>Executive assistants handling scheduling and correspondence</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI tool supervisors and prompt engineering specialists</li>
+          <li>Digital transformation project coordinators</li>
+          <li>Human-in-the-loop compliance reviewers</li>
+          <li>Hybrid workplace experience managers</li>
+          <li>Organisational change and AI adoption leads</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>OECD analysis (2024) confirms that approximately 2.5% of Dutch workers are at high risk of automation — significantly below the OECD average of 12%, reflecting the Netherlands' already high skill base. However, this encouraging headline figure does not distribute evenly. Administrative and clerical workers, often women in part-time roles, face substantially higher exposure than the average suggests. The Netherlands has a notably high share of part-time employment — particularly among women — in exactly the administrative and support roles most susceptible to AI substitution. Dutch labour law provides strong formal protections, including redundancy consultation requirements and severance entitlements, but these protections kick in after displacement decisions are made, not before.</p>
+    </div>
+  </div>
+
+  <!-- OFFICE TECH -->
+  <div id="office-tech" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Office — Tech &amp; Creative</div>
+      <div class="sector-momentum"><div class="score">70</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">The Netherlands is a European digital leader: Amsterdam hosts European headquarters for Google, Microsoft, Netflix, Cisco, Oracle, Uber, and IBM. The country ranks fifth globally on the Innovation Index and fourth on WEF Global Competitiveness. CBS identified 402 active AI companies in the Netherlands in 2024, with 63% concentrated in the Information and Communications sector. The tech skills shortage is acute: 56% of Dutch tech job vacancies are hard to fill, above Germany (47%) and Sweden (44%). ICT vacancies are 20% more numerous per employed person than average vacancies. ASML and Philips co-launched DeepTechXL, a €110 million private investment fund for high-tech startups. AI-related tech postings are growing as a share of all listings, but entry-level compression is already observable as GenAI reduces demand for junior coding tasks.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior developers in code-generation-susceptible tasks</li>
+          <li>Standard QA testers and manual code reviewers</li>
+          <li>Routine IT support and level 1 helpdesk</li>
+          <li>Basic data analyst roles (AI dashboards replacing human analysts)</li>
+          <li>Content and copywriting roles in tech marketing</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI engineers and LLM system architects</li>
+          <li>AI safety and red-teaming specialists</li>
+          <li>Semiconductor AI systems engineers (ASML ecosystem)</li>
+          <li>Creative directors with generative AI fluency</li>
+          <li>AI product managers and data governance leads</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>The Dutch tech sector faces the same paradox observable across advanced economies: aggregate demand for AI-adjacent skills is rising while AI itself compresses the entry-level roles through which workers have historically built those skills. The seven Dutch universities that collectively posted the most AI vacancies (2018–2024) primarily seek systems analysts, statistical specialists, and senior developers — not the entry-level positions that enable career progression. Without deliberate intervention to redesign learning pathways, the Netherlands risks concentrating AI's benefits in an already highly educated technical elite while blocking access for workers without pre-existing advanced qualifications. The country's strong university sector and adult education infrastructure are assets in addressing this, but uptake remains a voluntary choice requiring individual initiative and time investment.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>Netherlands AI Company Adoption Rate by Firm Size (CBS AI Monitor 2024)</h4>
+      <canvas id="chartTech" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- RETAIL -->
+  <div id="retail" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Retail</div>
+      <div class="sector-momentum"><div class="score">62</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Dutch retail generated 2.1% overall turnover growth in 2024, the lowest in a decade, with online turnover growing 5.8% against a 1.0% decline in food shop sales. The sector employs an estimated 800,000–900,000 people (CBS, based on retail trade category), making it one of the largest employing sectors in the Netherlands. AI applications in retail include personalisation engines, AI-driven inventory management, cashierless checkout trials, and chatbot customer service. Major Dutch retailers including Albert Heijn, Lidl Netherlands, and Bol.com are active in AI deployment. The sector is also a significant employer of younger workers and part-time workers, many of whom hold temporary or flex contracts with limited employment protections under the existing framework.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Cashiers and checkout staff</li>
+          <li>Inventory replenishment assistants (warehouse and floor)</li>
+          <li>Call centre and customer service agents</li>
+          <li>Retail administration and back-office clerks</li>
+          <li>Standard merchandising and planogram staff</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI-assisted customer experience advisors</li>
+          <li>Omnichannel operations managers</li>
+          <li>Retail data and analytics specialists</li>
+          <li>Sustainability and ethical sourcing monitors</li>
+          <li>Digital store and fulfilment technology supervisors</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Dutch retail is disproportionately employing workers in exactly the categories EURES and CBS identify as most vulnerable to AI displacement: level 1 occupations performing simple routine tasks. These workers — young, often part-time, frequently on flexible contracts — are the least protected by the existing labour framework. The proposed VBAR legislation, which aims to clarify the line between employment and self-employment, may actually worsen the transition challenge by reducing the supply of flexible gig contracts that currently absorb workers displaced from retail before they find stable employment elsewhere. There is no retail-sector reskilling obligation on employers under current Dutch or EU law.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context: EU AI Act Consumer Protection</h4>
+      <p>The EU AI Act's consumer-facing provisions require transparency around AI systems used in retail — particularly in personalisation and pricing. Works councils in larger retail employers have the right to be consulted on technology deployment affecting working conditions. The AI Act's high-risk classification does not cover retail automation of the type most directly displacing workers (such as automated checkout), treating these as lower-risk applications. This regulatory gap means the most labour-displacing AI applications in retail face the lightest scrutiny.</p>
+    </div>
+  </div>
+
+  <!-- CRE SERVICES -->
+  <div id="cre-services" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Commercial Real Estate Services</div>
+      <div class="sector-momentum"><div class="score">64</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">The Netherlands is a major European CRE market, with Amsterdam consistently ranked among Europe's top five investment destinations. The Zuidas district anchors prime office leasing; Schiphol-Rijk and the logistics triangle of Rotterdam-Amsterdam-Eindhoven dominate industrial and logistics real estate. The global CRE services firms — Cushman & Wakefield, JLL, CBRE, Savills, and Colliers — all operate substantial Dutch offices. AI adoption in Dutch CRE services is following the global playbook: automated valuation models, AI-enhanced lease management, generative AI research tools (JLL GPT, CBRE's LLM platform), and AI-driven facilities management. The rise of data centre demand has created a new advisory specialism that is growing rapidly.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Property market research and report analysts</li>
+          <li>Lease administration and contract processing staff</li>
+          <li>Standard valuation and appraisal associates</li>
+          <li>Facilities management coordinators</li>
+          <li>Junior brokers whose value rested on data aggregation</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Data centre and digital infrastructure advisors</li>
+          <li>ESG and energy performance certification specialists</li>
+          <li>AI-enhanced property technology (proptech) leads</li>
+          <li>Smart building and IoT asset managers</li>
+          <li>Cross-border M&A and fund advisory specialists</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>CRE services firms in the Netherlands employ a relatively small workforce concentrated in high-skill advisory roles, but the internal stratification between senior relationship managers and junior support staff is sharp. AI is eliminating the most accessible entry points — research, lease admin, basic valuation — while preserving the relationship-based senior advisory work that already commands premium compensation. The sector has no specific reskilling infrastructure; displaced junior staff must navigate general provision through the UWV employment agency or private initiative. The Netherlands' relatively strong social safety net provides a meaningful floor, but it is not designed for the kind of structured career transition from displaced CRE analyst to AI-augmented advisor that the sector's evolution requires.</p>
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL SERVICES -->
+  <div id="professional" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Professional Services</div>
+      <div class="sector-momentum"><div class="score">66</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">Professional services — encompassing law, accounting, management consulting, architecture, and scientific advisory — is one of the Netherlands' most significant employment sectors, with approximately 1.5–1.8 million workers across specialist business services (estimate from CBS sectoral employment data). The Netherlands is home to the global headquarters of major firms including KPMG, PricewaterhouseCoopers Netherlands, and NXP Semiconductors, alongside a dense consulting ecosystem. AI adoption in professional services is progressing rapidly: McKinsey's Dutch market analysis identifies administrative processes and management tasks as the most common AI deployment contexts (30% of AI-using firms). Legal AI tools for document review, contract analysis, and regulatory monitoring are in active use at major Dutch firms.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Junior lawyers performing document review and discovery</li>
+          <li>Audit associates handling routine data reconciliation</li>
+          <li>Management consulting analysts in process mapping</li>
+          <li>Architectural draughting and specification writing staff</li>
+          <li>Paralegals, legal secretaries, and research assistants</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI governance and EU AI Act compliance advisors</li>
+          <li>Technology and IP lawyers with AI specialisation</li>
+          <li>ESG and sustainability reporting specialists</li>
+          <li>Interdisciplinary AI risk and ethics consultants</li>
+          <li>Digital transformation leads for regulated industries</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Professional services workers in the Netherlands benefit from a strong institutional framework — professional associations, continuing education requirements, and works council representation at major firms — but the challenge is structural rather than procedural. The compression of junior roles is removing the developmental experiences through which professionals build the competencies that support seniority. A junior lawyer who cannot progress through document review cannot become the expert who reviews AI-generated document summaries for accuracy and risk. Dutch professional training bodies are beginning to adapt curricula, but structural reform of professional education takes years while AI deployment advances in months. The EU AI Act creates a significant demand opportunity for compliance and governance specialists, which is one genuine bright spot for the sector's human capital trajectory.</p>
+    </div>
+  </div>
+
+  <!-- FINANCIAL SERVICES -->
+  <div id="financial" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Financial Services</div>
+      <div class="sector-momentum"><div class="score">69</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc">The Netherlands hosts a globally significant financial services sector: ING, ABN AMRO, Rabobank, and NN Group are headquartered here, and Amsterdam is one of Europe's leading financial centres alongside London, Frankfurt, and Paris. CBS data identifies financial and insurance services as a consistently growth-positive employment sector in 2024. CBS AI Monitor 2024 shows AI adoption is higher among large firms — and the Dutch financial services sector is dominated by major institutions. Key applications include fraud detection systems, robo-advisory platforms, AI-driven credit assessment, AML (Anti-Money Laundering) screening, and GenAI tools for customer communication and regulatory compliance. ING has been a notable European leader in AI integration across its retail banking operations.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Branch banking tellers and counter staff</li>
+          <li>KYC and AML data processing operatives</li>
+          <li>Insurance claims handlers (routine claims)</li>
+          <li>Junior financial analysts performing data compilation</li>
+          <li>Customer service agents and complaints handlers</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>AI model governance and explainability specialists</li>
+          <li>Algorithmic risk and model validation analysts</li>
+          <li>Sustainable finance and ESG data analysts</li>
+          <li>Digital wealth management advisors</li>
+          <li>RegTech and EU AI Act compliance officers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment</h4>
+      <p>Dutch financial services provides a nuanced picture. The sector retains employment levels overall while the composition of roles shifts dramatically. The workers at greatest risk are those performing high-volume, lower-discretion tasks — KYC screening, claims processing, branch transaction support — who may not hold the qualifications for the compliance, risk, and AI governance roles that are expanding. The Dutch financial sector has a strong history of works council engagement and collective bargaining, and major banks have entered into agreements with unions on technology deployment. ING's Digital Transformation agreement with FNV and CNV provides a rare example of structured worker consultation on AI-driven change. This represents a genuinely better model than comparable agreements in most peer countries, but its provisions are voluntary and firm-specific rather than sector-wide or legally mandated.</p>
+    </div>
+
+    <div class="reg-box">
+      <h4>Regulatory Context: DNB, ECB, and EU AI Act</h4>
+      <p>De Nederlandsche Bank (DNB) and the ECB jointly supervise AI risk in Dutch financial institutions under the EU's Regulation on AI in Financial Services framework (DORA for operational resilience; EU AI Act for high-risk AI applications including credit scoring and AML). The EU AI Act classifies credit scoring systems, AML systems, and employment-related AI tools as high-risk, requiring transparency, human oversight, and audit trails. These provisions protect consumers and address systemic risk, but they do not extend to protecting workers whose roles are displaced by compliant AI systems. DNB has not yet issued sector-specific guidance on workforce transition obligations associated with AI adoption.</p>
+    </div>
+
+    <div class="chart-container">
+      <h4>Netherlands Financial Services: AI Adoption Trend vs Employment Index (2019–2024)</h4>
+      <canvas id="chartFS" height="110"></canvas>
+    </div>
+  </div>
+
+  <!-- MANUFACTURING (SNAPSHOT) -->
+  <div id="manufacturing" class="tab-content">
+    <div class="sector-header">
+      <div class="sector-title">Manufacturing <span class="snapshot-badge">Snapshot</span></div>
+      <div class="sector-momentum"><div class="score">60</div><div class="label">Momentum Score</div></div>
+    </div>
+    <p class="sector-desc"><em>This sector is covered at snapshot level. Data supports a brief indicative assessment rather than full analysis.</em></p>
+    <p class="sector-desc">Dutch manufacturing is globally significant in high-tech niches rather than mass production. ASML, the world's monopoly supplier of extreme ultraviolet lithography machines, is the most important employer; Philips, NXP Semiconductors, and DSM-Firmenich also anchor the sector. Manufacturing employs an estimated 800,000–900,000 workers (CBS, based on industry classification). December 2024 saw an 18th consecutive month without growth in calendar-adjusted manufacturing output (CBS), though this partly reflects global trade dynamics rather than purely domestic AI disruption. AI applications in Dutch manufacturing focus on predictive maintenance, quality control vision systems, and supply chain optimisation. ASML and Philips jointly launched DeepTechXL to accelerate high-tech startup development with implications for advanced manufacturing AI.</p>
+
+    <div class="two-col">
+      <div class="info-box">
+        <h4>Roles Under Pressure</h4>
+        <ul>
+          <li>Quality inspection operatives (machine vision replacing manual QC)</li>
+          <li>Routine assembly workers in standardised production</li>
+          <li>Administrative and planning support in production</li>
+          <li>Maintenance technicians in manual diagnostic roles</li>
+        </ul>
+      </div>
+      <div class="info-box">
+        <h4>Emerging Opportunities</h4>
+        <ul>
+          <li>Industry 4.0 and smart factory engineers</li>
+          <li>AI-driven predictive maintenance specialists</li>
+          <li>High-tech manufacturing R&D technicians (ASML ecosystem)</li>
+          <li>Advanced materials and semiconductor process engineers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impact-box">
+      <h4>Human Impact Assessment (Indicative)</h4>
+      <p>Dutch manufacturing is bifurcating: ASML-adjacent high-tech manufacturing requires rare advanced skills and is structurally insulated from routine AI displacement, while standard manufacturing sub-sectors face the same automation pressure seen across Europe. Workers in the latter category — often with vocational rather than academic qualifications — have fewer retraining pathways than their counterparts in service sectors. The 18 consecutive months without output growth suggest structural adjustment rather than cyclical headwinds, with AI-driven efficiency gains likely to accompany a reduction in headcount requirements even as output stabilises.</p>
+    </div>
+  </div>
+
+  <!-- EMPLOYMENT TABLE -->
+  <section class="emp-table-section">
+    <h2>Sector Employment Overview — Netherlands</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Sector</th>
+          <th>Estimated Employment</th>
+          <th>Source / Notes</th>
+          <th>Coverage</th>
+          <th>Momentum</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Data Centres</td>
+          <td>~12,000–18,000 direct</td>
+          <td class="est-note">Estimate; industry sources. Highly automated; indirect employment substantially larger.</td>
+          <td>Full</td>
+          <td class="score-cell">75</td>
+        </tr>
+        <tr>
+          <td>Logistics &amp; Warehousing</td>
+          <td>~800,000–900,000</td>
+          <td class="est-note">Estimate; CBS transport and storage sector, 2024</td>
+          <td>Full</td>
+          <td class="score-cell">69</td>
+        </tr>
+        <tr>
+          <td>Office — Traditional</td>
+          <td>~2,000,000–2,500,000</td>
+          <td class="est-note">Estimate; public admin, utilities, admin support, CBS 2024</td>
+          <td>Full</td>
+          <td class="score-cell">63</td>
+        </tr>
+        <tr>
+          <td>Office — Tech &amp; Creative</td>
+          <td>~400,000–500,000</td>
+          <td class="est-note">Estimate; CBS ICT sector and creative industries, 2024</td>
+          <td>Full</td>
+          <td class="score-cell">70</td>
+        </tr>
+        <tr>
+          <td>Retail</td>
+          <td>~800,000–900,000</td>
+          <td class="est-note">Estimate; CBS retail trade category, 2024</td>
+          <td>Full</td>
+          <td class="score-cell">62</td>
+        </tr>
+        <tr>
+          <td>CRE Services</td>
+          <td>~100,000–140,000</td>
+          <td class="est-note">Estimate; CBS real estate activities, 2024</td>
+          <td>Full</td>
+          <td class="score-cell">64</td>
+        </tr>
+        <tr>
+          <td>Professional Services</td>
+          <td>~1,500,000–1,800,000</td>
+          <td class="est-note">Estimate; CBS professional and specialist business services</td>
+          <td>Full</td>
+          <td class="score-cell">66</td>
+        </tr>
+        <tr>
+          <td>Financial Services</td>
+          <td>~400,000–440,000</td>
+          <td class="est-note">Estimate; CBS financial and insurance activities, 2024</td>
+          <td>Full</td>
+          <td class="score-cell">69</td>
+        </tr>
+        <tr>
+          <td>Manufacturing</td>
+          <td>~800,000–900,000</td>
+          <td class="est-note">CBS industry sector classification, 2024</td>
+          <td>Snapshot</td>
+          <td class="score-cell">60</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:0.75rem;color:#8899bb;margin-top:10px;">Sector employment figures are estimates. Total employed in the Netherlands is approximately 9.8 million (CBS/IMF 2024). Sector totals exceed this figure due to workers being active across multiple classifications and different definitional frameworks. Figures should be treated as indicative, not precise. CBS publishes employment by SIC 2008 classification; mapping to the Human Impact Index sector framework requires judgement-based aggregation.</p>
+  </section>
+
+  <!-- POLICY GAPS -->
+  <section class="policy-section">
+    <h2>Policy Gaps &amp; Human-Centred Recommendations</h2>
+    <div class="policy-grid">
+      <div class="policy-card gap">
+        <h4>SME AI Transition Support</h4>
+        <p>Approximately 65% of Dutch workers are employed by SMEs, which are slower AI adopters but face more acute disruption when they do adopt. SMEs lack the internal HR capacity, works council infrastructure, and training budgets that give large employers a managed transition. A dedicated SME AI workforce transition fund, co-financed by industry levies and public investment, is needed.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Extending Works Council Rights to AI Decisions</h4>
+        <p>Works council law (WOR) requires consultation on major organisational changes, but AI adoption that gradually eliminates roles without a single restructuring announcement often falls outside the formal trigger threshold. The WOR should be amended to require consultation when AI tools are introduced that materially change working conditions or headcount projections.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Part-Time Worker AI Exposure</h4>
+        <p>The Netherlands has one of the highest part-time employment rates in the EU, concentrated in retail, administration, and care services — all high AI-exposure sectors. Part-time workers are disproportionately women. Current reskilling programmes are designed around full-time participation, creating a structural barrier for the workers most at risk.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>EU AI Act Implementation Gap on Labour</h4>
+        <p>The EU AI Act's high-risk classifications (credit scoring, AML, employment tools) require human oversight but do not mandate worker protections for displaced staff. The Netherlands should advocate, within the EU rulemaking process, for an extension of AI Act obligations to include workforce impact assessments and transition planning requirements for large-scale AI deployments.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Flex Contract Vulnerability</h4>
+        <p>An estimated 2.7 million Dutch workers hold flexible or short-term contracts (CBS). These workers are the first to be released when AI reduces headcount, yet they are the least covered by redundancy protections, training obligations, and union agreements. VBAR legislation may clarify employment status, but it does not create transition entitlements for flex workers facing AI displacement.</p>
+      </div>
+      <div class="policy-card gap">
+        <h4>Sector-Level Reskilling Obligations</h4>
+        <p>McKinsey's analysis projects a 15% reduction in Dutch office work hours under slower AI adoption scenarios. This scale of transition requires sector-level responses, not individual firm voluntary commitments. Sectoral agreements (CAOs) negotiated between unions and employers' associations should incorporate binding AI reskilling obligations and transition fund contributions.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOURCE NOTE -->
+  <div class="source-note">
+    <strong>Data Sources &amp; Notes:</strong> Statistics Netherlands (CBS) Dutch AI Monitor 2024; CBS Labour Market Dashboard and annual employment data 2024; CBS Year in Review 2024; OECD Job Creation and Local Economic Development 2024 Country Note: Netherlands; IMF Staff Country Report Netherlands 2024; EURES Netherlands Labour Market Information 2024; McKinsey Global Institute "Capturing the Generative AI Opportunity for the Dutch Labour Market" (November 2024); De Nederlandsche Bank Labour Market data (end-2025); Eurostat employment by sector (Netherlands); Computer Weekly "Dutch workforce faces radical transformation as AI adoption accelerates"; CBS AI Monitor 2024 detailed findings at cbs.nl; Cushman &amp; Wakefield Singapore Market Outlook 2026 (used for CRE sector benchmarking context); World Bank GDP and employment data 2024; Amsterdam Data Center market data from Digital Realty, Iron Mountain, and DataCenterJournal (December 2024); ASML DeepTechXL fund announcement (March 2024); Addleshaw Goddard data centre analysis 2025. All sector employment figures are estimates based on CBS SIC 2008 classifications mapped to the Human Impact Index sector framework and should be treated as indicative. Authored by Andrew Phipps, PhD Candidate in Philosophy (AI Ethics), University of Sussex.
+  </div>
+
+</main>
+
+<footer>
+  <p><span>Human Impact Index</span> | Authored by Andrew Phipps, PhD Candidate in Philosophy (AI Ethics), University of Sussex | Former Global Leader, Cushman &amp; Wakefield</p>
+</footer>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Chart: Amsterdam data centre capacity vs AI demand
+const ctxDC = document.getElementById('chartDC').getContext('2d');
+new Chart(ctxDC, {
+  type: 'bar',
+  data: {
+    labels: ['2019', '2020', '2021', '2022', '2023', '2024', '2025 (est)'],
+    datasets: [
+      {
+        label: 'Amsterdam DC Capacity (MW, approximate)',
+        data: [600, 650, 700, 780, 870, 970, 1050],
+        backgroundColor: '#81c78440',
+        borderColor: '#81c784',
+        borderWidth: 1.5
+      },
+      {
+        label: 'AI Compute Demand Index (relative)',
+        data: [22, 28, 38, 52, 70, 90, 100],
+        type: 'line',
+        borderColor: '#64b5f6',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: 4,
+        tension: 0.3,
+        yAxisID: 'y2'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#c0cfe0', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' }, title: { display: true, text: 'Capacity (MW)', color: '#8899bb' } },
+      y2: { position: 'right', ticks: { color: '#64b5f6' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Demand Index', color: '#64b5f6' } }
+    }
+  }
+});
+
+// Chart: AI adoption by firm size
+const ctxTech = document.getElementById('chartTech').getContext('2d');
+new Chart(ctxTech, {
+  type: 'bar',
+  data: {
+    labels: ['10–49 employees', '50–249 employees', '250+ employees'],
+    datasets: [
+      {
+        label: '2023',
+        data: [11, 17, 38],
+        backgroundColor: '#81c78440',
+        borderColor: '#81c784',
+        borderWidth: 1.5
+      },
+      {
+        label: '2024',
+        data: [18, 26, 51],
+        backgroundColor: '#64b5f650',
+        borderColor: '#64b5f6',
+        borderWidth: 1.5
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#c0cfe0', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb', callback: v => v + '%' }, grid: { color: '#1e2a4a' }, title: { display: true, text: '% using AI technologies', color: '#8899bb' }, max: 60 }
+    }
+  }
+});
+
+// Chart: Financial services AI adoption vs employment
+const ctxFS = document.getElementById('chartFS').getContext('2d');
+new Chart(ctxFS, {
+  type: 'line',
+  data: {
+    labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+    datasets: [
+      {
+        label: 'AI Adoption in Financial Services (index)',
+        data: [20, 24, 34, 48, 62, 80],
+        borderColor: '#64b5f6',
+        backgroundColor: '#64b5f610',
+        fill: true,
+        borderWidth: 2,
+        tension: 0.4,
+        pointRadius: 4
+      },
+      {
+        label: 'Sector Employment Index (relative, 2019=100)',
+        data: [100, 97, 99, 101, 102, 101],
+        borderColor: '#81c784',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        borderDash: [5, 4],
+        tension: 0.3,
+        pointRadius: 4,
+        yAxisID: 'y2'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#c0cfe0', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' } },
+      y: { ticks: { color: '#8899bb' }, grid: { color: '#1e2a4a' }, title: { display: true, text: 'Adoption Index', color: '#8899bb' } },
+      y2: { position: 'right', ticks: { color: '#81c784' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Employment Index', color: '#81c784' }, min: 90, max: 110 }
+    }
+  }
+});
+</script>
+</body>
+</html>

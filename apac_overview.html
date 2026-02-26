@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asia Pacific Overview | Human Impact Index</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0e1a;
+            color: #e0e6f0;
+            line-height: 1.7;
+        }
+
+        /* ── HEADER ── */
+        .page-header {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a2a4a 50%, #0d2035 100%);
+            border-bottom: 1px solid rgba(64, 180, 255, 0.2);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .back-nav {
+            color: #64b5f6;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .back-nav:hover { color: #90caf9; }
+
+        .region-badge {
+            background: linear-gradient(135deg, #2a1a3a, #3d0d4a);
+            border: 1px solid rgba(200,130,255,0.4);
+            color: #ce93d8;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .brand-mark {
+            font-size: 0.85rem;
+            color: #4a6fa5;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-content {
+            padding: 40px 40px 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 40px;
+        }
+
+        .header-text { flex: 1; }
+
+        .region-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #ce93d8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .region-label::before {
+            content: '';
+            display: inline-block;
+            width: 24px;
+            height: 2px;
+            background: #ce93d8;
+        }
+
+        .page-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.15;
+            margin-bottom: 14px;
+        }
+
+        .page-subtitle {
+            font-size: 1.05rem;
+            color: #9fb8d8;
+            max-width: 680px;
+            line-height: 1.7;
+        }
+
+        .header-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-width: 280px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(100,181,246,0.15);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #64b5f6;
+            line-height: 1;
+        }
+        .stat-value.warning  { color: #ff9800; }
+        .stat-value.danger   { color: #ef5350; }
+        .stat-value.positive { color: #66bb6a; }
+        .stat-label {
+            font-size: 0.78rem;
+            color: #7a9bbf;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── REGULATORY BANNER ── */
+        .regulatory-banner {
+            background: linear-gradient(135deg, rgba(42,26,58,0.8), rgba(61,13,74,0.5));
+            border: 1px solid rgba(206,147,216,0.3);
+            border-left: 4px solid #ce93d8;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .banner-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .banner-text {
+            font-size: 0.92rem;
+            color: #d8b8e0;
+            line-height: 1.6;
+        }
+
+        .banner-text strong {
+            color: #ce93d8;
+            font-weight: 700;
+        }
+
+        /* ── CONTENT ── */
+        .content-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(100,181,246,0.25);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 22px;
+            background: linear-gradient(180deg, #64b5f6, #ce93d8);
+            border-radius: 2px;
+        }
+
+        .prose {
+            color: #b8cfe8;
+            font-size: 0.97rem;
+            line-height: 1.85;
+            margin-bottom: 16px;
+        }
+
+        .prose strong {
+            color: #e0e6f0;
+            font-weight: 600;
+        }
+
+        /* ── REGULATORY LANDSCAPE CARDS ── */
+        .reg-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .reg-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 24px;
+            transition: border-color 0.2s;
+        }
+
+        .reg-card:hover {
+            border-color: rgba(206,147,216,0.3);
+        }
+
+        .reg-card-flag {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .reg-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .reg-card-body {
+            font-size: 0.86rem;
+            color: #8aabb8;
+            line-height: 1.7;
+        }
+
+        .reg-stance {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .stance-restrictive  { background: rgba(239,83,80,0.15); color: #ef5350; border: 1px solid rgba(239,83,80,0.25); }
+        .stance-strategic    { background: rgba(255,152,0,0.15); color: #ff9800; border: 1px solid rgba(255,152,0,0.25); }
+        .stance-permissive   { background: rgba(100,181,246,0.12); color: #64b5f6; border: 1px solid rgba(100,181,246,0.2); }
+        .stance-developing   { background: rgba(206,147,216,0.12); color: #ce93d8; border: 1px solid rgba(206,147,216,0.2); }
+
+        /* ── COUNTRY NAVIGATOR ── */
+        .country-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .country-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.25s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .country-card:hover {
+            border-color: rgba(206,147,216,0.4);
+            background: rgba(206,147,216,0.04);
+            transform: translateY(-2px);
+        }
+
+        .country-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .country-name-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .country-flag { font-size: 1.6rem; }
+
+        .country-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .country-status {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .status-live    { background: rgba(102,187,106,0.15); color: #66bb6a; border: 1px solid rgba(102,187,106,0.25); }
+        .status-soon    { background: rgba(255,152,0,0.15); color: #ff9800; border: 1px solid rgba(255,152,0,0.25); }
+        .status-planned { background: rgba(100,181,246,0.1); color: #64b5f6; border: 1px solid rgba(100,181,246,0.2); }
+
+        .country-desc {
+            font-size: 0.86rem;
+            color: #7a9bbf;
+            line-height: 1.65;
+            margin-bottom: 16px;
+        }
+
+        .country-sectors {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .sector-tag {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #8aabb8;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* ── CHINA CALLOUT ── */
+        .china-callout {
+            background: linear-gradient(135deg, rgba(239,83,80,0.08), rgba(13,32,53,0.8));
+            border: 1px solid rgba(239,83,80,0.2);
+            border-left: 4px solid #ef5350;
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin-top: 20px;
+        }
+
+        .callout-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ef9a9a;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .callout-body {
+            font-size: 0.9rem;
+            color: #9fb8d8;
+            line-height: 1.8;
+        }
+
+        /* ── COVERAGE TABLE ── */
+        .coverage-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.88rem;
+        }
+
+        .coverage-table th {
+            background: rgba(255,255,255,0.06);
+            color: #7a9bbf;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-size: 0.75rem;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .coverage-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #b8cfe8;
+            vertical-align: middle;
+        }
+
+        .coverage-table tr:hover td {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .coverage-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-full     { background: #66bb6a; }
+        .dot-snapshot { background: #ff9800; }
+        .dot-none     { background: rgba(255,255,255,0.15); }
+
+        .coverage-key {
+            display: flex;
+            gap: 24px;
+            margin-top: 14px;
+            font-size: 0.82rem;
+            color: #7a9bbf;
+        }
+
+        .coverage-key-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ── DIFFERENTIATION BOX ── */
+        .differentiation-box {
+            background: linear-gradient(135deg, rgba(21,101,192,0.15), rgba(13,32,53,0.8));
+            border: 1px solid rgba(100,181,246,0.25);
+            border-left: 4px solid #64b5f6;
+            border-radius: 12px;
+            padding: 28px 32px;
+            margin-top: 24px;
+        }
+
+        .diff-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #64b5f6;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .diff-body {
+            font-size: 0.92rem;
+            color: #9fb8d8;
+            line-height: 1.8;
+        }
+
+        /* ── METHODOLOGY GRID ── */
+        .methodology-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .methodology-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .methodology-card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #e0e6f0;
+            margin-bottom: 10px;
+        }
+
+        .methodology-card-body {
+            font-size: 0.84rem;
+            color: #7a9bbf;
+            line-height: 1.7;
+        }
+
+        /* ── CHART ── */
+        .chart-container {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 14px;
+            padding: 28px;
+            margin-top: 24px;
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #e0e6f0;
+            margin-bottom: 20px;
+        }
+
+        /* ── COMING SOON ── */
+        .coming-soon-notice {
+            background: rgba(255,152,0,0.08);
+            border: 1px solid rgba(255,152,0,0.2);
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-size: 0.88rem;
+            color: #ffb74d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* ── FOOTER ── */
+        .page-footer {
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: 0.82rem;
+            color: #4a6fa5;
+            line-height: 1.7;
+        }
+
+        .footer-text strong { color: #7a9bbf; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .header-top { padding: 12px 20px; }
+            .header-content { flex-direction: column; padding: 24px 20px; }
+            .header-stats { min-width: unset; flex-direction: row; flex-wrap: wrap; }
+            .stat-card { flex: 1; min-width: 120px; }
+            .page-title { font-size: 2rem; }
+            .content-wrapper { padding: 20px; }
+            .regulatory-banner { padding: 16px 20px; flex-direction: column; gap: 10px; }
+            .country-grid { grid-template-columns: 1fr; }
+            .coverage-table { font-size: 0.78rem; }
+            .coverage-table th, .coverage-table td { padding: 8px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     HEADER
+═══════════════════════════════════════ -->
+<header class="page-header">
+    <div class="header-top">
+        <a href="index.html" class="back-nav">← Back to Global Overview</a>
+        <span class="region-badge">🌏 Asia Pacific</span>
+        <span class="brand-mark">Human Impact Index</span>
+    </div>
+
+    <div class="header-content">
+        <div class="header-text">
+            <div class="region-label">Regional Analysis</div>
+            <h1 class="page-title">Asia Pacific: AI Workforce<br>Transformation</h1>
+            <p class="page-subtitle">
+                A human-centered analysis of how artificial intelligence is reshaping employment, skills, and livelihoods
+                across six major Asia Pacific economies. This region presents the world's most diverse AI transformation
+                story: from Japan's automation-driven response to acute demographic decline, to India's existential
+                challenge to its knowledge services growth model, to China's state-directed AI deployment at a scale
+                without parallel elsewhere. Analysis is grounded in the distinct regulatory, cultural, and labour market
+                context of each nation rather than treating the region as a homogeneous whole.
+            </p>
+        </div>
+        <div class="header-stats">
+            <div class="stat-card">
+                <div class="stat-value">6</div>
+                <div class="stat-label">Countries Covered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value warning">~780M</div>
+                <div class="stat-label">Workers in Scope</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value danger">7</div>
+                <div class="stat-label">Core Sectors Analysed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value positive">Q2 2025</div>
+                <div class="stat-label">Data Reference Period</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="regulatory-banner">
+        <div class="banner-icon">🗺️</div>
+        <div class="banner-text">
+            <strong>No Unified Regulatory Framework:</strong> Unlike Europe's EU AI Act, Asia Pacific has no regional
+            AI governance architecture. Each country operates under its own regulatory philosophy, ranging from China's
+            prescriptive state-directed model to Singapore's principles-based voluntary framework and Australia's
+            nascent legislative approach. This regulatory fragmentation is itself a significant factor shaping how,
+            where, and how quickly AI workforce transformation unfolds across the region.
+        </div>
+    </div>
+</header>
+
+
+<!-- ═══════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════ -->
+<main class="content-wrapper">
+
+    <!-- ── THE APAC CONTEXT ── -->
+    <section class="section">
+        <h2 class="section-title">The Asia Pacific Context</h2>
+
+        <p class="prose">
+            Asia Pacific is not a region in any analytically meaningful sense when it comes to AI workforce
+            transformation. The six economies covered here, <strong>Australia, Japan, Singapore, India, South Korea
+            and China (Tier 1 Cities)</strong>, share a geographic designation but almost nothing else in terms of
+            labour market structure, regulatory approach, cultural attitudes to automation, or the human welfare
+            implications of AI deployment. Any analysis that treats APAC as a single story misrepresents what is
+            actually happening to working people across the region.
+        </p>
+
+        <p class="prose">
+            Three dynamics distinguish the APAC AI story from both Europe and North America in ways that matter
+            for human impact analysis. First, <strong>demographic asymmetry</strong>: Japan and South Korea face
+            among the world's most acute ageing-driven labour shortages, making AI adoption in many sectors
+            economically necessary rather than merely efficiency-driven. Australia faces a different but related
+            challenge of skill scarcity in key sectors. India, by contrast, has one of the world's youngest and
+            fastest-growing workforces, meaning that AI automation of knowledge work threatens to close the very
+            economic pathway that the country's development model depends upon. These are not variations on a
+            theme; they are fundamentally different human situations.
+        </p>
+
+        <p class="prose">
+            Second, <strong>state involvement in AI deployment</strong> varies more dramatically across APAC than
+            anywhere else. China's AI development is a national strategic priority prosecuted at scale by the state
+            and major technology companies operating within a state-aligned framework. Singapore's government actively
+            funds and accelerates AI adoption as part of its economic competitiveness strategy. Japan's government
+            is working to overcome deep cultural and organisational resistance to automation in traditional industries.
+            Australia and South Korea sit between these poles, with active policy frameworks but market-driven
+            deployment dynamics.
+        </p>
+
+        <p class="prose">
+            Third, <strong>data availability and quality</strong> varies significantly across the region and this
+            analysis is transparent about where that constraint shapes what can responsibly be said. Australia and
+            Singapore have strong, accessible labour market statistics. Japan's data is detailed but requires
+            careful interpretation given its specific employment structure. South Korea has good aggregate data.
+            India's formal sector data is robust but the informal economy, which employs the majority of India's
+            workforce and is profoundly affected by AI-driven disruption to adjacent formal sector employment,
+            is much harder to track with precision. China's official data is comprehensive in coverage but
+            requires contextual interpretation.
+        </p>
+    </section>
+
+    <!-- ── REGULATORY LANDSCAPE ── -->
+    <section class="section">
+        <h2 class="section-title">Regulatory Landscape: Six Distinct Approaches</h2>
+
+        <p class="prose">
+            The absence of a regional framework like the EU AI Act means that workers in APAC face very different
+            levels of protection depending on which country they work in. This regulatory fragmentation is itself
+            a human impact issue, creating the conditions for regulatory arbitrage where AI-intensive operations
+            can be located in lower-protection jurisdictions within the region.
+        </p>
+
+        <div class="reg-grid">
+            <div class="reg-card">
+                <div class="reg-card-flag">🇦🇺</div>
+                <div class="reg-stance stance-developing">Developing Framework</div>
+                <div class="reg-card-title">Australia</div>
+                <div class="reg-card-body">
+                    Australia's voluntary AI Ethics Framework (2019) has been under review, with the government
+                    consulting on mandatory guardrails for high-risk AI from 2023 onwards. The Safe and Responsible
+                    AI consultation signals movement toward binding obligations, but legislative timelines remain
+                    uncertain. Workers in high-risk AI deployment contexts currently lack statutory protections
+                    comparable to those in the EU.
+                </div>
+            </div>
+            <div class="reg-card">
+                <div class="reg-card-flag">🇯🇵</div>
+                <div class="reg-stance stance-permissive">Principles-Based</div>
+                <div class="reg-card-title">Japan</div>
+                <div class="reg-card-body">
+                    Japan has adopted a light-touch, principles-based approach to AI governance through its
+                    Social Principles of Human-Centric AI (2019) and subsequent guidelines. The government
+                    actively promotes AI adoption as a response to demographic decline and has resisted binding
+                    regulation that might slow deployment. Worker protection relies primarily on existing labour
+                    law rather than AI-specific provisions.
+                </div>
+            </div>
+            <div class="reg-card">
+                <div class="reg-card-flag">🇸🇬</div>
+                <div class="reg-stance stance-permissive">Pro-Innovation</div>
+                <div class="reg-card-title">Singapore</div>
+                <div class="reg-card-body">
+                    Singapore's Model AI Governance Framework is voluntary and sector-specific, reflecting the
+                    city-state's deliberate positioning as an AI hub. The government's AI strategy prioritises
+                    deployment and skills development over precautionary regulation. Singapore's PDPA provides
+                    some data protection context but there is no AI-specific worker protection framework.
+                    The human impact implications for Singapore's workforce are shaped more by upskilling
+                    investment than regulatory protection.
+                </div>
+            </div>
+            <div class="reg-card">
+                <div class="reg-card-flag">🇮🇳</div>
+                <div class="reg-stance stance-developing">Emerging Policy</div>
+                <div class="reg-card-title">India</div>
+                <div class="reg-card-body">
+                    India's approach to AI regulation has evolved rapidly. The Digital Personal Data Protection
+                    Act (2023) provides a data governance foundation, but AI-specific regulation remains nascent.
+                    The government's IndiaAI mission prioritises capability building and domestic AI development.
+                    Given the scale of India's workforce exposure to AI disruption in knowledge services, the
+                    absence of worker-focused AI regulation represents a significant policy gap.
+                </div>
+            </div>
+            <div class="reg-card">
+                <div class="reg-card-flag">🇰🇷</div>
+                <div class="reg-stance stance-strategic">Strategic Framework</div>
+                <div class="reg-card-title">South Korea</div>
+                <div class="reg-card-body">
+                    South Korea passed the Framework Act on Artificial Intelligence in 2024, making it one of
+                    the first APAC countries to enact AI-specific legislation. The Act establishes risk-based
+                    categories and obligations broadly influenced by the EU AI Act model, though with a stronger
+                    emphasis on AI promotion alongside governance. South Korea's chaebols are among the most
+                    aggressive AI deployers in the region, creating significant workforce transformation pressures.
+                </div>
+            </div>
+            <div class="reg-card">
+                <div class="reg-card-flag">🇨🇳</div>
+                <div class="reg-stance stance-restrictive">State-Directed</div>
+                <div class="reg-card-title">China (Tier 1 Cities)</div>
+                <div class="reg-card-body">
+                    China's AI governance model is distinct globally: prescriptive regulation of specific
+                    AI applications (generative AI, recommendation algorithms, deepfakes) coexists with
+                    aggressive state-backed deployment. The Interim Measures for Generative AI Services (2023)
+                    impose content obligations but not workforce protection requirements. State direction of
+                    AI strategy means that human impact analysis must engage with policy intent as well as
+                    market dynamics.
+                </div>
+            </div>
+        </div>
+
+        <div class="differentiation-box">
+            <div class="diff-title">Human Impact Lens: Why Regulatory Fragmentation Matters</div>
+            <div class="diff-body">
+                Commercial AI barometers treat APAC's regulatory diversity as a market opportunity variable.
+                The Human Impact Index treats it as a worker welfare variable. The difference matters: a worker
+                in Manila whose role is automated by AI deployed from a Singapore hub has none of the procedural
+                protections that the same worker would have in Germany. The question of who bears the cost of
+                AI-driven productivity gains, and who decides, is answered very differently depending on where
+                in the Asia Pacific region that worker sits. This index names that inequity rather than
+                abstracting it away into regional averages.
+            </div>
+        </div>
+    </section>
+
+    <!-- ── COUNTRY NAVIGATOR ── -->
+    <section class="section">
+        <h2 class="section-title">Country Navigator</h2>
+
+        <p class="prose">
+            Select a country to access full sector-by-sector analysis. Each country page covers all seven core
+            sectors with complete momentum scores, employment data, and human impact assessments. Snapshot coverage
+            for additional sectors is available where data quality permits. China is analysed at the Tier 1 City
+            level (Beijing, Shanghai, Shenzhen, Guangzhou) to reflect where commercial real estate and knowledge
+            sector AI deployment is concentrated; rural and lower-tier city dynamics are noted but are beyond
+            the scope of this edition.
+        </p>
+
+        <div class="country-grid">
+
+            <a class="country-card" href="australia_apac.html">
+                <div class="country-header">
+                    <div class="country-name-group">
+                        <span class="country-flag">🇦🇺</span>
+                        <span class="country-name">Australia</span>
+                    </div>
+                    <span class="country-status status-soon">Coming Q2 2025</span>
+                </div>
+                <p class="country-desc">
+                    Australia's knowledge-intensive economy, concentrated in Sydney, Melbourne and Brisbane,
+                    faces significant AI disruption in professional services, financial services and commercial
+                    real estate. Strong labour market institutions and relatively high digital literacy provide
+                    some buffer, but the country's distance from major AI development hubs creates adoption
+                    dynamics that differ from comparable advanced economies. Australia is also the most
+                    comparable market to the UK in terms of labour market structure, making it the natural
+                    APAC anchor for this analysis.
+                </p>
+                <div class="country-sectors">
+                    <span class="sector-tag">Professional Services</span>
+                    <span class="sector-tag">Financial Services</span>
+                    <span class="sector-tag">CRE Services</span>
+                    <span class="sector-tag">Logistics</span>
+                    <span class="sector-tag">+3 more</span>
+                </div>
+            </a>
+
+            <a class="country-card" href="japan_apac.html">
+                <div class="country-header">
+                    <div class="country-name-group">
+                        <span class="country-flag">🇯🇵</span>
+                        <span class="country-name">Japan</span>
+                    </div>
+                    <span class="country-status status-soon">Coming Q2 2025</span>
+                </div>
+                <p class="country-desc">
+                    Japan presents the world's most advanced case study in demographically driven AI adoption.
+                    With a shrinking workforce and deep cultural resistance to immigration as a solution, Japan
+                    is automating out of necessity in sectors from logistics to elder care services. The human
+                    impact story here is more nuanced than displacement: in many sectors AI is filling roles
+                    that would otherwise go unfilled. Tokyo, Osaka and Nagoya are the primary commercial
+                    real estate markets under analysis.
+                </p>
+                <div class="country-sectors">
+                    <span class="sector-tag">Logistics</span>
+                    <span class="sector-tag">Manufacturing</span>
+                    <span class="sector-tag">Office Traditional</span>
+                    <span class="sector-tag">Retail</span>
+                    <span class="sector-tag">+3 more</span>
+                </div>
+            </a>
+
+            <a class="country-card" href="singapore_apac.html">
+                <div class="country-header">
+                    <div class="country-name-group">
+                        <span class="country-flag">🇸🇬</span>
+                        <span class="country-name">Singapore</span>
+                    </div>
+                    <span class="country-status status-soon">Coming Q2 2025</span>
+                </div>
+                <p class="country-desc">
+                    Singapore functions as the AI hub of Southeast Asia, with disproportionate data centre
+                    density, a high concentration of regional professional and financial services operations,
+                    and active government investment in AI capability. The city-state's small size means that
+                    workforce transitions play out quickly and visibly. Singapore is simultaneously a model
+                    for managed AI adoption and a cautionary case for small, trade-dependent economies
+                    where AI disruption to key service sectors carries outsized macro risk.
+                </p>
+                <div class="country-sectors">
+                    <span class="sector-tag">Data Centres</span>
+                    <span class="sector-tag">Financial Services</span>
+                    <span class="sector-tag">Professional Services</span>
+                    <span class="sector-tag">Office Tech</span>
+                    <span class="sector-tag">+3 more</span>
+                </div>
+            </a>
+
+            <a class="country-card" href="india_apac.html">
+                <div class="country-header">
+                    <div class="country-name-group">
+                        <span class="country-flag">🇮🇳</span>
+                        <span class="country-name">India</span>
+                    </div>
+                    <span class="country-status status-soon">Coming Q2 2025</span>
+                </div>
+                <p class="country-desc">
+                    India's AI workforce story is perhaps the most consequential in the world and the most
+                    underreported in Western-centric analysis. The country's knowledge services sector,
+                    built over three decades into a globally significant industry employing millions in
+                    Bengaluru, Hyderabad, Pune and Chennai, is directly in the path of the AI automation
+                    wave. The stakes extend far beyond those directly employed: the sector anchors a broader
+                    economic ecosystem and represents the primary pathway for middle-class formation at scale.
+                    Analysis covers Tier 1 cities; data limitations for smaller cities and the informal
+                    economy are acknowledged throughout.
+                </p>
+                <div class="country-sectors">
+                    <span class="sector-tag">Professional Services</span>
+                    <span class="sector-tag">Office Tech</span>
+                    <span class="sector-tag">Financial Services</span>
+                    <span class="sector-tag">Data Centres</span>
+                    <span class="sector-tag">+3 more</span>
+                </div>
+            </a>
+
+            <a class="country-card" href="southkorea_apac.html">
+                <div class="country-header">
+                    <div class="country-name-group">
+                        <span class="country-flag">🇰🇷</span>
+                        <span class="country-name">South Korea</span>
+                    </div>
+                    <span class="country-status status-soon">Coming Q2 2025</span>
+                </div>
+                <p class="country-desc">
+                    South Korea's chaebol-dominated economy is deploying AI at pace across manufacturing,
+                    logistics, financial services and retail. The country combines high digital infrastructure
+                    density with significant labour market rigidity in large enterprises, creating a pattern
+                    where AI adoption is faster in new and smaller businesses than in established corporations.
+                    South Korea's Framework Act on AI makes it the APAC market most comparable to the EU
+                    regulatory environment, giving this country analysis a distinct policy dimension.
+                    Seoul and Busan are the primary commercial markets under analysis.
+                </p>
+                <div class="country-sectors">
+                    <span class="sector-tag">Manufacturing</span>
+                    <span class="sector-tag">Logistics</span>
+                    <span class="sector-tag">Financial Services</span>
+                    <span class="sector-tag">Retail</span>
+                    <span class="sector-tag">+3 more</span>
+                </div>
+            </a>
+
+            <a class="country-card" href="china_apac.html">
+                <div class="country-header">
+                    <div class="country-name-group">
+                        <span class="country-flag">🇨🇳</span>
+                        <span class="country-name">China (Tier 1 Cities)</span>
+                    </div>
+                    <span class="country-status status-soon">Coming Q2 2025</span>
+                </div>
+                <p class="country-desc">
+                    China's AI deployment is the largest in absolute scale anywhere in the world, driven by
+                    state strategy, abundant capital and massive talent pipelines. Analysis is scoped to
+                    Beijing, Shanghai, Shenzhen and Guangzhou, where commercial real estate, financial
+                    services, technology and logistics are concentrated at density comparable to global
+                    gateway cities. Data is drawn from official sources and international research; methodology
+                    notes throughout acknowledge the specific interpretive context required for Chinese
+                    labour market statistics.
+                </p>
+                <div class="country-sectors">
+                    <span class="sector-tag">Data Centres</span>
+                    <span class="sector-tag">Logistics</span>
+                    <span class="sector-tag">Office Tech</span>
+                    <span class="sector-tag">Financial Services</span>
+                    <span class="sector-tag">+3 more</span>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="china-callout">
+            <div class="callout-title">Note on China Data</div>
+            <div class="callout-body">
+                China analysis in this index uses official National Bureau of Statistics data, supplemented by
+                research from international institutions including the OECD, McKinsey Global Institute, and
+                major CRE firms operating in Chinese markets. Where official data and independent research
+                diverge, both are noted and the basis for the figures used in momentum score calculations is
+                explained in-page. Readers should treat China figures as indicative rather than precise in
+                the same way as other markets; the analytical value lies in directional assessment and
+                comparative framing rather than absolute precision.
+            </div>
+        </div>
+    </section>
+
+    <!-- ── SECTOR COVERAGE ── -->
+    <section class="section">
+        <h2 class="section-title">Sector Coverage by Country</h2>
+
+        <p class="prose">
+            The table below shows the coverage tier for each sector across all six countries. Full analysis
+            includes complete momentum scores, employment data, automation exposure assessments, human impact
+            narratives, and policy recommendations. Snapshot coverage provides indicative assessment where
+            data quality is more limited.
+        </p>
+
+        <div style="overflow-x: auto;">
+            <table class="coverage-table">
+                <thead>
+                    <tr>
+                        <th>Sector</th>
+                        <th style="text-align:center;">🇦🇺 AU</th>
+                        <th style="text-align:center;">🇯🇵 JP</th>
+                        <th style="text-align:center;">🇸🇬 SG</th>
+                        <th style="text-align:center;">🇮🇳 IN</th>
+                        <th style="text-align:center;">🇰🇷 KR</th>
+                        <th style="text-align:center;">🇨🇳 CN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Data Centres</strong></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-snapshot"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-snapshot"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Logistics &amp; Warehousing</strong></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Office (Traditional)</strong></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Office (Tech &amp; Creative)</strong></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-snapshot"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Retail</strong></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-snapshot"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>CRE Services</strong></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-snapshot"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-snapshot"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Professional Services</strong></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Manufacturing</strong></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-snapshot"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-none"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-snapshot"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Financial Services</strong></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                        <td style="text-align:center;"><span class="coverage-dot dot-full"></span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="coverage-key">
+            <div class="coverage-key-item">
+                <span class="coverage-dot dot-full" style="width:12px;height:12px;"></span>
+                Full Analysis
+            </div>
+            <div class="coverage-key-item">
+                <span class="coverage-dot dot-snapshot" style="width:12px;height:12px;"></span>
+                Snapshot Coverage
+            </div>
+            <div class="coverage-key-item">
+                <span class="coverage-dot dot-none" style="width:12px;height:12px;"></span>
+                Not Covered
+            </div>
+        </div>
+    </section>
+
+    <!-- ── APAC LABOUR MARKET DYNAMICS ── -->
+    <section class="section">
+        <h2 class="section-title">Asia Pacific Labour Market Dynamics</h2>
+
+        <p class="prose">
+            The structural characteristics that most distinguish APAC labour markets from Europe and North America
+            are worth naming explicitly, because they shape what AI workforce transformation actually means for
+            the people experiencing it.
+        </p>
+
+        <p class="prose">
+            <strong>Informality and the missing data problem.</strong> India's informal economy employs approximately
+            90% of its workforce. In China, internal migration workers in manufacturing and logistics are technically
+            formal sector employees but operate with limited labour protections in practice. Mainstream AI impact
+            analysis, which draws primarily on formal sector data, systematically underestimates the human impact
+            in these contexts because it cannot see the people most affected. This index acknowledges that limitation
+            directly rather than presenting false precision.
+        </p>
+
+        <p class="prose">
+            <strong>The demographic divergence dynamic.</strong> Japan (median age 49) and South Korea (median age 44)
+            are automating in conditions of labour scarcity. India (median age 28) and Australia (median age 38)
+            are automating in conditions of labour abundance or growth. This distinction is fundamental: in ageing
+            economies, AI adoption can in principle improve welfare by maintaining economic output for a shrinking
+            workforce; in young, growing economies, the same technology can close off employment pathways for
+            workers who have no alternative. The human impact of the same technology differs profoundly
+            depending on this demographic context.
+        </p>
+
+        <p class="prose">
+            <strong>The knowledge services threat in India and the Philippines.</strong> The outsourcing and
+            knowledge services industries that transformed economic prospects for tens of millions of workers
+            in South and Southeast Asia were built on labour cost arbitrage for tasks that AI can now
+            perform at marginal cost. This is not primarily a story about distant future risk; it is already
+            affecting hiring, role composition, and career trajectories in Bengaluru, Hyderabad, Manila and
+            Cebu. The Human Impact Index treats this as one of the most urgent human welfare questions in
+            the current AI transition.
+        </p>
+
+        <div class="chart-container">
+            <div class="chart-title">Estimated AI Automation Exposure by Country: Share of Workforce in High-Exposure Roles</div>
+            <canvas id="automationChart" style="max-height: 320px;"></canvas>
+        </div>
+
+        <div style="margin-top: 14px; padding: 14px 18px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; font-size: 0.8rem; color: #5a7a9a; line-height: 1.7;">
+            <strong style="color: #7a9bbf;">Source note and important methodological caveat:</strong> Figures represent the share of the workforce with medium-to-high AI automation exposure, where available drawing on national government research. Definitions of "exposure" vary significantly across studies and this variation is analytically important, not a minor footnote. <strong style="color: #7a9bbf;">Australia (21%):</strong> Sourced from Jobs and Skills Australia (JSA 2025), cited in the Reserve Bank of Australia's November 2025 Bulletin. This is the authoritative Australian government estimate and uses a strict definition: roles where AI can currently automate a material share of constituent tasks independently. The IMF estimates up to 60% of advanced economy employment is exposed when a broader augmentation definition is applied; McKinsey's 2023 generative AI research suggests up to 62% of current work hours in Australia could theoretically be automated with today's technology. These figures are not contradictory: they measure different things. The JSA/RBA figure measures current high-exposure roles under conservative assumptions; the IMF and McKinsey figures measure theoretical task-level automation potential. The Human Impact Index uses the JSA/RBA figure for Australia as it is government-sourced, country-specific, and methodologically transparent. For all other APAC countries where equivalent national government research is not available, figures are cross-referenced estimates from OECD, ILO, and McKinsey Global Institute research and should be treated as indicative. All figures will be reviewed and updated as more robust country-level data becomes available.
+        </div>
+    </section>
+
+    <!-- ── DATA METHODOLOGY ── -->
+    <section class="section">
+        <h2 class="section-title">Data Sources and Methodology</h2>
+
+        <p class="prose">
+            APAC analysis presents greater data challenges than Europe or North America. The sources and
+            limitations below apply across all APAC country pages and should be read before drawing
+            comparative conclusions.
+        </p>
+
+        <div class="methodology-grid">
+            <div class="methodology-card">
+                <div class="methodology-card-title">📊 Primary Statistical Sources</div>
+                <div class="methodology-card-body">
+                    Australian Bureau of Statistics (ABS), Japan Statistics Bureau, Singapore Ministry of
+                    Manpower (MOM), India Ministry of Statistics and Programme Implementation (MoSPI),
+                    South Korea Statistics Korea (KOSTAT), and China National Bureau of Statistics (NBS)
+                    provide national labour market baselines. OECD data is used for cross-country
+                    comparability checks where available.
+                </div>
+            </div>
+            <div class="methodology-card">
+                <div class="methodology-card-title">🏢 Industry Sources</div>
+                <div class="methodology-card-body">
+                    Cushman &amp; Wakefield, CBRE and JLL APAC market reports provide the primary commercial
+                    real estate employment and market data. NASSCOM provides India technology sector data.
+                    Japan Real Estate Institute and RICS Asia Pacific provide supplementary property
+                    market context. Regional logistics associations are used for sector-specific data
+                    in logistics and warehousing.
+                </div>
+            </div>
+            <div class="methodology-card">
+                <div class="methodology-card-title">🤖 AI Impact Research</div>
+                <div class="methodology-card-body">
+                    McKinsey Global Institute APAC research, OECD AI Policy Observatory country profiles,
+                    Bain &amp; Company Asia Pacific AI reports, and Oxford Internet Institute automation
+                    exposure research form the analytical foundation. Country-specific academic research
+                    is incorporated where available, particularly for Japan (Nomura Research Institute)
+                    and India (ICRIER, NCAER).
+                </div>
+            </div>
+            <div class="methodology-card">
+                <div class="methodology-card-title">⚠️ Data Limitations</div>
+                <div class="methodology-card-body">
+                    Data quality varies substantially across the six countries. Australia and Singapore
+                    are strong. Japan and South Korea are reliable but require contextual interpretation.
+                    India's formal sector data is good; informal economy coverage is limited. China data
+                    is comprehensive in coverage but requires interpretive care. Coverage tier decisions
+                    in the sector matrix reflect these quality differences directly.
+                </div>
+            </div>
+            <div class="methodology-card">
+                <div class="methodology-card-title">📅 Reference Period</div>
+                <div class="methodology-card-body">
+                    Employment baseline data references Q2 2025 where available, with some national
+                    sources reflecting 2024 annual figures. Given the pace of AI adoption in certain
+                    APAC markets, particularly China and South Korea, this analysis may lag actual
+                    deployment conditions in fast-moving sectors. The data reference period is noted
+                    on each country page.
+                </div>
+            </div>
+            <div class="methodology-card">
+                <div class="methodology-card-title">🌏 Human Impact Framework</div>
+                <div class="methodology-card-body">
+                    Momentum scores reflect the pace and scale of AI-driven workforce change, not
+                    economic value creation or national AI competitiveness. A high momentum score
+                    indicates significant human disruption. In APAC specifically, where some
+                    governments frame high AI adoption as a policy success, this framing provides
+                    a deliberately different perspective: one centred on worker welfare rather than
+                    national economic strategy.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── COMING SOON ── -->
+    <section class="section">
+        <h2 class="section-title">Publication Timeline</h2>
+        <p class="prose">
+            Asia Pacific country pages are being developed for publication in Q2 2025. Pages will be released
+            on a rolling basis, beginning with Australia and Singapore, which have the strongest data availability
+            and the most comparable market structures to existing UK and North America analysis. All six
+            countries will be complete before the end of Q2 2025.
+        </p>
+        <div class="coming-soon-notice">
+            ⏳ Country pages are under active development. Senior leaders with specific country or sector
+            priorities are welcome to contact us to discuss early access or to contribute market expertise
+            that strengthens the analysis.
+        </div>
+    </section>
+
+</main>
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════ -->
+<footer class="page-footer">
+    <div class="footer-text">
+        <strong>Human Impact Index</strong> &nbsp;|&nbsp; Andrew Phipps &nbsp;|&nbsp;
+        PhD Candidate, Philosophy (AI Ethics), University of Sussex &nbsp;|&nbsp;
+        Former Global Leader, Cushman &amp; Wakefield<br>
+        <span style="color:#364f6b;">
+            This analysis is provided for research and professional education purposes. Employment projections
+            are indicative and should not be relied upon for investment or workforce planning decisions without
+            independent verification. Data sources are cited throughout; readers are encouraged to consult
+            primary sources for decision-critical applications.
+        </span>
+    </div>
+</footer>
+
+<!-- ═══════════════════════════════════════
+     CHART SCRIPT
+═══════════════════════════════════════ -->
+<script>
+    const ctx = document.getElementById('automationChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Australia', 'Japan', 'Singapore', 'India', 'South Korea', 'China (T1)'],
+            datasets: [{
+                label: 'High Automation Exposure (% of workforce)',
+                data: [21, 55, 48, 52, 58, 62],
+                backgroundColor: [
+                    'rgba(100,181,246,0.65)',
+                    'rgba(255,152,0,0.65)',
+                    'rgba(100,181,246,0.65)',
+                    'rgba(239,83,80,0.65)',
+                    'rgba(239,83,80,0.7)',
+                    'rgba(239,83,80,0.75)',
+                ],
+                borderColor: [
+                    '#64b5f6',
+                    '#ff9800',
+                    '#64b5f6',
+                    '#ef5350',
+                    '#ef5350',
+                    '#ef5350',
+                ],
+                borderWidth: 1,
+                borderRadius: 6,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: '#9fb8d8', font: { size: 12 } }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return ` ${context.parsed.y}% of workforce in high-exposure roles`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#7a9bbf' },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                },
+                y: {
+                    beginAtZero: true,
+                    max: 80,
+                    ticks: {
+                        color: '#7a9bbf',
+                        callback: function(value) { return value + '%'; }
+                    },
+                    grid: { color: 'rgba(255,255,255,0.07)' }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
