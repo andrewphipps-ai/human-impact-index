@@ -1,569 +1,802 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Methodology & Research | Human Impact Index</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Methodology &amp; Research | Human Impact Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
 
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f3a 100%);
-            color: #e0e6f0;
-            line-height: 1.7;
-            min-height: 100vh;
-        }
+<style>
+  /* ── Design tokens ─────────────────────────────────────────────── */
+  :root {
+    --bg-deep:      #0A1018;
+    --bg-panel:     #111827;
+    --bg-card:      #1A2332;
+    --bg-card-alt:  #162030;
+    --border:       #1E3048;
+    --border-light: #2A4060;
+    --accent:       #2DD4BF;
+    --accent-dim:   #1A7A6E;
+    --accent-glow:  rgba(45,212,191,0.12);
+    --text-primary: #F0F6FF;
+    --text-secondary:#94A3B8;
+    --text-muted:   #4A6080;
+    --urgent-red:   #EF4444;
+    --radius:       8px;
+    --radius-lg:    14px;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body:    'DM Sans', system-ui, sans-serif;
+  }
 
-        .page-header {
-            background: linear-gradient(135deg, #0d1b2a 0%, #1a2a4a 50%, #0d2035 100%);
-            border-bottom: 2px solid rgba(64, 180, 255, 0.3);
-            padding: 40px 20px 36px;
-        }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
 
-        .header-top {
-            max-width: 1100px;
-            margin: 0 auto 24px;
-        }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
 
-        .back-nav {
-            color: #64b5f6;
-            text-decoration: none;
-            font-size: 0.9em;
-            transition: color 0.2s;
-        }
-        .back-nav:hover { color: #90caf9; }
+  body::before {
+    content: '';
+    position: fixed;
+    top: -40%;
+    left: -20%;
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(ellipse, rgba(45,212,191,0.04) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
 
-        .header-main {
-            max-width: 1100px;
-            margin: 0 auto;
-            text-align: center;
-        }
+  .site-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
 
-        .page-label {
-            font-size: 0.8em;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: #64b5f6;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
+  /* ── Top navigation bar ─────────────────────────────────────────── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+  }
 
-        .page-header h1 {
-            font-size: 2.8em;
-            font-weight: 700;
-            background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 16px;
-        }
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
 
-        .page-header .subtitle {
-            font-size: 1.1em;
-            color: #90caf9;
-            max-width: 700px;
-            margin: 0 auto;
-        }
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--accent);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    background: var(--accent-glow);
+    flex-shrink: 0;
+  }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 50px 20px 80px;
-        }
+  .brand-text { display: flex; flex-direction: column; }
 
-        /* Section styling */
-        .content-section {
-            background: rgba(30, 40, 60, 0.5);
-            border: 1px solid rgba(64, 180, 255, 0.15);
-            border-radius: 14px;
-            padding: 40px;
-            margin-bottom: 32px;
-        }
+  .brand-name {
+    font-family: var(--font-display);
+    font-size: 15px;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+  }
 
-        .content-section h2 {
-            font-size: 1.7em;
-            color: #64b5f6;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(64, 180, 255, 0.2);
-        }
+  .brand-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
 
-        .content-section h3 {
-            font-size: 1.15em;
-            color: #90caf9;
-            margin: 24px 0 10px;
-        }
+  .topbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
 
-        .content-section p {
-            color: #c8d8ea;
-            margin-bottom: 16px;
-            font-size: 1.0em;
-        }
+  .nav-link {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    transition: all 0.2s;
+    font-weight: 400;
+  }
 
-        .content-section p:last-child { margin-bottom: 0; }
+  .nav-link:hover { color: var(--text-primary); background: var(--bg-card); }
+  .nav-link.active { color: var(--accent); background: var(--accent-glow); font-weight: 500; }
 
-        .content-section ul, .content-section ol {
-            color: #c8d8ea;
-            padding-left: 22px;
-            margin-bottom: 16px;
-        }
+  /* ── Page hero ──────────────────────────────────────────────────── */
+  .page-hero {
+    padding: 52px 0 36px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
 
-        .content-section li {
-            margin-bottom: 8px;
-            font-size: 1.0em;
-        }
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-        .content-section strong {
-            color: #90caf9;
-        }
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 2px;
+    background: var(--accent);
+  }
 
-        /* Score bands table */
-        .score-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 0.95em;
-        }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(26px, 3.5vw, 40px);
+    line-height: 1.15;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+    max-width: 640px;
+  }
 
-        .score-table thead th {
-            background: rgba(21, 101, 192, 0.3);
-            color: #90caf9;
-            padding: 12px 16px;
-            text-align: left;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.82em;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid rgba(64, 180, 255, 0.3);
-        }
+  .hero-title em { color: var(--accent); font-style: italic; }
 
-        .score-table tbody tr {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-        }
+  .hero-description {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 600px;
+    line-height: 1.75;
+    font-weight: 300;
+  }
 
-        .score-table tbody tr:hover {
-            background: rgba(64, 180, 255, 0.05);
-        }
+  /* ── Content sections ───────────────────────────────────────────── */
+  .content-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 36px 40px;
+    margin-bottom: 24px;
+  }
 
-        .score-table tbody td {
-            padding: 13px 16px;
-            color: #c8d8ea;
-        }
+  .section-heading {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--text-primary);
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-        .score-extreme  { color: #ef5350; font-weight: 700; }
-        .score-very-high { color: #ff9800; font-weight: 700; }
-        .score-high     { color: #ffeb3b; font-weight: 700; }
-        .score-moderate { color: #64b5f6; font-weight: 700; }
-        .score-low      { color: #81c784; font-weight: 700; }
+  .section-heading::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 22px;
+    background: var(--accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
 
-        /* Dimensions grid */
-        .dimensions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
+  .sub-heading {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 22px 0 8px;
+  }
 
-        .dimension-card {
-            background: rgba(21, 101, 192, 0.1);
-            border: 1px solid rgba(64, 180, 255, 0.2);
-            border-radius: 10px;
-            padding: 22px;
-        }
+  .body-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 14px;
+    font-weight: 300;
+  }
 
-        .dimension-card .dim-weight {
-            font-size: 1.8em;
-            font-weight: 700;
-            color: #64b5f6;
-            margin-bottom: 6px;
-        }
+  .body-text:last-child { margin-bottom: 0; }
 
-        .dimension-card .dim-name {
-            font-size: 1.0em;
-            font-weight: 700;
-            color: #90caf9;
-            margin-bottom: 10px;
-        }
+  .body-text strong { color: var(--text-primary); font-weight: 500; }
 
-        .dimension-card p {
-            font-size: 0.9em;
-            color: #b0bec5;
-            margin-bottom: 0;
-        }
+  .body-text a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-dim);
+    transition: border-color 0.2s;
+  }
 
-        /* Update timeline */
-        .timeline {
-            position: relative;
-            padding-left: 28px;
-        }
+  .body-text a:hover { border-color: var(--accent); }
 
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 8px;
-            top: 6px;
-            bottom: 6px;
-            width: 2px;
-            background: rgba(64, 180, 255, 0.3);
-        }
+  .body-list {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    font-weight: 300;
+    padding-left: 20px;
+    margin-bottom: 14px;
+  }
 
-        .timeline-item {
-            position: relative;
-            margin-bottom: 28px;
-        }
+  .body-list li { margin-bottom: 8px; }
+  .body-list strong { color: var(--text-primary); font-weight: 500; }
 
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -24px;
-            top: 6px;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #64b5f6;
-            border: 2px solid #0a0e1a;
-        }
+  /* ── Dimension cards grid ───────────────────────────────────────── */
+  .dimensions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
 
-        .timeline-item.current::before { background: #81c784; }
-        .timeline-item.future::before  { background: #7a9bbf; }
+  .dimension-card {
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
 
-        .timeline-item .phase-label {
-            font-size: 0.78em;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #64b5f6;
-            margin-bottom: 4px;
-        }
+  .dimension-card:hover { border-color: var(--border-light); }
 
-        .timeline-item.current .phase-label { color: #81c784; }
-        .timeline-item.future .phase-label  { color: #7a9bbf; }
+  .dim-weight {
+    font-family: var(--font-display);
+    font-size: 28px;
+    color: var(--accent);
+    margin-bottom: 4px;
+    line-height: 1;
+  }
 
-        .timeline-item h4 {
-            font-size: 1.05em;
-            color: #e3f2fd;
-            margin-bottom: 6px;
-        }
+  .dim-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
 
-        .timeline-item p {
-            font-size: 0.93em;
-            color: #b0bec5;
-            margin-bottom: 0;
-        }
+  .dim-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    font-weight: 300;
+  }
 
-        /* Limitations callout */
-        .limitations-box {
-            background: rgba(239, 83, 80, 0.07);
-            border: 1px solid rgba(239, 83, 80, 0.25);
-            border-radius: 10px;
-            padding: 24px 28px;
-            margin: 20px 0;
-        }
+  /* ── Score table ────────────────────────────────────────────────── */
+  .score-table-wrap {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 20px 0;
+  }
 
-        .limitations-box h4 {
-            color: #ef9a9a;
-            margin-bottom: 12px;
-            font-size: 1.0em;
-        }
+  .score-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
 
-        .limitations-box ul {
-            color: #c8d8ea;
-            padding-left: 20px;
-        }
+  .score-table thead th {
+    background: var(--bg-panel);
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
 
-        .limitations-box li { margin-bottom: 8px; font-size: 0.95em; }
+  .score-table tbody tr {
+    border-bottom: 1px solid var(--border);
+  }
 
-        /* Bio card */
-        .bio-card {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-top: 16px;
-        }
+  .score-table tbody tr:last-child { border-bottom: none; }
 
-        .bio-item {
-            background: rgba(21, 101, 192, 0.08);
-            border: 1px solid rgba(64, 180, 255, 0.15);
-            border-radius: 10px;
-            padding: 20px;
-        }
+  .score-table tbody td {
+    padding: 13px 16px;
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
 
-        .bio-item .bio-label {
-            font-size: 0.78em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #64b5f6;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
+  .score-extreme   { color: #F87171; font-weight: 700; }
+  .score-very-high { color: #FB923C; font-weight: 700; }
+  .score-high      { color: #FBBF24; font-weight: 700; }
+  .score-moderate  { color: #60A5FA; font-weight: 700; }
+  .score-low       { color: #6EE7B7; font-weight: 700; }
 
-        .bio-item p {
-            color: #c8d8ea;
-            font-size: 0.93em;
-            margin-bottom: 0;
-        }
+  /* ── Limitations callout ────────────────────────────────────────── */
+  .callout-warning {
+    background: rgba(239,68,68,0.06);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-left: 3px solid rgba(239,68,68,0.5);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
 
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 40px 20px;
-            border-top: 2px solid rgba(64, 180, 255, 0.2);
-        }
+  .callout-warning-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #FCA5A5;
+    margin-bottom: 10px;
+  }
 
-        .footer p {
-            color: #90caf9;
-            font-size: 0.95em;
-            margin-bottom: 8px;
-        }
+  .callout-warning ul {
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding-left: 18px;
+    line-height: 1.75;
+    font-weight: 300;
+  }
 
-        .footer .tagline {
-            color: #78909c;
-            font-size: 0.85em;
-            font-style: italic;
-            margin-top: 12px;
-        }
+  .callout-warning li { margin-bottom: 6px; }
 
-        @media (max-width: 768px) {
-            .page-header h1 { font-size: 2em; }
-            .bio-card { grid-template-columns: 1fr; }
-            .content-section { padding: 28px 22px; }
-            .dimensions-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+  /* ── Timeline ───────────────────────────────────────────────────── */
+  .timeline {
+    position: relative;
+    padding-left: 28px;
+    margin-top: 16px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 28px;
+  }
+
+  .timeline-item:last-child { margin-bottom: 0; }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -23px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    border: 2px solid var(--bg-deep);
+  }
+
+  .timeline-item.current::before { background: var(--accent); }
+  .timeline-item.future::before  { background: var(--text-muted); }
+
+  .phase-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+  }
+
+  .timeline-item.current .phase-label { color: var(--accent); }
+
+  .phase-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+
+  .phase-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  /* ── Bio grid ───────────────────────────────────────────────────── */
+  .bio-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .bio-card {
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+
+  .bio-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .bio-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .bio-text a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-dim);
+    transition: border-color 0.2s;
+  }
+
+  .bio-text a:hover { border-color: var(--accent); }
+
+  /* ── Source regions list ────────────────────────────────────────── */
+  .source-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    align-items: baseline;
+  }
+
+  .source-item:last-child { border-bottom: none; }
+
+  .source-region {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .source-list {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── Footer ─────────────────────────────────────────────────────── */
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding: 36px 0;
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .footer-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .footer-meta {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .footer-meta a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-dim);
+    transition: border-color 0.2s;
+  }
+
+  .footer-meta a:hover { border-color: var(--accent); }
+
+  .footer-tagline {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 12px;
+    opacity: 0.6;
+  }
+
+  /* ── Responsive ─────────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .bio-grid { grid-template-columns: 1fr; }
+    .dimensions-grid { grid-template-columns: 1fr; }
+    .content-section { padding: 24px 20px; }
+    .source-item { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  @media (max-width: 600px) {
+    .topbar-nav { display: none; }
+    .hero-title { font-size: 26px; }
+  }
+</style>
 </head>
 <body>
 
-    <div class="page-header">
-        <div class="header-top">
-            <a href="index.html" class="back-nav">&#8592; Back to Index</a>
-        </div>
-        <div class="header-main">
-            <p class="page-label">Human Impact Index</p>
-            <h1>Methodology &amp; Research</h1>
-            <p class="subtitle">How the index is built, what the scores mean, and the principles that guide this research</p>
-        </div>
+<div class="site-wrap">
+
+  <!-- ── Top nav ──────────────────────────────────────────────────── -->
+  <nav class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-mark">AI</div>
+      <div class="brand-text">
+        <span class="brand-name">AI Human Impact Index</span>
+      </div>
+    </div>
+    <div class="topbar-nav">
+      <a href="hii-news-feed.html" class="nav-link">Intelligence Feed</a>
+      <a href="index.html" class="nav-link">Index</a>
+      <a href="methodology.html" class="nav-link active">Methodology</a>
+      <a href="about.html" class="nav-link">About</a>
+    </div>
+  </nav>
+
+  <!-- ── Page hero ────────────────────────────────────────────────── -->
+  <header class="page-hero">
+    <p class="hero-eyebrow">Research Framework</p>
+    <h1 class="hero-title">Methodology &amp; Research</h1>
+    <p class="hero-description">How the index is built, what the scores mean, and the principles that guide this research into AI's human impact on the workforce.</p>
+  </header>
+
+  <!-- ── Philosophy ───────────────────────────────────────────────── -->
+  <div class="content-section">
+    <h2 class="section-heading">The Human-Centred Approach</h2>
+    <p class="body-text">
+      Most AI impact tools measure workforce transformation through an economic lens: productivity gains, cost reductions, efficiency ratios, and return on automation investment. The Human Impact Index starts from a different premise. The central question is not "how much value does AI create?" but "who bears the cost of this transition, and are they receiving adequate support?"
+    </p>
+    <p class="body-text">
+      This means the index gives weight to factors that conventional barometers typically omit: the concentration of displacement risk among lower-income workers, the adequacy of national retraining infrastructure, the gap between formal regulatory protections and real-world enforcement, and the degree to which AI adoption is happening faster than affected communities can adapt.
+    </p>
+    <p class="body-text">
+      The tool is grounded in philosophy of technology, labour economics, and commercial real estate practice. It is designed to be useful to policy-makers, business leaders, and researchers who want a more complete picture of AI's societal impact than economic metrics alone can provide.
+    </p>
+  </div>
+
+  <!-- ── Momentum Score ───────────────────────────────────────────── -->
+  <div class="content-section">
+    <h2 class="section-heading">The Momentum Score</h2>
+    <p class="body-text">
+      Each sector in each region is assigned a Momentum Score from 0 to 100. The score represents the <strong>pace and depth of AI-driven workforce transformation</strong>, not the absolute number of jobs affected. A score of 90 means transformation is happening fast, at scale, and with significant structural consequences for workers. A score of 40 means change is real but more gradual, with more time for adaptation.
+    </p>
+    <p class="body-text">Scores are calculated across five weighted dimensions:</p>
+
+    <div class="dimensions-grid">
+      <div class="dimension-card">
+        <div class="dim-weight">30%</div>
+        <div class="dim-name">Current AI Adoption Rate</div>
+        <p class="dim-desc">Measured penetration of AI tools in the sector, including automation of specific task types, deployment of generative AI in workflows, and robotics density where applicable.</p>
+      </div>
+      <div class="dimension-card">
+        <div class="dim-weight">25%</div>
+        <div class="dim-name">Displacement Velocity</div>
+        <p class="dim-desc">The speed at which roles are being eliminated or fundamentally restructured, including observed redundancy rates, hiring freezes in specific functions, and forward guidance from major employers.</p>
+      </div>
+      <div class="dimension-card">
+        <div class="dim-weight">20%</div>
+        <div class="dim-name">Task Automation Exposure</div>
+        <p class="dim-desc">The proportion of current job tasks in the sector that are technically automatable using existing or near-term AI capabilities, drawing on OECD and academic task-analysis frameworks.</p>
+      </div>
+      <div class="dimension-card">
+        <div class="dim-weight">15%</div>
+        <div class="dim-name">Investment Signal Strength</div>
+        <p class="dim-desc">The volume and direction of capital flowing into AI tools, infrastructure, and automation within the sector, used as a leading indicator of future displacement pressure.</p>
+      </div>
+      <div class="dimension-card">
+        <div class="dim-weight">10%</div>
+        <div class="dim-name">Policy &amp; Regulatory Friction</div>
+        <p class="dim-desc">The degree to which regulatory frameworks, labour protections, and government policy are slowing or shaping AI adoption in ways that protect workers. Higher friction reduces the score.</p>
+      </div>
     </div>
 
-    <div class="container">
+    <h3 class="sub-heading">Score Interpretation</h3>
 
-        <!-- Philosophy -->
-        <div class="content-section">
-            <h2>The Human-Centred Approach</h2>
-            <p>
-                Most AI impact tools measure workforce transformation through an economic lens: productivity gains, cost reductions, efficiency ratios, and return on automation investment. The Human Impact Index starts from a different premise. The central question is not "how much value does AI create?" but "who bears the cost of this transition, and are they receiving adequate support?"
-            </p>
-            <p>
-                This means the index gives weight to factors that conventional barometers typically omit: the concentration of displacement risk among lower-income workers, the adequacy of national retraining infrastructure, the gap between formal regulatory protections and real-world enforcement, and the degree to which AI adoption is happening faster than affected communities can adapt.
-            </p>
-            <p>
-                The tool is grounded in philosophy of technology, labour economics, and commercial real estate practice. It is designed to be useful to policy-makers, business leaders, and researchers who want a more complete picture of AI's societal impact than economic metrics alone can provide.
-            </p>
-        </div>
-
-        <!-- Momentum Score -->
-        <div class="content-section">
-            <h2>The Momentum Score</h2>
-            <p>
-                Each sector in each region is assigned a Momentum Score from 0 to 100. The score represents the <strong>pace and depth of AI-driven workforce transformation</strong>, not the absolute number of jobs affected. A score of 90 means transformation is happening fast, at scale, and with significant structural consequences for workers. A score of 40 means change is real but more gradual, with more time for adaptation.
-            </p>
-            <p>
-                Scores are calculated across five weighted dimensions:
-            </p>
-
-            <div class="dimensions-grid">
-                <div class="dimension-card">
-                    <div class="dim-weight">30%</div>
-                    <div class="dim-name">Current AI Adoption Rate</div>
-                    <p>Measured penetration of AI tools in the sector, including automation of specific task types, deployment of generative AI in workflows, and robotics density where applicable.</p>
-                </div>
-                <div class="dimension-card">
-                    <div class="dim-weight">25%</div>
-                    <div class="dim-name">Displacement Velocity</div>
-                    <p>The speed at which roles are being eliminated or fundamentally restructured, including observed redundancy rates, hiring freezes in specific functions, and forward guidance from major employers.</p>
-                </div>
-                <div class="dimension-card">
-                    <div class="dim-weight">20%</div>
-                    <div class="dim-name">Task Automation Exposure</div>
-                    <p>The proportion of current job tasks in the sector that are technically automatable using existing or near-term AI capabilities, drawing on OECD and academic task-analysis frameworks.</p>
-                </div>
-                <div class="dimension-card">
-                    <div class="dim-weight">15%</div>
-                    <div class="dim-name">Investment Signal Strength</div>
-                    <p>The volume and direction of capital flowing into AI tools, infrastructure, and automation within the sector, used as a leading indicator of future displacement pressure.</p>
-                </div>
-                <div class="dimension-card">
-                    <div class="dim-weight">10%</div>
-                    <div class="dim-name">Policy &amp; Regulatory Friction</div>
-                    <p>The degree to which regulatory frameworks, labour protections, and government policy are slowing or shaping AI adoption in ways that protect workers. Higher friction reduces the score.</p>
-                </div>
-            </div>
-
-            <h3>Score Interpretation</h3>
-            <table class="score-table">
-                <thead>
-                    <tr>
-                        <th>Range</th>
-                        <th>Classification</th>
-                        <th>What it means</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="score-extreme">80 - 100</td>
-                        <td class="score-extreme">Extreme Transformation</td>
-                        <td>Rapid, structural displacement underway. Significant workforce impact already visible, with acceleration expected.</td>
-                    </tr>
-                    <tr>
-                        <td class="score-very-high">65 - 79</td>
-                        <td class="score-very-high">Very High Transformation</td>
-                        <td>Strong and accelerating AI adoption with material workforce consequences. Reskilling urgency is high.</td>
-                    </tr>
-                    <tr>
-                        <td class="score-high">50 - 64</td>
-                        <td class="score-high">High Transformation</td>
-                        <td>Significant change in progress. Role profiles shifting materially. Some displacement, more task restructuring.</td>
-                    </tr>
-                    <tr>
-                        <td class="score-moderate">35 - 49</td>
-                        <td class="score-moderate">Moderate Transformation</td>
-                        <td>AI adoption real but slower-paced. Workers have more time to adapt. Structural change is directional, not yet acute.</td>
-                    </tr>
-                    <tr>
-                        <td class="score-low">0 - 34</td>
-                        <td class="score-low">Early Stage</td>
-                        <td>AI integration beginning but limited workforce impact to date. Monitor for acceleration.</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="limitations-box">
-                <h4>Important: scores are directional, not precise</h4>
-                <ul>
-                    <li>Momentum scores reflect the best available evidence at time of publication. They are informed judgements, not algorithmic outputs.</li>
-                    <li>Scores are calibrated within regions, meaning a European score of 70 reflects high transformation relative to the European context, and should not be read as identical to a North American 70.</li>
-                    <li>Manufacturing scores across Europe carry a "Snapshot" designation where granular AI-specific displacement data is not available from official statistics. These are treated as indicative rather than fully evidenced.</li>
-                    <li>The index does not predict absolute job loss numbers. The relationship between automation exposure and actual employment outcomes depends heavily on demand growth, policy response, and adaptation timelines.</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Data Sources -->
-        <div class="content-section">
-            <h2>Data Sources &amp; Research Standards</h2>
-            <p>
-                The index prioritises primary and authoritative secondary sources. Where granular AI-specific data is not available, estimates are clearly labelled as such in the source notes of each country page. The approach follows the principle of transparent estimation over false precision: it is more valuable to acknowledge uncertainty honestly than to present a confident figure that obscures its own shakiness.
-            </p>
-
-            <h3>Primary sources used by region</h3>
-            <p><strong>UK:</strong> ONS Labour Force Survey, CIPD workforce reports, UK government AI strategy documentation, sector-specific regulators (FCA, ICO).</p>
-            <p><strong>North America:</strong> US Bureau of Labor Statistics, Statistics Canada, McKinsey Global Institute, Stanford AI Index, sector trade associations.</p>
-            <p><strong>Europe:</strong> Eurostat, national statistics offices (Destatis, INSEE, CBS, INE, ISTAT, SCB, GUS), OECD Employment Outlook, EU AI Act implementation documentation, CNIL, BaFin, and equivalent national regulators.</p>
-            <p><strong>Asia-Pacific:</strong> Statistics Bureau Japan Labour Force Survey, Singapore Ministry of Manpower, Australian Bureau of Statistics, India PLFS/NASSCOM, NBS China, OECD APAC data where available.</p>
-            <p><strong>Cross-regional:</strong> OECD AI Policy Observatory, ILO World Employment and Social Outlook, World Economic Forum Future of Jobs reports, CBRE and JLL global market research, McKinsey Global Institute automation studies.</p>
-        </div>
-
-        <!-- Regional approach -->
-        <div class="content-section">
-            <h2>Regional &amp; Country Coverage</h2>
-            <p>
-                The index covers four regions: the UK, North America, Europe, and Asia-Pacific. Within Europe and APAC, individual country pages provide detailed analysis rather than treating each region as a single homogeneous market. This reflects the reality that AI adoption pace, regulatory environment, and labour market structure vary significantly even within the EU.
-            </p>
-            <p>
-                Country selection follows the coverage approach of major commercial real estate firms (Cushman &amp; Wakefield, CBRE, JLL), which ensures the tool is directly relevant to the senior real estate leaders who form a core part of its intended audience. Countries covered within each region are those where these firms maintain substantive research and analytical operations.
-            </p>
-            <p>
-                <strong>Europe:</strong> Germany, France, Netherlands, Spain, Italy, Poland.<br>
-                <strong>Asia-Pacific:</strong> Australia, Japan, Singapore, India, China.
-            </p>
-            <p>
-                Sector coverage across Europe and APAC follows the same nine-sector framework used for the UK and North America, with Manufacturing carried at "Snapshot" level in several European countries where official statistics do not provide the granularity needed for full analysis. This is flagged clearly on each affected page.
-            </p>
-        </div>
-
-        <!-- Updates -->
-        <div class="content-section">
-            <h2>Update Strategy</h2>
-            <p>
-                The Human Impact Index is a living resource. AI adoption is accelerating rapidly, and a static snapshot becomes outdated quickly. The current update approach is:
-            </p>
-
-            <div class="timeline">
-                <div class="timeline-item current">
-                    <div class="phase-label">Phase 1 — Current</div>
-                    <h4>Quarterly Manual Review</h4>
-                    <p>Each country and sector page is reviewed and updated quarterly using the latest available data from the primary sources listed above. Momentum scores are recalibrated when material changes in adoption pace or policy are evident.</p>
-                </div>
-                <div class="timeline-item future">
-                    <div class="phase-label">Phase 2 — Q3 2026</div>
-                    <h4>Expanded Country Coverage</h4>
-                    <p>Planned addition of further APAC markets (South Korea, potentially Hong Kong), Nordic countries within Europe, and a more detailed Canada-specific analysis within the North America region.</p>
-                </div>
-                <div class="timeline-item future">
-                    <div class="phase-label">Phase 3 — 2027</div>
-                    <h4>Community Validation</h4>
-                    <p>Structured input from sector practitioners, academics, and policy specialists to validate and enrich the analysis, particularly for countries where primary data availability is more constrained.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Limitations -->
-        <div class="content-section">
-            <h2>Limitations &amp; Honest Caveats</h2>
-            <p>
-                Academic integrity requires acknowledging what this tool cannot do, as well as what it can.
-            </p>
-            <ul>
-                <li><strong>AI-specific displacement data is not consistently published.</strong> National statistics offices categorise employment by sector and occupation, not by whether jobs have been displaced by AI specifically. The index triangulates from multiple sources, but some figures involve estimation.</li>
-                <li><strong>The tool covers formal employment.</strong> In markets with large informal workforces (notably India and China), the index understates the true scale of AI impact on workers, since informal workers are largely invisible in official data and have the fewest protections.</li>
-                <li><strong>Momentum scores involve judgement.</strong> The weighting of the five dimensions, and the calibration of scores within regional ranges, reflects informed analytical decisions rather than purely mechanical calculation. Reasonable analysts might weight these dimensions differently.</li>
-                <li><strong>The index is not a forecast.</strong> High momentum scores indicate that transformation pressure is intense, not that a specific number of jobs will be lost. Actual employment outcomes depend on many factors beyond the scope of this tool.</li>
-                <li><strong>Data currency varies by market.</strong> Some national statistics are published with a significant lag. Where the most recent available data is more than 18 months old, this is noted in the relevant source documentation.</li>
-            </ul>
-        </div>
-
-        <!-- Academic foundation -->
-        <div class="content-section">
-            <h2>Academic Foundation</h2>
-            <p>
-                This tool emerges from PhD research at the University of Sussex examining the ethical implications of AI systems and their relationship with human welfare, with particular focus on workforce transformation, human flourishing, and the moral responsibilities of organisations deploying AI at scale.
-            </p>
-            <p>
-                The analytical framework draws on philosophy of technology (Heidegger, Borgmann, Verbeek), the capability approach to human development (Sen, Nussbaum), labour economics and workforce transition theory, and ethics of automation and displacement. The commercial real estate focus reflects more than 20 years of industry experience, including a global leadership role at Cushman &amp; Wakefield, which provides the practical grounding to assess how AI is actually being deployed in real estate operations rather than how it is theorised to be.
-            </p>
-        </div>
-
-        <!-- About -->
-        <div class="content-section">
-            <h2>About the Author</h2>
-            <div class="bio-card">
-                <div class="bio-item">
-                    <div class="bio-label">Academic</div>
-                    <p>PhD Candidate in Philosophy, University of Sussex. MSc Sustainability and Behaviour Change, Liverpool John Moores University. MBA, Henley Business School.</p>
-                </div>
-                <div class="bio-item">
-                    <div class="bio-label">Professional</div>
-                    <p>Global industry consultant, global real estate lead at CBRE and Cushman &amp; Wakefield with extensive international market experience.</p>
-                </div>
-                <div class="bio-item">
-                    <div class="bio-label">Podcast</div>
-                    <p>Host of <em>Empathy Unbound</em>, exploring the intersection of technology, ethics, and human connection.</p>
-                </div>
-                <div class="bio-item">
-                    <div class="bio-label">Contact &amp; Feedback</div>
-                    <p>Corrections, data contributions, and methodological suggestions are welcome. The index is stronger for practitioner and academic input. andrew.phipps@empathyunbound.com</p>
-                </div>
-            </div>
-        </div>
-
+    <div class="score-table-wrap">
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th>Range</th>
+            <th>Classification</th>
+            <th>What it means</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="score-extreme">80 – 100</td>
+            <td class="score-extreme">Extreme Transformation</td>
+            <td>Rapid, structural displacement underway. Significant workforce impact already visible, with acceleration expected.</td>
+          </tr>
+          <tr>
+            <td class="score-very-high">65 – 79</td>
+            <td class="score-very-high">Very High Transformation</td>
+            <td>Strong and accelerating AI adoption with material workforce consequences. Reskilling urgency is high.</td>
+          </tr>
+          <tr>
+            <td class="score-high">50 – 64</td>
+            <td class="score-high">High Transformation</td>
+            <td>Significant change in progress. Role profiles shifting materially. Some displacement, more task restructuring.</td>
+          </tr>
+          <tr>
+            <td class="score-moderate">35 – 49</td>
+            <td class="score-moderate">Moderate Transformation</td>
+            <td>AI adoption real but slower-paced. Workers have more time to adapt. Structural change is directional, not yet acute.</td>
+          </tr>
+          <tr>
+            <td class="score-low">0 – 34</td>
+            <td class="score-low">Early Stage</td>
+            <td>AI integration beginning but limited workforce impact to date. Monitor for acceleration.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <div class="footer">
-        <p><strong>Human Impact Index</strong> | AI Workforce Transformation Analysis</p>
-        <p>Research and analysis by <strong>Andrew Phipps</strong></p>
-        <p>PhD Candidate in Philosophy, University of Sussex</p>
-        <p class="tagline">A human-centred alternative to purely economic AI impact metrics</p>
+    <div class="callout-warning">
+      <div class="callout-warning-title">Important: scores are directional, not precise</div>
+      <ul>
+        <li>Momentum scores reflect the best available evidence at time of publication. They are informed judgements, not algorithmic outputs.</li>
+        <li>Scores are calibrated within regions, meaning a European score of 70 reflects high transformation relative to the European context, and should not be read as identical to a North American 70.</li>
+        <li>Manufacturing scores across Europe carry a "Snapshot" designation where granular AI-specific displacement data is not available from official statistics. These are treated as indicative rather than fully evidenced.</li>
+        <li>The index does not predict absolute job loss numbers. The relationship between automation exposure and actual employment outcomes depends heavily on demand growth, policy response, and adaptation timelines.</li>
+      </ul>
     </div>
+  </div>
 
-</body>
-</html>
+  <!-- ── Data Sources ──────────────────────────────────────────────── -->
+  <div class="content-section">
+    <h2 class="section-heading">Data Sources &amp; Research Standards</h2>
+    <p class="body-text">
+      The index prioritises primary and authoritative secondary sources. Where granular AI-specific data is not available, estimates are clearly labelled as such in the source notes of each country page. The approach follows the principle of <strong>transparent estimation over false precision</strong>: it is more valuable to acknowledge uncertainty honestly than to present a confident figure that obscures its own shakiness.
+    </p>
+
+    <h3 class="sub-heading">Primary sources used by region</h3>
+
+    <div class="source-item">
+      <span class="source-region">UK</span>
+      <span class="source-list">ONS Labour Force Survey, CIPD workforce reports, UK government AI strategy documentation, sector-specific regulators (FCA, ICO).</span>
+    </div>
+    <div class="source-item">
+      <span class="source-region">North America</span>
+      <span class="source-list">US Bureau of Labor Statistics, Statistics Canada, McKinsey Global Institute, Stanford AI Index, sector trade associations.</span>
+    </div>
+    <div class="source-item">
+      <span class="source-region">Europe</span>
+      <span class="source-list">Eurostat, national statistics offices (Destatis, INSEE, CBS, INE, ISTAT, SCB, GUS), OECD Employment Outlook, EU AI Act implementation documentation, CNIL, BaFin, and equivalent national regulators.</span>
+    </div>
+    <div class="source-item">
+      <span class="source-region">Asia-Pacific</span>
+      <span class="source-list">Statistics Bureau Japan Labour Force Survey, Singapore Ministry of Manpower, Australian Bureau of Statistics, India PLFS/NASSCOM, NBS China, OECD APAC data where available.</span>
+    </div>
+    <div class="source-item">
+      <span class="source-region">Cross-regional</span>
+      <span class="source-list">OECD AI Policy Observatory, ILO World Employment and Social Outlook, World Economic Forum Future of Jobs reports, CBRE and JLL global market research, McKinsey Global Institute automation studies.</span>
+    </div>
+  </div>
+
+  <!-- ── Regional coverage ────────────────────────────────────────── -->
+  <div class="content-section">
+    <h2 class="section-heading">Regional &amp; Country Coverage</h2>
+    <p class="body-text">
+      The index covers four regions: the UK, North America, Europe, and Asia-Pacific. Within Europe and APAC, individual country pages provide detailed analysis rather than treating each region as a single homogeneous market. This reflects the reality that AI adoption pace, regulatory environment, and labour market structure vary significantly even within the EU.
+    </p>
+    <p class="body-text">
+      Country selection follows the coverage approach of major commercial real estate firms (Cushman &amp; Wakefield, CBRE, JLL), which ensures the tool is directly relevant to the senior real estate leaders who form a core part of its intended audience. Countries covered within each region are those where these firms maintain substantive research and analytical operations.
+    </p>
+    <p class="body-text">
+      <strong>Europe:</strong> Germany, France, Netherlands, Spain, Italy, Poland.<br>
+      <strong>Asia-Pacific:</strong> Australia, Japan, Singapore, India, China.
+    </p>
+    <p class="body-text">
+      Sector coverage across Europe and APAC follows the same nine-sector framework used for the UK and North America, with Manufacturing carried at "Snapshot" level in several European countries where official statistics do not provide the granularity needed for full analysis. This is flagged clearly on each affected page.
+    </p>
+  </div>
+
+  <!-- ── Update Strategy ───────────────────────────────────────────── -->
+  <div class="content-section">
+    <h2 class="section-heading">Update Strategy</h2>
+    <p class="body-text">
+      The Human Impact Index is a living resource. AI adoption is accelerating rapidly, and a static snapshot becomes outdated quickly. The current update approach is:
+    </p>
+
+    <div class="timeline">
+      <div class="timeline-item current">
+        <div class="phase-label">Phase 1 — Current</div>
+        <div class="phase-title">Quarterly Manual Review</div>
+        <p class="phase-desc">Each country and sector page is reviewed and updated quarterly using the latest available data from the primary sources listed above. Momentum scores are recalibrated when material changes in adoption pace or policy are evident.</p>
+      </div>
+      <div class="timeline-item future">
+        <div class="phase-label">Phase 2 — Q3 2026</div>
+        <div class="phase-title">Expanded Country Coverage</div>
+        <p class="phase-desc">Planned addition of further APAC markets (South Korea, potentially Hong Kong), Nordic countries within Europe, and a more detailed Canada-specific analysis within the North America region.</p>
+      </div>
+      <div class="timeline-item future">
+        <div class="phase-label">Phase 3 — 2027</div>
+        <div class="phase-title">Community Validation</div>
+        <p class="phase-desc">Structured input from sector practitioners, academics, and policy specialists to validate and enrich the analysis, particularly for countries where primary data availability is more constrained.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Limitations ───────────────────────────────────────────────── -->
+  <div class="content-section">
+    <h2 class="section-heading">Limitations &amp; Honest Caveats</h2>
+    <p class="body-text">Academic integrity requires acknowledging what this tool cannot do, as well as what it can.</p>
+    <ul class="body-list">
+      <li><strong>AI-specific displacement data is not consistently published.</strong> National statistics offices categorise employment by sector and occupation, not by whether jobs have been displaced by AI specifically. The index triangulates from multiple sources, but some figures involve estimation.</li>
+      <li><strong>The tool covers formal employment.</strong> In markets with large informal workforces (notably India and China), the index understates the true scale of AI impact on workers, since informal workers are largely invisible in official data and have the fewest protections.</li>
+      <li><strong>Momentum scores involve judgement.</strong> The weighting of the five dimensions, and the calibration of scores within regional ranges, reflects informed analytical decisions rather than purely mechanical calculation. Reasonable analysts might weight these dimensions differently.</li>
+      <li><strong>The index is not a forecast.</strong> High momentum scores indicate that transformation pressure is intense, not that a specific number of jobs will be lost. Actual employment outcomes depend on many factors beyond the scope of this tool.</li>
+      <li><strong>Data currency varies by market.</strong> Some national statistics are published with a significant lag. Where the most recent available data is more than 18 months old, this is noted in the relevant source documentation.</li>
+    </ul>
+  </div>
+
+  <!-- ── Academic foundation ───────────────────────────────────────── -->
+  <div class="content-section">
+    <h2 class="section-heading">Academic Foundation</h2>
+    <p class="body-text">
+      This tool emerges from PhD research at the University of Sussex examining the ethical implications of AI systems and their relationship with human welfare, with particular focus on workforce transformation, human flourishing, and the moral responsibilities of organisations deploying AI at scale.
+    </p>
+    <p class="body-text">
+      The analytical framework draws on philosophy of technology (Heidegger, Borgmann, Verbeek), the capability approach to human development (Sen, Nussbaum), labour economics and workforce transition theory, and ethics of automation and displacement. The commercial real estate focus reflects more than 20 years of industry experience, including a global leadership role at Cushman &amp; Wakefield, which provides the practical grounding to assess how AI is actually being deployed in real estate operations rather than how it is theorised to be.
+    </p>
+  </div>
+
+  <!-- ── About the author ──────────────────────────────────────────── -->
+  <div class="content-section">
+    <h2 class="section-heading">About the Author</h2>
+    <div class="bio-grid">
+      <div class="bio-card">
+        <div class="bio-label">Academic</div>
+        <p class="bio-text">PhD Candidate in Philosophy, University of Sussex. MSc Sustainability and Behaviour Change, Liverpool John Moores University. MBA, Henley Business School.</p>
+      </div>
+      <div class="bio-card">
+        <div class="bio-label">Professional</div>
+        <p class="bio-text">Global industry consultant; global real estate lead at CBRE and Cushman &amp; Wakefield with extensive international market experience.</p>
+      </div>
+      <div class="bio-card">
+        <div class="bio-label">Podcast</div>
+        <p class="bio-text">Host of <em>Empathy Unbound</em>, exploring the intersection of technology, ethics, and human connection.</p>
+      </div>
+      <div class="bio-card">
+        <div class="bio-label">Contact &amp; Feedback</div>
+        <p class="bio-text">Corrections, data contributions, and methodological suggestions are welcome. The index is stronger for practitioner and academic input. <a href="/cdn-cgi/l/email-protection#dabbb4bea8bfadf4aab2b3aaaaa99abfb7aabbaeb2a3afb4b8b5afb4bef4b9b5b7"><span class="__cf_email__" data-cfemail="04656a607661732a746c6d7474774461697465706c7d716a666b716a602a676b69">[email&#160;protected]</span></a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Footer ─────────────────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="footer-title">Human Impact Index</div>
+    <div class="footer-meta">
+      Research and analysis by <a href="https://www.linkedin.com/in/andrew-phipps-ap/" target="_blank" rel="noopener noreferrer">Andrew Phipps</a><br>
+      PhD Researcher in AI, Ethics &amp; People &nbsp;·&nbsp; Host, Empathy Unbound Podcast &nbsp;·&nbsp; Independent Leader in Global CRE Foresight
+    

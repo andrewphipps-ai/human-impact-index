@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Human Impact Index | Intelligence Feed Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg-deep:      #0A1018;
+    --bg-panel:     #111827;
+    --bg-card:      #1A2332;
+    --bg-card-alt:  #162030;
+    --border:       #1E3048;
+    --border-light: #2A4060;
+    --accent:       #2DD4BF;
+    --accent-dim:   #1A7A6E;
+    --accent-glow:  rgba(45,212,191,0.12);
+    --text-primary: #F0F6FF;
+    --text-secondary:#94A3B8;
+    --text-muted:   #4A6080;
+    --tag-econ:     #3B82F6;
+    --tag-policy:   #8B5CF6;
+    --tag-tech:     #2DD4BF;
+    --tag-labour:   #F59E0B;
+    --tag-cre:      #EC4899;
+    --tag-global:   #10B981;
+    --radius:       8px;
+    --radius-lg:    14px;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body:    'DM Sans', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -40%;
+    left: -20%;
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(ellipse, rgba(45,212,191,0.04) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .site-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--accent);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    background: var(--accent-glow);
+    flex-shrink: 0;
+  }
+
+  .brand-text { display: flex; flex-direction: column; }
+
+  .brand-name {
+    font-family: var(--font-display);
+    font-size: 15px;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+  }
+
+  .topbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-link {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    transition: all 0.2s;
+    font-weight: 400;
+  }
+
+  .nav-link:hover {
+    color: var(--text-primary);
+    background: var(--bg-card);
+  }
+
+  .nav-link.active {
+    color: var(--accent);
+    background: var(--accent-glow);
+    font-weight: 500;
+  }
+
+  /* Page hero */
+  .page-hero {
+    padding: 52px 0 36px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 36px;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1.15;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    max-width: 640px;
+  }
+
+  .hero-title em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .hero-description {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 620px;
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 28px;
+  }
+
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .hero-meta-item {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Main layout */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 32px;
+    align-items: start;
+    padding-bottom: 80px;
+  }
+
+  /* Period groups */
+  .period-group {
+    margin-bottom: 40px;
+  }
+
+  .period-heading {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 12px 0 14px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .period-count {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+
+  /* Filter bar */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+
+  .filter-btn {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--border-light);
+    color: var(--text-primary);
+  }
+
+  .filter-btn.active {
+    background: var(--accent-glow);
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  /* Feed items */
+  .feed-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .feed-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+    opacity: 0.88;
+  }
+
+  .feed-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--border);
+    transition: background 0.25s;
+  }
+
+  .feed-item:hover {
+    border-color: var(--border-light);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    opacity: 1;
+  }
+
+  .feed-item:hover::before {
+    background: var(--accent);
+  }
+
+  .item-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .item-tags {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .tag-econ    { background: rgba(59,130,246,0.15); color: #93C5FD; border: 1px solid rgba(59,130,246,0.2); }
+  .tag-policy  { background: rgba(139,92,246,0.15); color: #C4B5FD; border: 1px solid rgba(139,92,246,0.2); }
+  .tag-tech    { background: rgba(45,212,191,0.12); color: var(--accent); border: 1px solid var(--accent-dim); }
+  .tag-labour  { background: rgba(245,158,11,0.12); color: #FCD34D; border: 1px solid rgba(245,158,11,0.2); }
+  .tag-cre     { background: rgba(236,72,153,0.12); color: #F9A8D4; border: 1px solid rgba(236,72,153,0.2); }
+  .tag-global  { background: rgba(16,185,129,0.12); color: #6EE7B7; border: 1px solid rgba(16,185,129,0.2); }
+
+  .item-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .item-headline {
+    font-family: var(--font-display);
+    font-size: 17px;
+    line-height: 1.3;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .item-headline a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .item-headline a:hover {
+    color: var(--accent);
+  }
+
+  .item-context {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    font-weight: 300;
+    margin-bottom: 10px;
+  }
+
+  .item-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .item-source {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .item-source::before {
+    content: '↗';
+    font-size: 12px;
+  }
+
+  .item-read-link {
+    font-size: 12px;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: gap 0.2s;
+  }
+
+  .item-read-link:hover { gap: 8px; }
+
+  /* Sidebar */
+  .sidebar {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .sidebar-widget {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .widget-header {
+    padding: 16px 20px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .widget-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .widget-body {
+    padding: 16px 20px;
+  }
+
+  .about-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+
+  .about-link {
+    font-size: 12px;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Archive year nav */
+  .year-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .year-nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .year-nav-item:last-child { border-bottom: none; }
+
+  .year-nav-label {
+    color: var(--text-secondary);
+    transition: color 0.2s;
+  }
+
+  .year-nav-item:hover .year-nav-label {
+    color: var(--accent);
+  }
+
+  .year-nav-count {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--bg-deep);
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  /* Back link */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: 24px;
+    margin-top: 24px;
+    display: block;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: var(--accent); }
+
+  .empty-state {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px 28px;
+    text-align: center;
+  }
+
+  .empty-state-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+  }
+
+  .empty-state-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+
+  .empty-state-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 900px) {
+    .main-layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+    .topbar-nav { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .site-wrap { padding: 0 16px; }
+    .feed-item { padding: 18px 18px; }
+    .item-header { flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="site-wrap">
+
+  <!-- Navigation -->
+  <nav class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-mark">AI</div>
+      <div class="brand-text">
+        <span class="brand-name">AI Human Impact Index</span>
+      </div>
+    </div>
+    <div class="topbar-nav">
+      <a href="hii-news-feed.html" class="nav-link active">Intelligence Feed</a>
+      <a href="index.html" class="nav-link">Index</a>
+      <a href="methodology.html" class="nav-link">Methodology</a>
+      <a href="about.html" class="nav-link">About</a>
+    </div>
+  </nav>
+
+  <!-- Page hero -->
+  <div class="page-hero">
+    <div class="hero-eyebrow">Intelligence Feed Archive</div>
+    <h1 class="hero-title">All items, from the beginning</h1>
+    <p class="hero-description">
+      Items are moved to the archive after six months. Every entry retains its original editorial context. The archive is a record of AI's developing impact on the real estate workforce over time.
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Curated by Andrew Phipps
+      </div>
+    </div>
+  </div>
+
+  <a href="hii-news-feed.html" class="back-link">← Back to Intelligence Feed</a>
+
+  <!-- Main content -->
+  <div class="main-layout">
+
+    <!-- Feed column -->
+    <div class="feed-column">
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <span class="filter-label">Filter</span>
+        <button class="filter-btn active" onclick="filterFeed('all', this)">All</button>
+        <button class="filter-btn" onclick="filterFeed('tech', this)">Technology</button>
+        <button class="filter-btn" onclick="filterFeed('policy', this)">Policy</button>
+        <button class="filter-btn" onclick="filterFeed('labour', this)">Labour</button>
+        <button class="filter-btn" onclick="filterFeed('econ', this)">Economics</button>
+        <button class="filter-btn" onclick="filterFeed('cre', this)">CRE Specific</button>
+        <button class="filter-btn" onclick="filterFeed('global', this)">Global</button>
+        <span class="filter-label" style="margin-left:8px;">By Date</span>
+        <button class="filter-btn" id="sort-date-btn" onclick="sortByDate(this)">Most Recent First</button>
+      </div>
+
+      <div class="feed-items" id="feed-items">
+
+        <!-- Archive items will appear here as items are moved from the main feed -->
+        <!-- The section below is an example structure for when items are added -->
+
+        <div class="empty-state">
+          <div class="empty-state-icon">📁</div>
+          <div class="empty-state-title">The archive is empty for now</div>
+          <div class="empty-state-text">
+            Items from the Intelligence Feed are moved here after six months.<br>
+            Check back as the feed matures.
+          </div>
+        </div>
+
+        <!--
+        ARCHIVE ITEM TEMPLATE (copy and paste when adding archived items):
+
+        <article class="feed-item" data-tags="tech cre">
+          <div class="item-header">
+            <div class="item-tags">
+              <span class="tag tag-tech">Technology</span>
+              <span class="tag tag-cre">CRE Specific</span>
+            </div>
+            <span class="item-date">DD Mon YYYY</span>
+          </div>
+          <h2 class="item-headline">
+            <a href="[URL]" target="_blank" rel="noopener">Headline here</a>
+          </h2>
+          <p class="item-context">
+            Summary text here.
+          </p>
+          <div class="item-footer">
+            <span class="item-source">Source Name</span>
+            <a href="[URL]" class="item-read-link" target="_blank" rel="noopener">Read source →</a>
+          </div>
+        </article>
+
+        -->
+
+      </div>
+
+    </div><!-- /feed-column -->
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+      <div class="sidebar-widget">
+        <div class="widget-header">
+          <div class="widget-title">About the archive</div>
+        </div>
+        <div class="widget-body">
+          <p class="about-text">
+            Items are moved from the live Intelligence Feed to this archive after six months. All editorial context is preserved. The archive serves as a longitudinal record of AI's developing impact on the real estate workforce.
+          </p>
+          <a href="hii-news-feed.html" class="about-link">← Current feed</a>
+        </div>
+      </div>
+
+      <div class="sidebar-widget">
+        <div class="widget-header">
+          <div class="widget-title">Browse by period</div>
+        </div>
+        <div class="widget-body">
+          <div class="year-nav">
+            <div class="year-nav-item">
+              <span class="year-nav-label">2025 (all quarters)</span>
+              <span class="year-nav-count">0</span>
+            </div>
+            <div class="year-nav-item">
+              <span class="year-nav-label">2024 (all quarters)</span>
+              <span class="year-nav-count">0</span>
+            </div>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);margin-top:14px;line-height:1.6;">
+            Archive periods will populate as items are moved from the main feed.
+          </p>
+        </div>
+      </div>
+
+      <div class="sidebar-widget">
+        <div class="widget-header">
+          <div class="widget-title">About this project</div>
+        </div>
+        <div class="widget-body">
+          <p class="about-text">
+            The AI Human Impact Index tracks AI's workforce impact across commercial real estate sectors in 15 countries.
+          </p>
+          <a href="about.html" class="about-link">About the project →</a>
+        </div>
+      </div>
+
+    </aside>
+
+  </div><!-- /main-layout -->
+
+</div><!-- /site-wrap -->
+
+<script>
+  function filterFeed(tag, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const items = document.querySelectorAll('.feed-item');
+    items.forEach(item => {
+      if (tag === 'all') { item.style.display = ''; return; }
+      const tags = (item.dataset.tags || '').split(' ');
+      item.style.display = tags.includes(tag) ? '' : 'none';
+    });
+  }
+
+  function parseItemDate(article) {
+    const dateEl = article.querySelector('.item-date');
+    if (!dateEl) return 0;
+    return new Date(dateEl.textContent.trim()).getTime() || 0;
+  }
+
+  function sortByDate(btn) {
+    const container = document.getElementById('feed-items');
+    const items = Array.from(container.querySelectorAll('.feed-item'));
+    const isActive = btn.classList.contains('active');
+    if (isActive) {
+      btn.classList.remove('active');
+      items.sort((a, b) => parseInt(a.dataset.origIndex || 0) - parseInt(b.dataset.origIndex || 0));
+    } else {
+      items.forEach((item, i) => { if (!item.dataset.origIndex) item.dataset.origIndex = i; });
+      items.sort((a, b) => parseItemDate(b) - parseItemDate(a));
+      btn.classList.add('active');
+    }
+    items.forEach(item => container.appendChild(item));
+  }
+</script>
+
+</body>
+</html>

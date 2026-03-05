@@ -5,109 +5,413 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sweden | Human Impact Index</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0a0e1a; color: #e0e6f0; font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; }
-  a { color: #64b5f6; text-decoration: none; }
+  :root {
+    --bg-deep:       #0A1018;
+    --bg-panel:      #111827;
+    --bg-card:       #1A2332;
+    --bg-card-alt:   #162030;
+    --border:        #1E3048;
+    --border-light:  #2A4060;
+    --accent:        #2DD4BF;
+    --accent-dim:    #1A7A6E;
+    --accent-glow:   rgba(45,212,191,0.12);
+    --col-eu:        #10B981;
+    --col-apac:      #8B5CF6;
+    --text-primary:  #F0F6FF;
+    --text-secondary:#94A3B8;
+    --text-muted:    #4A6080;
+    --radius:        8px;
+    --radius-lg:     14px;
+    --font-display:  'DM Serif Display', Georgia, serif;
+    --font-body:     'DM Sans', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -40%; left: -20%;
+    width: 80%; height: 80%;
+    background: radial-gradient(ellipse, rgba(45,212,191,0.04) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
 
-  .site-header { background: #0d1226; border-bottom: 1px solid #1e2a4a; padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; }
-  .brand { font-size: 1.1rem; font-weight: 700; color: #64b5f6; letter-spacing: 0.04em; }
-  .back-link { font-size: 0.85rem; color: #8899bb; }
-  .back-link:hover { color: #64b5f6; }
+  /* ── Top nav ── */
+  .site-header {
+    position: relative; z-index: 1;
+    background: var(--bg-deep);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 100%;
+  }
 
-  .hero { background: linear-gradient(135deg, #0d1226 0%, #111a35 60%, #0a1a1a 100%); padding: 48px 32px 36px; border-bottom: 1px solid #1e2a4a; }
-  .hero-inner { max-width: 1100px; margin: 0 auto; }
-  .region-badge { display: inline-block; background: #81c78420; border: 1px solid #81c78440; color: #81c784; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
-  .hero h1 { font-size: 2.6rem; font-weight: 800; color: #e0e6f0; margin-bottom: 6px; }
-  .hero .subtitle { font-size: 1.05rem; color: #8899bb; margin-bottom: 28px; }
-  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
-  .stat-card { background: #0a0e1a; border: 1px solid #1e2a4a; border-radius: 8px; padding: 16px 18px; }
-  .stat-card .label { font-size: 0.72rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-  .stat-card .value { font-size: 1.55rem; font-weight: 700; color: #64b5f6; }
-  .stat-card .sub { font-size: 0.75rem; color: #8899bb; margin-top: 2px; }
+  .topbar-inner {
+    max-width: 1160px; margin: 0 auto; width: 100%;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 0;
+  }
 
-  .momentum-section { background: #0a0e1a; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px 22px; }
-  .momentum-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .momentum-label { font-size: 0.8rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; }
-  .momentum-score { font-size: 1.6rem; font-weight: 700; color: #64b5f6; }
-  .momentum-bar-bg { background: #1e2a4a; border-radius: 4px; height: 10px; width: 100%; }
-  .momentum-bar-fill { background: linear-gradient(90deg, #64b5f6, #81c784); border-radius: 4px; height: 10px; }
-  .momentum-note { font-size: 0.75rem; color: #8899bb; margin-top: 8px; }
+  .topbar-brand {
+    display: flex; align-items: center; gap: 12px; text-decoration: none;
+  }
 
-  .main { max-width: 1100px; margin: 0 auto; padding: 36px 32px; }
+  .brand-mark {
+    width: 34px; height: 34px;
+    border: 2px solid var(--accent); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 17px;
+    color: var(--accent); background: var(--accent-glow); flex-shrink: 0;
+  }
 
-  .tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 0; border-bottom: 1px solid #1e2a4a; }
-  .tab-btn { background: none; border: none; color: #8899bb; padding: 10px 16px; font-size: 0.82rem; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; white-space: nowrap; }
-  .tab-btn:hover { color: #e0e6f0; }
-  .tab-btn.active { color: #81c784; border-bottom-color: #81c784; }
+  .brand-text { display: flex; flex-direction: column; }
+  .brand-name { font-family: var(--font-display); font-size: 14px; color: var(--text-primary); letter-spacing: 0.02em; line-height: 1.2; }
+  .brand-sub  { font-size: 10px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .topbar-right { display: flex; align-items: center; gap: 6px; }
+
+  .nav-link {
+    font-size: 12px; color: var(--text-secondary); text-decoration: none;
+    padding: 5px 12px; border-radius: var(--radius); transition: all 0.2s;
+  }
+  .nav-link:hover { color: var(--text-primary); background: var(--bg-card); text-decoration: none; }
+
+  .back-link {
+    font-size: 12px; color: var(--text-secondary); text-decoration: none;
+    padding: 5px 12px; border-radius: var(--radius); transition: all 0.2s;
+    border: 1px solid var(--border);
+  }
+  .back-link:hover { color: var(--text-primary); border-color: var(--border-light); text-decoration: none; }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--bg-deep);
+    border-bottom: 1px solid var(--border);
+    padding: 44px 32px 36px;
+    position: relative; z-index: 1;
+  }
+
+  .hero-inner { max-width: 1160px; margin: 0 auto; }
+
+  .region-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 20px; margin-bottom: 14px;
+  }
+
+  .region-badge.eu-badge {
+    background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #6EE7B7;
+  }
+  .region-badge.apac-badge {
+    background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.25); color: #C4B5FD;
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 42px);
+    color: var(--text-primary);
+    margin-bottom: 6px; line-height: 1.12;
+  }
+
+  .hero .subtitle {
+    font-size: 14px; color: var(--text-secondary);
+    margin-bottom: 28px; font-weight: 300;
+  }
+
+  /* ── Stats row ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px; background: var(--border);
+    border: 1px solid var(--border); border-radius: var(--radius-lg);
+    overflow: hidden; margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--bg-card); padding: 16px 18px;
+  }
+
+  .stat-card .label {
+    font-size: 10px; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; font-weight: 600;
+  }
+
+  .stat-card .value {
+    font-family: var(--font-display);
+    font-size: 1.5rem; color: var(--accent); line-height: 1;
+  }
+
+  .stat-card .sub {
+    font-size: 11px; color: var(--text-muted); margin-top: 4px; font-weight: 300;
+  }
+
+  /* ── Momentum section ── */
+  .momentum-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: var(--radius-lg); padding: 20px 24px;
+  }
+
+  .momentum-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 12px; gap: 20px;
+  }
+
+  .momentum-label {
+    font-size: 10px; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; margin-bottom: 8px;
+  }
+
+  .momentum-score {
+    font-family: var(--font-display);
+    font-size: 2rem; color: var(--text-primary);
+    flex-shrink: 0;
+  }
+
+  .momentum-bar-bg {
+    background: var(--border); border-radius: 4px; height: 6px; width: 100%;
+  }
+
+  .momentum-bar-fill {
+    background: linear-gradient(90deg, var(--accent), var(--accent-dim));
+    border-radius: 4px; height: 6px;
+  }
+
+  .momentum-note {
+    font-size: 12px; color: var(--text-muted); margin-top: 10px;
+    line-height: 1.65; font-weight: 300;
+  }
+
+  /* ── Main content ── */
+  .main {
+    max-width: 1160px; margin: 0 auto;
+    padding: 36px 32px; position: relative; z-index: 1;
+  }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex; gap: 2px; flex-wrap: wrap;
+    border-bottom: 1px solid var(--border); margin-bottom: 0;
+  }
+
+  .tab-btn {
+    background: none; border: none; color: var(--text-muted);
+    padding: 10px 14px; font-size: 12px; font-family: var(--font-body);
+    cursor: pointer; border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s; white-space: nowrap; font-weight: 400;
+  }
+
+  .tab-btn:hover { color: var(--text-primary); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+
   .tab-content { display: none; padding: 28px 0 0; }
   .tab-content.active { display: block; }
 
-  .sector-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
-  .sector-title { font-size: 1.45rem; font-weight: 700; color: #e0e6f0; }
-  .sector-momentum { text-align: right; }
-  .sector-momentum .score { font-size: 1.8rem; font-weight: 700; color: #81c784; }
-  .sector-momentum .label { font-size: 0.72rem; color: #8899bb; text-transform: uppercase; }
-  .snapshot-badge { display: inline-block; background: #81c78420; border: 1px solid #81c78440; color: #81c784; font-size: 0.7rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-left: 10px; vertical-align: middle; }
-  .sector-desc { font-size: 0.95rem; color: #c0cfe0; margin-bottom: 22px; line-height: 1.7; }
+  /* ── Sector header ── */
+  .sector-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    flex-wrap: wrap; gap: 12px; margin-bottom: 16px;
+  }
 
+  .sector-title {
+    font-family: var(--font-display);
+    font-size: 22px; color: var(--text-primary);
+  }
+
+  .snapshot-badge {
+    display: inline-block;
+    background: rgba(45,212,191,0.1); border: 1px solid rgba(45,212,191,0.25); color: var(--accent);
+    font-size: 10px; font-weight: 600; padding: 2px 9px; border-radius: 20px;
+    margin-left: 10px; vertical-align: middle; font-family: var(--font-body);
+  }
+
+  .sector-momentum { text-align: right; }
+  .sector-momentum .score { font-family: var(--font-display); font-size: 2rem; color: var(--accent); line-height: 1; }
+  .sector-momentum .label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 3px; }
+
+  .sector-desc {
+    font-size: 13px; color: var(--text-secondary);
+    margin-bottom: 22px; line-height: 1.8; font-weight: 300;
+  }
+
+  /* ── Two-col boxes ── */
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
   @media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
 
-  .info-box { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 18px 20px; }
-  .info-box h4 { font-size: 0.78rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+  .info-box {
+    background: var(--bg-card-alt); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px 20px;
+  }
+
+  .info-box h4 {
+    font-size: 10px; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; font-weight: 600;
+  }
+
   .info-box ul { list-style: none; }
-  .info-box ul li { font-size: 0.88rem; color: #c0cfe0; padding: 4px 0; border-bottom: 1px solid #1e2a4a20; }
-  .info-box ul li:before { content: "›"; color: #81c784; margin-right: 8px; }
+  .info-box ul li {
+    font-size: 12px; color: var(--text-secondary); padding: 4px 0;
+    border-bottom: 1px solid rgba(30,48,72,0.5); line-height: 1.55; font-weight: 300;
+  }
+  .info-box ul li:before { content: "›"; color: var(--accent); margin-right: 8px; }
   .info-box ul li:last-child { border-bottom: none; }
 
-  .impact-box { background: #0f2214; border: 1px solid #81c78430; border-left: 3px solid #81c784; border-radius: 8px; padding: 18px 20px; margin-bottom: 20px; }
-  .impact-box h4 { font-size: 0.78rem; color: #81c784; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
-  .impact-box p { font-size: 0.9rem; color: #c0cfe0; line-height: 1.65; }
+  /* ── Impact / reg boxes ── */
+  .impact-box {
+    background: rgba(45,212,191,0.04);
+    border: 1px solid rgba(45,212,191,0.15); border-left: 3px solid var(--accent);
+    border-radius: var(--radius); padding: 18px 20px; margin-bottom: 20px;
+  }
 
-  .reg-box { background: #0d1226; border: 1px solid #64b5f630; border-left: 3px solid #64b5f6; border-radius: 8px; padding: 18px 20px; margin-bottom: 20px; }
-  .reg-box h4 { font-size: 0.78rem; color: #64b5f6; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
-  .reg-box p { font-size: 0.9rem; color: #c0cfe0; line-height: 1.65; }
+  .impact-box h4 {
+    font-size: 10px; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px; font-weight: 600;
+  }
 
-  .chart-container { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
-  .chart-container h4 { font-size: 0.82rem; color: #8899bb; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
+  .impact-box p { font-size: 13px; color: var(--text-secondary); line-height: 1.75; font-weight: 300; }
 
-  .emp-table-section { margin-top: 40px; }
-  .emp-table-section h2 { font-size: 1.2rem; font-weight: 700; color: #e0e6f0; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #1e2a4a; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-  th { background: #0d1226; color: #8899bb; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 14px; text-align: left; border-bottom: 1px solid #1e2a4a; }
-  td { padding: 10px 14px; border-bottom: 1px solid #1e2a4a10; color: #c0cfe0; }
-  tr:hover td { background: #0d122620; }
-  .score-cell { font-weight: 700; color: #81c784; }
-  .est-note { font-size: 0.75rem; color: #8899bb; font-style: italic; }
+  .reg-box {
+    background: var(--bg-card-alt);
+    border: 1px solid rgba(59,130,246,0.15); border-left: 3px solid #3B82F6;
+    border-radius: var(--radius); padding: 18px 20px; margin-bottom: 20px;
+  }
 
-  .policy-section { margin-top: 40px; }
-  .policy-section h2 { font-size: 1.2rem; font-weight: 700; color: #e0e6f0; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #1e2a4a; }
+  .reg-box h4 {
+    font-size: 10px; color: #60A5FA;
+    text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px; font-weight: 600;
+  }
+
+  .reg-box p { font-size: 13px; color: var(--text-secondary); line-height: 1.75; font-weight: 300; }
+
+  /* ── Chart container ── */
+  .chart-container {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px; margin-bottom: 20px;
+  }
+
+  .chart-container h4 {
+    font-size: 10px; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; font-weight: 600;
+  }
+
+  /* ── Employment table ── */
+  .emp-table-section { margin-top: 48px; }
+
+  .emp-table-section h2 {
+    font-family: var(--font-display);
+    font-size: 18px; color: var(--text-primary);
+    margin-bottom: 16px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+
+  th {
+    background: var(--bg-panel); color: var(--text-muted);
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--border); font-weight: 600;
+  }
+
+  td { padding: 11px 14px; border-bottom: 1px solid rgba(30,48,72,0.5); color: var(--text-secondary); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(45,212,191,0.02); }
+
+  .score-cell { font-weight: 700; color: var(--accent); font-size: 13px; }
+  .est-note { font-size: 11px; color: var(--text-muted); font-style: italic; }
+
+  /* ── Policy section ── */
+  .policy-section { margin-top: 48px; }
+
+  .policy-section h2 {
+    font-family: var(--font-display);
+    font-size: 18px; color: var(--text-primary);
+    margin-bottom: 16px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
   .policy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-  .policy-card { background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 18px 20px; }
-  .policy-card h4 { font-size: 0.88rem; font-weight: 700; color: #e0e6f0; margin-bottom: 8px; }
-  .policy-card p { font-size: 0.85rem; color: #8899bb; line-height: 1.6; }
-  .policy-card.gap { border-color: #81c78430; }
-  .policy-card.gap h4 { color: #81c784; }
 
-  .source-note { margin-top: 40px; background: #0d1226; border: 1px solid #1e2a4a; border-radius: 8px; padding: 20px 22px; font-size: 0.78rem; color: #8899bb; line-height: 1.7; }
-  .source-note strong { color: #c0cfe0; }
+  .policy-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px 20px;
+  }
 
-  footer { background: #0d1226; border-top: 1px solid #1e2a4a; padding: 22px 32px; text-align: center; font-size: 0.78rem; color: #8899bb; }
-  footer span { color: #64b5f6; }
+  .policy-card h4 { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+  .policy-card p  { font-size: 12px; color: var(--text-secondary); line-height: 1.65; font-weight: 300; }
+
+  .policy-card.gap { border-color: rgba(45,212,191,0.2); border-top: 2px solid var(--accent); }
+  .policy-card.gap h4 { color: var(--accent); }
+
+  /* ── Source note ── */
+  .source-note {
+    margin-top: 40px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px 22px;
+    font-size: 11px; color: var(--text-muted); line-height: 1.75; font-weight: 300;
+  }
+
+  .source-note strong { color: var(--text-secondary); font-weight: 500; }
+
+  /* ── Footer ── */
+  footer {
+    background: var(--bg-deep); border-top: 1px solid var(--border);
+    padding: 24px 32px; text-align: center;
+    font-size: 12px; color: var(--text-muted);
+    position: relative; z-index: 1;
+  }
+
+  footer span { color: var(--accent); }
+
+  @media (max-width: 768px) {
+    .hero { padding: 32px 20px 28px; }
+    .main { padding: 28px 20px; }
+    .topbar-right .nav-link { display: none; }
+  }
 </style>
 </head>
 <body>
 
 <header class="site-header">
-  <div class="brand">Human Impact Index</div>
-  <a href="europe_overview.html" class="back-link">← Back to Europe Overview</a>
+  <div class="topbar-inner">
+    <a href="index.html" class="topbar-brand">
+      <div class="brand-mark">H</div>
+      <div class="brand-text">
+        <span class="brand-name">AI Human Impact Index</span>
+        <span class="brand-sub">AI Workforce Analysis</span>
+      </div>
+    </a>
+    <div class="topbar-right">
+      <a href="hii-news-feed.html" class="nav-link">Intelligence Feed</a>
+      <a href="index.html" class="nav-link">Index</a>
+      <a href="methodology.html" class="nav-link">Methodology</a>
+      <a href="about.html" class="nav-link">About</a>
+    </div>
+  </div>
 </header>
 
 <section class="hero">
   <div class="hero-inner">
-    <div class="region-badge">Europe Region</div>
+    <div class="region-badge eu-badge">Europe Region</div>
     <h1>Sweden</h1>
     <p class="subtitle">AI Workforce Transformation Analysis — Human-Centred Assessment</p>
 

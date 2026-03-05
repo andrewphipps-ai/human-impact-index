@@ -1,135 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>China | Human Impact Index</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>China | Human Impact Index</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #0a0e1a;
-    --surface: #111827;
-    --surface2: #1a2235;
-    --border: #1e2d45;
-    --text: #e0e6f0;
-    --text-muted: #8899aa;
-    --blue: #64b5f6;
-    --purple: #ce93d8;
-    --green: #81c784;
-    --amber: #ffb74d;
-    --red: #ef5350;
-    --teal: #4db6ac;
+    --bg-deep:#0A1018;--bg-panel:#111827;--bg-card:#1A2332;--bg-card-alt:#162030;
+    --border:#1E3048;--border-light:#2A4060;--accent:#2DD4BF;--accent-dim:#1A7A6E;
+    --accent-glow:rgba(45,212,191,0.12);--col-eu:#10B981;--col-apac:#8B5CF6;
+    --text-primary:#F0F6FF;--text-secondary:#94A3B8;--text-muted:#4A6080;
+    --radius:8px;--radius-lg:14px;
+    --font-display:'DM Serif Display',Georgia,serif;
+    --font-body:'DM Sans',system-ui,sans-serif;
   }
-  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; }
-  a { color: var(--blue); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-
-  /* HEADER */
-  .page-header { background: linear-gradient(135deg, #0d1525 0%, #131e35 50%, #0d1525 100%); border-bottom: 1px solid var(--border); padding: 2rem 0; }
-  .header-inner { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
-  .back-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--purple); font-size: 0.85rem; margin-bottom: 1rem; }
-  .back-link:hover { color: var(--text); text-decoration: none; }
-  .country-title { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
-  .country-flag { font-size: 2.5rem; }
-  .country-title h1 { font-size: 2.2rem; font-weight: 700; color: var(--text); }
-  .country-title .region-tag { background: var(--purple); color: #fff; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
-  .subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem; max-width: 700px; }
-
-  /* STAT CARDS */
-  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
-  .stat-card .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.3rem; }
-  .stat-card .value { font-size: 1.4rem; font-weight: 700; color: var(--purple); }
-  .stat-card .note { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem; }
-
-  /* MOMENTUM BAR */
-  .momentum-section { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem 1.5rem; }
-  .momentum-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.6rem; }
-  .momentum-bar-wrap { position: relative; height: 10px; background: var(--border); border-radius: 5px; margin-bottom: 0.5rem; }
-  .momentum-bar-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--purple), var(--blue)); }
-  .momentum-row { display: flex; justify-content: space-between; align-items: center; }
-  .momentum-score { font-size: 1.8rem; font-weight: 700; color: var(--purple); }
-  .momentum-desc { font-size: 0.8rem; color: var(--text-muted); max-width: 500px; }
-
-  /* MAIN */
-  .main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
-
-  /* TABS */
-  .tab-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
-  .tab-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); padding: 0.45rem 0.9rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; transition: all 0.2s; }
-  .tab-btn:hover, .tab-btn.active { background: var(--purple); border-color: var(--purple); color: #fff; }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-
-  /* SECTOR LAYOUT */
-  .sector-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
-  .sector-icon { font-size: 2rem; }
-  .sector-header h2 { font-size: 1.5rem; font-weight: 700; }
-  .sector-momentum { margin-left: auto; text-align: right; }
-  .sector-momentum .score { font-size: 2rem; font-weight: 700; color: var(--purple); }
-  .sector-momentum .label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
-  .snapshot-badge { display: inline-block; background: var(--amber); color: #000; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; text-transform: uppercase; margin-left: 0.6rem; vertical-align: middle; }
-
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
-
-  .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; }
-  .info-card h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.8rem; }
-  .info-card ul { list-style: none; }
-  .info-card ul li { padding: 0.3rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-  .info-card ul li:last-child { border-bottom: none; }
-  .info-card ul li::before { content: "→ "; color: var(--purple); }
-  .at-risk::before { content: "▼ "; color: var(--red) !important; }
-  .emerging::before { content: "▲ "; color: var(--green) !important; }
-
-  .impact-box { background: linear-gradient(135deg, #1a0d2e, #0d1a2e); border: 1px solid #4a2060; border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem; }
-  .impact-box h3 { color: var(--purple); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
-  .impact-box p { font-size: 0.9rem; color: var(--text); line-height: 1.7; }
-
-  .reg-box { background: linear-gradient(135deg, #0d1a2e, #0a1520); border: 1px solid #1e3a5f; border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem; }
-  .reg-box h3 { color: var(--blue); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
-  .reg-box p { font-size: 0.9rem; color: var(--text); line-height: 1.7; }
-
-  .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
-  .chart-wrap h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 1rem; }
-  canvas { max-height: 280px; }
-
-  /* REGIONAL TABLE */
-  .section-title { font-size: 1.2rem; font-weight: 700; margin: 2rem 0 1rem; color: var(--text); border-left: 3px solid var(--purple); padding-left: 0.75rem; }
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  th { background: var(--surface); color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.06em; padding: 0.7rem 1rem; text-align: left; border-bottom: 2px solid var(--border); }
-  td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
-  tr:hover td { background: rgba(206, 147, 216, 0.04); }
-  .high { color: var(--red); font-weight: 600; }
-  .medium { color: var(--amber); font-weight: 600; }
-  .low { color: var(--green); font-weight: 600; }
-
-  /* POLICY */
-  .policy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-  .policy-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--purple); border-radius: 8px; padding: 1.2rem; }
-  .policy-card h4 { font-size: 0.85rem; font-weight: 700; color: var(--purple); margin-bottom: 0.5rem; }
-  .policy-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
-
-  /* SOURCE */
-  .source-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; }
-  .source-box h3 { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.8rem; }
-  .source-box p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.8; }
-
-  /* FOOTER */
-  footer { background: var(--surface); border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; font-size: 0.8rem; color: var(--text-muted); }
-  footer .brand { color: var(--purple); font-weight: 700; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--font-body);background:var(--bg-deep);color:var(--text-primary);min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
+  body::before{content:'';position:fixed;top:-40%;left:-20%;width:80%;height:80%;background:radial-gradient(ellipse,rgba(45,212,191,0.04) 0%,transparent 65%);pointer-events:none;z-index:0}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .page-header,.site-header{position:relative;z-index:1;background:var(--bg-deep);border-bottom:1px solid var(--border);padding:0 32px}
+  .header-inner,.topbar-inner{max-width:1160px;margin:0 auto;width:100%;padding:16px 0}
+  .topbar-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0}
+  .topbar-brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+  .brand-mark{width:34px;height:34px;border:2px solid var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:17px;color:var(--accent);background:var(--accent-glow);flex-shrink:0}
+  .brand-text{display:flex;flex-direction:column}
+  .brand-name{font-family:var(--font-display);font-size:14px;color:var(--text-primary);letter-spacing:0.02em;line-height:1.2}
+  .brand-sub{font-size:10px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase}
+  .topbar-right{display:flex;align-items:center;gap:6px}
+  .nav-link{font-size:12px;color:var(--text-secondary);text-decoration:none;padding:5px 12px;border-radius:var(--radius);transition:all 0.2s}
+  .nav-link:hover{color:var(--text-primary);background:var(--bg-card);text-decoration:none}
+  .back-link{font-size:12px;color:var(--text-secondary);text-decoration:none;padding:5px 12px;border-radius:var(--radius);transition:all 0.2s;border:1px solid var(--border)}
+  .back-link:hover{color:var(--text-primary);border-color:var(--border-light);text-decoration:none}
+  .hero{background:var(--bg-deep);border-bottom:1px solid var(--border);padding:44px 32px 36px;position:relative;z-index:1}
+  .hero-section{background:var(--bg-deep);border-bottom:1px solid var(--border);padding:36px 32px 32px;position:relative;z-index:1}
+  .hero-inner{max-width:1160px;margin:0 auto}
+  .region-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+  .region-badge.eu-badge{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#6EE7B7}
+  .region-badge.apac-badge{background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);color:#C4B5FD}
+  .country-title{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+  .country-flag{font-size:2.2rem}
+  .country-title h1{font-family:var(--font-display);font-size:clamp(26px,3.5vw,40px);color:var(--text-primary);line-height:1.12}
+  .hero h1{font-family:var(--font-display);font-size:clamp(28px,4vw,42px);color:var(--text-primary);margin-bottom:6px;line-height:1.12}
+  .region-tag{display:inline-flex;align-items:center;font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-left:10px;vertical-align:middle;font-family:var(--font-body)}
+  .region-tag.eu-tag{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#6EE7B7}
+  .region-tag.apac-tag{background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);color:#C4B5FD}
+  .subtitle{font-size:13px;color:var(--text-secondary);margin-bottom:24px;font-weight:300;line-height:1.75;max-width:780px}
+  .hero .subtitle{font-size:14px;color:var(--text-secondary);margin-bottom:28px;font-weight:300}
+  .stat-grid,.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:20px}
+  .stat-card{background:var(--bg-card);padding:14px 16px}
+  .stat-card .label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;font-weight:600}
+  .stat-card .value{font-family:var(--font-display);font-size:1.4rem;color:var(--accent);line-height:1}
+  .stat-card .note,.stat-card .sub{font-size:10px;color:var(--text-muted);margin-top:4px;font-weight:300}
+  .momentum-section{background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius-lg);padding:18px 22px}
+  .momentum-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:20px}
+  .momentum-label{font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:0.14em;font-weight:600;margin-bottom:8px}
+  .momentum-score{font-family:var(--font-display);font-size:2rem;color:var(--text-primary);flex-shrink:0}
+  .momentum-bar-bg,.momentum-bar-wrap{background:var(--border);border-radius:4px;height:6px;width:100%;margin:10px 0 8px}
+  .momentum-bar-fill{background:linear-gradient(90deg,var(--accent),var(--accent-dim));border-radius:4px;height:6px}
+  .momentum-row{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+  .momentum-desc,.momentum-note{font-size:11px;color:var(--text-muted);line-height:1.65;font-weight:300;margin-top:8px}
+  .main{max-width:1160px;margin:0 auto;padding:32px 32px;position:relative;z-index:1}
+  .tab-bar,.tabs{display:flex;gap:2px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:0;padding-bottom:0}
+  .tab-btn{background:none;border:none;color:var(--text-muted);padding:10px 14px;font-size:12px;font-family:var(--font-body);cursor:pointer;border-bottom:2px solid transparent;border-radius:0;transition:color 0.2s,border-color 0.2s;white-space:nowrap;font-weight:400}
+  .tab-btn:hover{color:var(--text-primary);background:none;border-color:transparent}
+  .tab-btn.active{background:none;border-color:var(--accent);color:var(--accent);font-weight:500}
+  .tab-panel,.tab-content{display:none;padding:28px 0 0}
+  .tab-panel.active,.tab-content.active{display:block}
+  .sector-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+  .sector-icon{font-size:1.8rem;flex-shrink:0;line-height:1}
+  .sector-header h2{font-family:var(--font-display);font-size:22px;color:var(--text-primary);flex:1}
+  .sector-title{font-family:var(--font-display);font-size:22px;color:var(--text-primary)}
+  .sector-momentum{margin-left:auto;text-align:right;flex-shrink:0}
+  .sector-momentum .score{font-family:var(--font-display);font-size:2rem;color:var(--accent);line-height:1}
+  .sector-momentum .label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:3px}
+  .snapshot-badge{display:inline-block;background:rgba(45,212,191,0.1);border:1px solid rgba(45,212,191,0.25);color:var(--accent);font-size:10px;font-weight:600;padding:2px 9px;border-radius:20px;margin-left:10px;vertical-align:middle;font-family:var(--font-body)}
+  .sector-desc{font-size:13px;color:var(--text-secondary);margin-bottom:22px;line-height:1.8;font-weight:300}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+  @media(max-width:680px){.two-col{grid-template-columns:1fr}}
+  .info-card,.info-box{background:var(--bg-card-alt,#162030);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+  .info-card h3,.info-box h4{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;font-weight:600}
+  .info-card ul,.info-box ul{list-style:none}
+  .info-card ul li,.info-box ul li{font-size:12px;color:var(--text-secondary);padding:4px 0;border-bottom:1px solid rgba(30,48,72,0.5);line-height:1.55;font-weight:300}
+  .info-card ul li::before{content:"→ ";color:var(--accent)}
+  .info-box ul li::before{content:"› ";color:var(--accent)}
+  .info-card ul li:last-child,.info-box ul li:last-child{border-bottom:none}
+  .at-risk::before{content:"▼ ";color:#F87171!important}
+  .emerging::before{content:"▲ ";color:#6EE7B7!important}
+  .impact-box{background:rgba(45,212,191,0.04);border:1px solid rgba(45,212,191,0.15);border-left:3px solid var(--accent);border-radius:var(--radius);padding:18px 20px;margin-bottom:20px}
+  .impact-box h3,.impact-box h4{font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;font-weight:600}
+  .impact-box p{font-size:13px;color:var(--text-secondary);line-height:1.75;font-weight:300}
+  .reg-box{background:var(--bg-card-alt,#162030);border:1px solid rgba(59,130,246,0.15);border-left:3px solid #3B82F6;border-radius:var(--radius);padding:18px 20px;margin-bottom:20px}
+  .reg-box h3,.reg-box h4{font-size:10px;color:#60A5FA;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;font-weight:600}
+  .reg-box p{font-size:13px;color:var(--text-secondary);line-height:1.75;font-weight:300}
+  .chart-wrap,.chart-container{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px}
+  .chart-wrap h3,.chart-container h4{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;font-weight:600}
+  canvas{max-height:280px}
+  .section-title{font-family:var(--font-display);font-size:18px;color:var(--text-primary);margin:40px 0 16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+  .emp-table-section{margin-top:48px}
+  .emp-table-section h2{font-family:var(--font-display);font-size:18px;color:var(--text-primary);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{background:var(--bg-panel);color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:0.1em;padding:11px 14px;text-align:left;border-bottom:1px solid var(--border);font-weight:600}
+  td{padding:11px 14px;border-bottom:1px solid rgba(30,48,72,0.5);color:var(--text-secondary);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(45,212,191,0.02)}
+  .score-cell,.high{color:var(--accent);font-weight:700;font-size:13px}
+  .medium{color:#FBBF24;font-weight:600}
+  .low{color:#6EE7B7;font-weight:600}
+  .est-note{font-size:11px;color:var(--text-muted);font-style:italic}
+  .policy-section{margin-top:48px}
+  .policy-section h2{font-family:var(--font-display);font-size:18px;color:var(--text-primary);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+  .policy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+  .policy-card{background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius);padding:18px 20px}
+  .policy-card h4{font-size:13px;font-weight:600;color:var(--accent);margin-bottom:8px}
+  .policy-card p{font-size:12px;color:var(--text-secondary);line-height:1.65;font-weight:300}
+  .source-box,.source-note{margin-top:40px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;font-size:11px;color:var(--text-muted);line-height:1.75;font-weight:300}
+  .source-box h3{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;font-weight:600}
+  .source-box p{font-size:11px;color:var(--text-muted);line-height:1.75;font-weight:300}
+  .source-note strong,.source-box strong{color:var(--text-secondary);font-weight:500}
+  footer{background:var(--bg-deep);border-top:1px solid var(--border);padding:24px 32px;text-align:center;font-size:12px;color:var(--text-muted);position:relative;z-index:1}
+  footer span,.brand{color:var(--accent);font-weight:500}
+  @media(max-width:768px){.hero,.hero-section{padding:28px 20px}.main{padding:24px 20px}.topbar-right .nav-link{display:none}.country-flag{display:none}}
 </style>
 </head>
 <body>
 
 <header class="page-header">
   <div class="header-inner">
-    <a class="back-link" href="apac_overview.html">← Back to APAC Overview</a>
+    <div class="topbar-row">
+      <a href="index.html" class="topbar-brand">
+        <div class="brand-mark">H</div>
+        <div class="brand-text">
+          <span class="brand-name">AI Human Impact Index</span>
+          <span class="brand-sub">AI Workforce Analysis</span>
+        </div>
+      </a>
+      <div class="topbar-right">
+        <a href="hii-news-feed.html" class="nav-link">Intelligence Feed</a>
+        <a href="index.html" class="nav-link">Index</a>
+        <a href="methodology.html" class="nav-link">Methodology</a>
+        <a href="about.html" class="nav-link">About</a>
+      </div>
+    </div>
+  </div>
+</header>
+<section class="hero-section">
+  <div class="hero-inner">
     <div class="country-title">
       <span class="country-flag">🇨🇳</span>
       <div>
-        <h1>China <span class="region-tag">APAC</span></h1>
+        <h1>China <span class="region-tag apac-tag">APAC</span></h1>
       </div>
     </div>
     <p class="subtitle">AI is transforming China's workforce at a scale unmatched anywhere on earth. With 734 million employed people and a government-directed acceleration programme, the human stakes are immense — and largely invisible in productivity metrics.</p>
@@ -176,7 +203,7 @@
       </div>
     </div>
   </div>
-</header>
+</section>
 
 <main class="main">
 
