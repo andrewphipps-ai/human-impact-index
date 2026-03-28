@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visualiser | Human Impact Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  /* ─── Design tokens (matches existing HII pages) ─── */
+  :root {
+    --bg-deep:    #0A1018;
+    --bg-card:    #111827;
+    --bg-card2:   #0f1a26;
+    --bg-surface: #162032;
+    --border:     rgba(45,212,191,0.12);
+    --border-dim: rgba(255,255,255,0.07);
+    --teal:       #2DD4BF;
+    --teal-dim:   rgba(45,212,191,0.15);
+    --teal-glow:  rgba(45,212,191,0.08);
+    --text-pri:   #f0f4f8;
+    --text-sec:   #94a3b8;
+    --text-dim:   #64748b;
+    --eu-color:   #818CF8;
+    --eu-dim:     rgba(129,140,248,0.15);
+    --na-color:   #FB923C;
+    --na-dim:     rgba(251,146,60,0.15);
+    --apac-color: #34D399;
+    --apac-dim:   rgba(52,211,153,0.15);
+    --uk-color:   #2DD4BF;
+    --uk-dim:     rgba(45,212,191,0.15);
+    --font-serif: 'DM Serif Display', Georgia, serif;
+    --font-sans:  'DM Sans', system-ui, sans-serif;
+    --radius:     12px;
+    --radius-sm:  8px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-pri);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ─── Nav (matches existing HII nav) ─── */
+  nav {
+    border-bottom: 1px solid var(--border-dim);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    background: rgba(10,16,24,0.96);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
+  .nav-brand {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--teal);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .nav-links { display: flex; gap: 1.75rem; }
+  .nav-links a {
+    color: var(--text-sec);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 400;
+    transition: color .2s;
+    letter-spacing: 0.02em;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--teal); }
+
+  /* ─── Hero ─── */
+  .hero {
+    padding: 4rem 2rem 2.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .hero-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 400;
+    color: var(--text-pri);
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    max-width: 640px;
+  }
+  .hero-desc {
+    color: var(--text-sec);
+    font-size: 0.95rem;
+    max-width: 580px;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+  .hero-meta-item { display: flex; align-items: center; gap: 0.4rem; }
+  .hero-meta-item svg { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.7; }
+
+  /* ─── Main layout ─── */
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem 5rem;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  /* ─── Controls strip ─── */
+  .controls-strip {
+    grid-column: 1 / -1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+  .ctrl-group { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .ctrl-label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .chip-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    font-size: 0.78rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border-dim);
+    background: transparent;
+    color: var(--text-sec);
+    cursor: pointer;
+    transition: all .2s;
+    font-family: var(--font-sans);
+    white-space: nowrap;
+  }
+  .chip:hover { border-color: var(--teal); color: var(--teal); }
+  .chip.active { background: var(--teal-dim); border-color: var(--teal); color: var(--teal); font-weight: 500; }
+  .chip.region-eu { --rc: var(--eu-color); }
+  .chip.region-na { --rc: var(--na-color); }
+  .chip.region-apac { --rc: var(--apac-color); }
+  .chip.region-eu.active  { background: var(--eu-dim);   border-color: var(--eu-color);   color: var(--eu-color); }
+  .chip.region-na.active  { background: var(--na-dim);   border-color: var(--na-color);   color: var(--na-color); }
+  .chip.region-apac.active { background: var(--apac-dim); border-color: var(--apac-color); color: var(--apac-color); }
+
+  .divider { width: 1px; height: 28px; background: var(--border-dim); flex-shrink: 0; }
+
+  .toggle-group { display: flex; gap: 4px; }
+  .toggle-btn {
+    font-size: 0.78rem;
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-dim);
+    background: transparent;
+    color: var(--text-sec);
+    cursor: pointer;
+    transition: all .2s;
+    font-family: var(--font-sans);
+    white-space: nowrap;
+  }
+  .toggle-btn:hover { color: var(--text-pri); border-color: var(--border); }
+  .toggle-btn.active { background: var(--bg-surface); color: var(--text-pri); border-color: var(--border); }
+
+  /* ─── Radar card ─── */
+  .radar-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    position: relative;
+  }
+  .radar-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+  }
+  .radar-title {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--text-pri);
+  }
+  .radar-subtitle { font-size: 0.8rem; color: var(--text-sec); margin-top: 2px; }
+
+  .bubble-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: var(--text-sec);
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .bubble-toggle input { display: none; }
+  .bubble-track {
+    width: 32px; height: 18px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-dim);
+    border-radius: 9px;
+    position: relative;
+    transition: background .2s, border-color .2s;
+  }
+  .bubble-track::after {
+    content: '';
+    position: absolute;
+    width: 12px; height: 12px;
+    background: var(--text-dim);
+    border-radius: 50%;
+    top: 2px; left: 2px;
+    transition: transform .2s, background .2s;
+  }
+  .bubble-toggle.on .bubble-track { background: var(--teal-dim); border-color: var(--teal); }
+  .bubble-toggle.on .bubble-track::after { transform: translateX(14px); background: var(--teal); }
+
+  .canvas-wrap { position: relative; }
+  #radar-canvas { width: 100% !important; }
+
+  /* ─── Tooltip: point-specific ─── */
+  .radar-tooltip {
+    position: absolute;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .12s;
+    z-index: 20;
+    min-width: 160px;
+    max-width: 200px;
+  }
+  .radar-tooltip.show { opacity: 1; }
+  .tt-head { font-family: var(--font-serif); font-size: 0.95rem; color: var(--text-pri); margin-bottom: 3px; }
+  .tt-region { font-size: 0.7rem; }
+  .tt-dim-label { font-size: 0.75rem; color: var(--text-sec); margin-bottom: 4px; }
+  .tt-score-row { display: flex; align-items: baseline; gap: 3px; }
+  .tt-score-val { font-size: 1.6rem; font-weight: 600; line-height: 1; }
+  .tt-score-suffix { font-size: 0.8rem; color: var(--text-dim); }
+  .tt-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+  .tt-bar-fill { height: 100%; border-radius: 2px; }
+  .tt-desc { font-size: 0.72rem; color: var(--text-dim); margin-top: 5px; line-height: 1.4; }
+
+  /* ─── Scorecard (click-to-reveal full profile) ─── */
+  .scorecard {
+    display: none;
+    margin-top: 1rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.1rem;
+  }
+  .scorecard.show { display: block; }
+  .sc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.85rem; }
+  .sc-name { font-family: var(--font-serif); font-size: 1.05rem; color: var(--text-pri); }
+  .sc-avg { text-align: right; }
+  .sc-avg-val { font-size: 1.5rem; font-weight: 600; color: var(--teal); line-height: 1; }
+  .sc-avg-label { font-size: 0.7rem; color: var(--text-dim); margin-top: 1px; }
+  .sc-rows { display: flex; flex-direction: column; gap: 8px; }
+  .sc-row { display: flex; align-items: center; gap: 8px; }
+  .sc-row-label { font-size: 0.78rem; color: var(--text-sec); min-width: 130px; display: flex; align-items: center; }
+  .sc-bar-wrap { flex: 1; height: 5px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; }
+  .sc-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+  .sc-bar-fill.sc-high { background: #f87171; }
+  .sc-bar-fill.sc-med  { background: #fb923c; }
+  .sc-bar-fill.sc-low  { background: #34d399; }
+  .sc-val { font-size: 0.78rem; font-weight: 500; min-width: 28px; text-align: right; }
+  .sc-val.sc-high { color: #f87171; }
+  .sc-val.sc-med  { color: #fb923c; }
+  .sc-val.sc-low  { color: #34d399; }
+  .sc-workers { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.75rem; padding-top: 0.6rem; border-top: 1px solid var(--border-dim); }
+  .sc-workers strong { color: var(--text-sec); }
+  .sc-close {
+    display: block; width: 100%; margin-top: 0.75rem;
+    font-size: 0.75rem; color: var(--text-dim);
+    background: transparent; border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm); padding: 5px 0; cursor: pointer;
+    font-family: var(--font-sans); transition: color .15s, border-color .15s;
+  }
+  .sc-close:hover { color: var(--text-sec); border-color: var(--border); }
+
+  /* ─── Legend ─── */
+  .legend-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 1rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background .15s;
+    font-size: 0.82rem;
+    color: var(--text-sec);
+  }
+  .legend-item:hover { background: var(--bg-surface); color: var(--text-pri); }
+  .legend-item.highlighted { background: var(--bg-surface); color: var(--text-pri); }
+  .legend-item.dimmed { opacity: 0.4; }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .legend-score {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  /* ─── Sidebar cards ─── */
+  .sidebar { display: flex; flex-direction: column; gap: 1rem; }
+
+  .info-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+  .info-card-title {
+    font-size: 0.72rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 0.85rem;
+  }
+
+  /* axis explainer */
+  .axis-list { display: flex; flex-direction: column; gap: 0; }
+  .axis-item {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-dim);
+  }
+  .axis-item:last-child { border-bottom: none; }
+  .axis-item-name {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-pri);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+  }
+  .axis-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .axis-item-desc { font-size: 0.76rem; color: var(--text-sec); line-height: 1.5; padding-left: 15px; }
+
+  /* insight card */
+  .insight-list { display: flex; flex-direction: column; gap: 0.75rem; }
+  .insight-item {
+    padding: 10px 12px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    border-left: 2px solid var(--teal);
+  }
+  .insight-item.warn { border-left-color: var(--na-color); }
+  .insight-item.neutral { border-left-color: var(--eu-color); }
+  .insight-text { font-size: 0.8rem; color: var(--text-sec); line-height: 1.5; }
+  .insight-text strong { color: var(--text-pri); font-weight: 500; }
+
+  /* methodology note */
+  .method-note { font-size: 0.77rem; color: var(--text-sec); line-height: 1.6; }
+  .method-note a { color: var(--teal); text-decoration: none; }
+  .method-note a:hover { text-decoration: underline; }
+
+  /* region badges */
+  .region-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .badge-uk   { background: var(--uk-dim);   color: var(--uk-color); }
+  .badge-eu   { background: var(--eu-dim);   color: var(--eu-color); }
+  .badge-na   { background: var(--na-dim);   color: var(--na-color); }
+  .badge-apac { background: var(--apac-dim); color: var(--apac-color); }
+
+  /* ─── Geographic concentration panel ─── */
+  .geo-card {
+    grid-column: 1 / -1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+  }
+  .geo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+    gap: 1rem;
+  }
+  .geo-title {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--text-pri);
+  }
+  .geo-subtitle { font-size: 0.8rem; color: var(--text-sec); margin-top: 2px; }
+  .geo-note { font-size: 0.78rem; color: var(--text-sec); max-width: 480px; line-height: 1.5; }
+
+  .geo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+  .geo-country {
+    background: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--border-dim);
+  }
+  .geo-country-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .geo-country-name { font-size: 0.88rem; font-weight: 500; color: var(--text-pri); }
+  .geo-score {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .geo-score.high  { background: rgba(239,68,68,0.15); color: #f87171; }
+  .geo-score.med   { background: rgba(251,146,60,0.15); color: var(--na-color); }
+  .geo-score.low   { background: rgba(45,212,191,0.12); color: var(--teal); }
+
+  .geo-bars { display: flex; flex-direction: column; gap: 7px; }
+  .geo-bar-row { display: flex; flex-direction: column; gap: 3px; }
+  .geo-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.74rem;
+    color: var(--text-sec);
+  }
+  .geo-bar-label span:last-child { color: var(--text-dim); }
+  .geo-bar-track {
+    height: 5px;
+    background: var(--bg-deep);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .geo-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+  .geo-hotspot {
+    margin-top: 0.75rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--border-dim);
+    font-size: 0.75rem;
+    color: var(--text-sec);
+    line-height: 1.5;
+  }
+  .geo-hotspot strong { color: var(--text-pri); font-weight: 500; }
+
+  /* ─── Footer ─── */
+  footer {
+    border-top: 1px solid var(--border-dim);
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+  footer a { color: var(--teal); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; }
+    .controls-strip { flex-direction: column; align-items: flex-start; }
+    .divider { display: none; }
+  }
+  @media (max-width: 600px) {
+    nav { padding: 0 1rem; }
+    .hero, .main { padding-left: 1rem; padding-right: 1rem; }
+    .nav-links { gap: 1rem; }
+    .hero h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <a href="hii-index.html" class="nav-brand">Human Impact Index</a>
+  <div class="nav-links">
+    <a href="hii-news-feed.html">Intelligence Feed</a>
+    <a href="hii-visualiser.html" class="active">Visualiser</a>
+    <a href="hii-index.html">Index</a>
+    <a href="methodology.html">Methodology</a>
+    <a href="about.html">About</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="hero-eyebrow">Visualiser &mdash; Multi-Dimensional Analysis</div>
+  <h1>Mapping workforce disruption across dimensions</h1>
+  <p class="hero-desc">
+    The HII Visualiser maps six dimensions of AI-driven workforce disruption simultaneously, revealing the distinct profile each country carries &mdash; not just how much disruption is occurring, but what kind, and who bears the cost.
+  </p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+      Last updated: March 2026
+    </div>
+    <div class="hero-meta-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l4-4 3 3 5-6"/></svg>
+      15 countries &bull; 6 dimensions &bull; Quarterly data
+    </div>
+    <div class="hero-meta-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5"/></svg>
+      500M+ workers represented
+    </div>
+  </div>
+</header>
+
+<!-- Main content -->
+<div class="main">
+
+  <!-- Controls strip -->
+  <div class="controls-strip">
+    <div class="ctrl-group">
+      <span class="ctrl-label">View</span>
+      <div class="toggle-group">
+        <button class="toggle-btn active" onclick="setView('country', this)">By country</button>
+        <button class="toggle-btn" onclick="setView('sector', this)">By sector</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="ctrl-group" id="region-group">
+      <span class="ctrl-label">Region</span>
+      <div class="chip-row">
+        <button class="chip active" onclick="filterRegion('all', this)">All</button>
+        <button class="chip region-uk" onclick="filterRegion('uk', this)">UK</button>
+        <button class="chip region-eu" onclick="filterRegion('eu', this)">Europe</button>
+        <button class="chip region-na" onclick="filterRegion('na', this)">N. America</button>
+        <button class="chip region-apac" onclick="filterRegion('apac', this)">APAC</button>
+      </div>
+    </div>
+
+    <div class="divider" id="overlay-divider" style="display:none"></div>
+
+    <div class="ctrl-group" id="overlay-group" style="display:none">
+      <span class="ctrl-label">Overlay</span>
+      <div class="chip-row" id="overlay-chips"></div>
+    </div>
+
+    <div style="margin-left:auto">
+      <label class="bubble-toggle" id="bubble-toggle" onclick="toggleBubble()">
+        <span class="bubble-track"></span>
+        <span>Scale by workforce size</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Radar card -->
+  <div class="radar-card">
+    <div class="radar-card-header">
+      <div>
+        <div class="radar-title" id="radar-title">Country comparison &mdash; all regions</div>
+        <div class="radar-subtitle" id="radar-subtitle">Hover any point to see that dimension's score. Click a point or name below to pin the full profile.</div>
+      </div>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="radar-canvas"></canvas>
+      <div class="radar-tooltip" id="tt"></div>
+    </div>
+    <div class="legend-grid" id="legend"></div>
+    <div class="scorecard" id="scorecard"></div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+
+    <!-- Axis explainer -->
+    <div class="info-card">
+      <div class="info-card-title">Dimensions explained</div>
+      <div class="axis-list" id="axis-list"></div>
+    </div>
+
+    <!-- Key insights -->
+    <div class="info-card">
+      <div class="info-card-title">Pattern insights</div>
+      <div class="insight-list" id="insight-list">
+        <!-- populated by JS based on view -->
+      </div>
+    </div>
+
+    <!-- Methodology note -->
+    <div class="info-card">
+      <div class="info-card-title">Data &amp; methodology</div>
+      <p class="method-note">
+        Scores are composite indices triangulated from OECD, ILO, ONS, Eurostat, and national statistical agencies. Each dimension is normalised to a 0&ndash;100 scale where higher values indicate greater risk or challenge to workers. Workforce scale modifier uses absolute employment data from ILO 2024 estimates.
+        <br><br>
+        See full methodology on the <a href="methodology.html">Methodology</a> page.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Geographic concentration panel -->
+  <div class="geo-card">
+    <div class="geo-header">
+      <div>
+        <div class="geo-title">Geographic concentration of impact</div>
+        <div class="geo-subtitle">Where within each country are affected workers clustered?</div>
+      </div>
+      <p class="geo-note">Disruption is not evenly distributed within countries. This panel maps intra-national concentration &mdash; identifying the regions, cities, and communities bearing the highest share of workforce displacement risk, with implications for local labour markets and the commercial real estate assets that serve them.</p>
+    </div>
+    <div class="geo-grid" id="geo-grid"></div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>Human Impact Index &mdash; AI Workforce Impact Research &bull; <a href="methodology.html">Methodology</a> &bull; <a href="about.html">About this tool</a></p>
+  <p style="margin-top:6px">Research by Andrew Phipps, PhD researcher in AI Ethics, University of Sussex &bull; <a href="about.html">andrewphipps.ai</a></p>
+</footer>
+
+<script>
+/* ─── Data ─── */
+
+const COUNTRY_DIMS = [
+  { key: 'disp',    label: 'Displacement risk',     desc: '% of roles with high automation exposure', color: '#f87171' },
+  { key: 'adopt',   label: 'Adoption velocity',     desc: 'Speed of AI deployment in the economy',    color: '#fb923c' },
+  { key: 'vuln',    label: 'Worker vulnerability',  desc: 'Low-wage, limited retraining access',       color: '#fbbf24' },
+  { key: 'policy',  label: 'Policy readiness',      desc: 'Regulatory and social protection framework', color: '#34d399' },
+  { key: 'reskill', label: 'Reskilling access',     desc: 'Availability of and participation in retraining', color: '#60a5fa' },
+  { key: 'precarity', label: 'Income precarity',    desc: 'Share on low wages, zero-hours or gig contracts', color: '#c084fc' },
+];
+
+const SECTOR_DIMS = [
+  { key: 'disp',   label: 'Displacement risk',       desc: '% of roles with high automation exposure', color: '#f87171' },
+  { key: 'adopt',  label: 'Adoption velocity',       desc: 'Speed of AI deployment in this sector',     color: '#fb923c' },
+  { key: 'vuln',   label: 'Worker vulnerability',    desc: 'Low-wage, limited retraining access',        color: '#fbbf24' },
+  { key: 'augment',label: 'Augmentation potential',  desc: 'Share of roles AI assists rather than replaces', color: '#34d399' },
+  { key: 'precarity', label: 'Income precarity',     desc: 'Share on low wages, zero-hours or gig contracts', color: '#c084fc' },
+];
+
+const COUNTRIES = {
+  uk:  { label: 'United Kingdom', region: 'uk',   regionLabel: 'UK',       color: '#2DD4BF', workers: 33, data: { disp:72, adopt:68, vuln:58, policy:62, reskill:55, precarity:60 } },
+  de:  { label: 'Germany',        region: 'eu',   regionLabel: 'Europe',   color: '#818CF8', workers: 44, data: { disp:65, adopt:74, vuln:52, policy:71, reskill:68, precarity:44 } },
+  fr:  { label: 'France',         region: 'eu',   regionLabel: 'Europe',   color: '#a78bfa', workers: 29, data: { disp:60, adopt:62, vuln:55, policy:58, reskill:52, precarity:48 } },
+  nl:  { label: 'Netherlands',    region: 'eu',   regionLabel: 'Europe',   color: '#c4b5fd', workers: 9,  data: { disp:62, adopt:70, vuln:48, policy:74, reskill:71, precarity:40 } },
+  es:  { label: 'Spain',          region: 'eu',   regionLabel: 'Europe',   color: '#7c3aed', workers: 21, data: { disp:58, adopt:56, vuln:62, policy:50, reskill:44, precarity:64 } },
+  it:  { label: 'Italy',          region: 'eu',   regionLabel: 'Europe',   color: '#e879f9', workers: 25, data: { disp:62, adopt:58, vuln:64, policy:52, reskill:46, precarity:66 } },
+  pl:  { label: 'Poland',         region: 'eu',   regionLabel: 'Europe',   color: '#6d28d9', workers: 17, data: { disp:54, adopt:58, vuln:66, policy:44, reskill:40, precarity:68 } },
+  us:  { label: 'United States',  region: 'na',   regionLabel: 'N. America', color: '#FB923C', workers: 161,data: { disp:78, adopt:82, vuln:64, policy:45, reskill:50, precarity:66 } },
+  ca:  { label: 'Canada',         region: 'na',   regionLabel: 'N. America', color: '#fdba74', workers: 20, data: { disp:70, adopt:75, vuln:58, policy:62, reskill:60, precarity:54 } },
+  au:  { label: 'Australia',      region: 'apac', regionLabel: 'APAC',     color: '#34D399', workers: 14, data: { disp:68, adopt:70, vuln:55, policy:64, reskill:58, precarity:52 } },
+  jp:  { label: 'Japan',          region: 'apac', regionLabel: 'APAC',     color: '#6ee7b7', workers: 68, data: { disp:55, adopt:60, vuln:62, policy:58, reskill:62, precarity:46 } },
+  sg:  { label: 'Singapore',      region: 'apac', regionLabel: 'APAC',     color: '#059669', workers: 4,  data: { disp:66, adopt:78, vuln:50, policy:80, reskill:76, precarity:38 } },
+  in:  { label: 'India',          region: 'apac', regionLabel: 'APAC',     color: '#a7f3d0', workers: 470,data: { disp:48, adopt:52, vuln:78, policy:30, reskill:28, precarity:80 } },
+  kr:  { label: 'South Korea',    region: 'apac', regionLabel: 'APAC',     color: '#10b981', workers: 28, data: { disp:62, adopt:76, vuln:56, policy:60, reskill:58, precarity:50 } },
+  cn:  { label: 'China',          region: 'apac', regionLabel: 'APAC',     color: '#d1fae5', workers: 780,data: { disp:60, adopt:70, vuln:68, policy:48, reskill:44, precarity:62 } },
+};
+
+const SECTORS = {
+  fin:   { label: 'Financial Services',   color: '#2DD4BF', workers: 2.0, data: { disp:78, adopt:82, vuln:45, augment:72, precarity:30 } },
+  legal: { label: 'Legal Services',       color: '#818CF8', workers: 0.8, data: { disp:72, adopt:75, vuln:42, augment:68, precarity:28 } },
+  retail:{ label: 'Retail & Logistics',   color: '#FB923C', workers: 5.4, data: { disp:82, adopt:68, vuln:80, augment:32, precarity:78 } },
+  health:{ label: 'Healthcare',           color: '#34D399', workers: 2.2, data: { disp:38, adopt:48, vuln:58, augment:78, precarity:52 } },
+  const: { label: 'Construction & FM',    color: '#fbbf24', workers: 2.6, data: { disp:55, adopt:50, vuln:68, augment:44, precarity:58 } },
+  pro:   { label: 'Professional Services',color: '#c084fc', workers: 1.8, data: { disp:68, adopt:74, vuln:40, augment:75, precarity:32 } },
+  tech:  { label: 'Technology',           color: '#60a5fa', workers: 1.5, data: { disp:55, adopt:88, vuln:35, augment:82, precarity:22 } },
+  edu:   { label: 'Education',            color: '#f472b6', workers: 1.4, data: { disp:42, adopt:52, vuln:50, augment:65, precarity:40 } },
+  pub:   { label: 'Public Sector',        color: '#94a3b8', workers: 5.8, data: { disp:48, adopt:40, vuln:55, augment:58, precarity:36 } },
+};
+
+const GEO_DATA = {
+  uk:  { name: 'United Kingdom', score: 72, level: 'high', badge: 'badge-uk', bars: [
+    { label: 'Greater London',      pct: 28, note: 'Financial & professional services displacement' },
+    { label: 'West Midlands',       pct: 22, note: 'Manufacturing, logistics, retail concentration' },
+    { label: 'North West England',  pct: 18, note: 'Retail, logistics, BPO exposure' },
+    { label: 'South East',          pct: 16, note: 'Mixed professional and retail' },
+    { label: 'Rest of UK',          pct: 16, note: 'Distributed retail, public sector, construction' },
+  ], hotspot: '<strong>Post-industrial towns</strong> in the Midlands and North face compounding risks: high retail and logistics exposure, limited retraining infrastructure, and weaker digital connectivity than London or the South East.' },
+
+  us:  { name: 'United States', score: 78, level: 'high', badge: 'badge-na', bars: [
+    { label: 'Sun Belt metros',     pct: 32, note: 'Tech-driven white-collar displacement' },
+    { label: 'Midwest rust belt',   pct: 26, note: 'Manufacturing and logistics automation' },
+    { label: 'Coastal cities',      pct: 22, note: 'Finance and professional services' },
+    { label: 'Rural South',         pct: 20, note: 'Agricultural, logistics and retail exposure' },
+  ], hotspot: '<strong>Rural and small-metro communities</strong> in the Midwest and South face displacement with fewer alternative employment options, weak retraining provision, and significant distance from growth sectors.' },
+
+  ca:  { name: 'Canada', score: 70, level: 'high', badge: 'badge-na', bars: [
+    { label: 'Greater Toronto',     pct: 35, note: 'Finance, professional services, tech' },
+    { label: 'Vancouver metro',     pct: 22, note: 'Tech, logistics, professional services' },
+    { label: 'Montreal / Quebec',   pct: 20, note: 'Manufacturing, finance, public sector' },
+    { label: 'Prairie provinces',   pct: 23, note: 'Energy sector transition, agriculture, retail' },
+  ], hotspot: '<strong>Prairie cities</strong> face a compounding challenge: energy-sector contraction is already reshaping Calgary and Edmonton\'s labour markets, and AI-driven displacement in logistics and back-office roles is arriving before prior workforce transitions are complete.' },
+
+  de:  { name: 'Germany', score: 65, level: 'med', badge: 'badge-eu', bars: [
+    { label: 'Bavaria',             pct: 30, note: 'Automotive and advanced manufacturing' },
+    { label: 'Baden-Württemberg',   pct: 25, note: 'Engineering, automotive, manufacturing' },
+    { label: 'Ruhr / NRW',         pct: 22, note: 'Legacy industrial, logistics, retail' },
+    { label: 'Berlin metro',        pct: 23, note: 'Tech, professional services, public sector' },
+  ], hotspot: '<strong>The Ruhr valley</strong> faces a structural second wave: having transitioned from heavy industry, logistics and administrative roles now face AI displacement with fewer social protection buffers and lower firm-level investment in workforce development than in southern Germany.' },
+
+  fr:  { name: 'France', score: 60, level: 'med', badge: 'badge-eu', bars: [
+    { label: 'Île-de-France (Paris)', pct: 42, note: 'Finance, professional services, tech — highly concentrated' },
+    { label: 'Auvergne-Rhône-Alpes', pct: 18, note: 'Manufacturing, logistics, tourism' },
+    { label: 'Hauts-de-France',     pct: 16, note: 'Legacy manufacturing, logistics, retail' },
+    { label: 'Rest of France',      pct: 24, note: 'Agriculture, tourism, distributed retail' },
+  ], hotspot: '<strong>France\'s extreme economic concentration in Paris</strong> means the capital region carries a disproportionate share of high-adoption-velocity risk, while peripheral regions face slower but harder-to-manage displacement with weaker local labour markets and long travel distances to retraining centres.' },
+
+  nl:  { name: 'Netherlands', score: 62, level: 'med', badge: 'badge-eu', bars: [
+    { label: 'Amsterdam / North Holland', pct: 34, note: 'Finance, tech, professional services' },
+    { label: 'Rotterdam / South Holland', pct: 28, note: 'Logistics, port operations, manufacturing' },
+    { label: 'Eindhoven / Brabant',       pct: 20, note: 'High-tech manufacturing, ASML supply chain' },
+    { label: 'Other Randstad',            pct: 18, note: 'Mixed services, government, retail' },
+  ], hotspot: '<strong>Rotterdam\'s port and logistics cluster</strong> combines high automation velocity with a workforce that has relatively low formal qualification levels, creating a concentration of precarity risk even in a country with strong overall policy readiness.' },
+
+  es:  { name: 'Spain', score: 58, level: 'med', badge: 'badge-eu', bars: [
+    { label: 'Madrid metro',        pct: 30, note: 'Finance, professional services, public sector' },
+    { label: 'Catalonia / Barcelona', pct: 25, note: 'Manufacturing, logistics, tech, tourism' },
+    { label: 'Valencian Community', pct: 16, note: 'Tourism, logistics, retail' },
+    { label: 'Andalusia',           pct: 29, note: 'Tourism, agriculture, construction — high precarity' },
+  ], hotspot: '<strong>Andalusia and other southern regions</strong> carry the highest vulnerability scores in Spain: high reliance on tourism and seasonal agricultural work creates a workforce with limited formal qualifications, high zero-hours and gig contract exposure, and little access to firm-sponsored retraining.' },
+
+  it:  { name: 'Italy', score: 62, level: 'med', badge: 'badge-eu', bars: [
+    { label: 'Milan / Lombardy',    pct: 35, note: 'Finance, manufacturing, professional services' },
+    { label: 'Rome / Lazio',        pct: 25, note: 'Public sector, professional services' },
+    { label: 'Turin / Piedmont',    pct: 18, note: 'Automotive manufacturing, logistics' },
+    { label: 'Veneto / Emilia-Romagna', pct: 22, note: 'SME manufacturing, logistics, food industry' },
+  ], hotspot: '<strong>Italy\'s SME-heavy industrial heartland</strong> in the North-East faces acute exposure: smaller firms lack capital for AI transition support, and the highly fragmented nature of Italian manufacturing creates a long tail of workers with no firm-level reskilling provision and limited state alternatives.' },
+
+  pl:  { name: 'Poland', score: 54, level: 'med', badge: 'badge-eu', bars: [
+    { label: 'Warsaw metro',        pct: 30, note: 'Finance, BPO, professional services, tech' },
+    { label: 'Silesian conurbation', pct: 25, note: 'Legacy industrial, mining transition, logistics' },
+    { label: 'Kraków / Lesser Poland', pct: 18, note: 'BPO, shared services, manufacturing' },
+    { label: 'Łódź / Central Poland', pct: 27, note: 'Logistics, e-commerce, textile legacy' },
+  ], hotspot: '<strong>Warsaw\'s BPO and shared services sector</strong> — built on Poland\'s cost-competitiveness — faces structural exposure as AI makes geographic labour arbitrage less relevant. Mid-level finance, legal and data-processing roles that drove Warsaw\'s growth are among the most exposed globally.' },
+
+  au:  { name: 'Australia', score: 68, level: 'high', badge: 'badge-apac', bars: [
+    { label: 'Sydney / NSW',        pct: 32, note: 'Finance, professional services, tech' },
+    { label: 'Melbourne / Victoria', pct: 28, note: 'Finance, professional services, manufacturing' },
+    { label: 'Brisbane / Queensland', pct: 18, note: 'Mining services, logistics, construction' },
+    { label: 'Perth / Western Australia', pct: 22, note: 'Mining tech, logistics, resources' },
+  ], hotspot: '<strong>Regional mining communities</strong> in Queensland and Western Australia face a dual transition: automation of mining operations is advancing rapidly, and the remote geographic location of many affected workers limits access to retraining and alternative employment markets.' },
+
+  jp:  { name: 'Japan', score: 55, level: 'med', badge: 'badge-apac', bars: [
+    { label: 'Greater Tokyo',       pct: 40, note: 'Finance, admin, professional services' },
+    { label: 'Osaka-Kobe-Kyoto',    pct: 22, note: 'Manufacturing, logistics, retail' },
+    { label: 'Nagoya corridor',     pct: 20, note: 'Automotive manufacturing and supply chain' },
+    { label: 'Regional cities',     pct: 18, note: 'Retail, local government, agriculture' },
+  ], hotspot: '<strong>Japan\'s demographic profile</strong> creates a distinctive dynamic: severe labour shortage means AI automation is politically framed as relief rather than threat. This obscures genuine displacement risk for mid-career workers in administrative and clerical roles, particularly in Tokyo, where concentration is extreme.' },
+
+  sg:  { name: 'Singapore', score: 66, level: 'med', badge: 'badge-apac', bars: [
+    { label: 'Central Business District', pct: 45, note: 'Finance, professional services, tech' },
+    { label: 'Jurong industrial zone',    pct: 28, note: 'Manufacturing, petrochemicals, logistics' },
+    { label: 'Changi logistics hub',      pct: 27, note: 'Logistics, aviation, supply chain services' },
+  ], hotspot: '<strong>Singapore\'s compressed geography</strong> means concentration is extreme: almost half of exposed workers are in the CBD. Strong government retraining through SkillsFuture partially mitigates risk, but the pace of financial services AI adoption is outrunning programme capacity.' },
+
+  kr:  { name: 'South Korea', score: 62, level: 'med', badge: 'badge-apac', bars: [
+    { label: 'Seoul Capital Area',  pct: 50, note: 'Finance, tech, professional services — extreme concentration' },
+    { label: 'Gyeonggi province',   pct: 20, note: 'Manufacturing, semiconductors, logistics' },
+    { label: 'Busan / Ulsan',       pct: 15, note: 'Heavy industry, shipbuilding, automotive' },
+    { label: 'Rest of Korea',       pct: 15, note: 'Agriculture, retail, regional services' },
+  ], hotspot: '<strong>South Korea\'s extreme concentration in the Seoul Capital Area</strong> — home to half the country\'s exposed workforce — means that displacement in finance and professional services hits a single dense labour market simultaneously, limiting geographic diversification of risk.' },
+
+  in:  { name: 'India', score: 48, level: 'med', badge: 'badge-apac', bars: [
+    { label: 'Bengaluru / Hyderabad', pct: 35, note: 'IT & BPO — highest adoption velocity' },
+    { label: 'Mumbai metro',          pct: 25, note: 'Financial services, back office operations' },
+    { label: 'Delhi NCR',             pct: 22, note: 'BPO, professional services, government' },
+    { label: 'Secondary cities',      pct: 18, note: 'Pune, Chennai, emerging outsourcing hubs' },
+  ], hotspot: '<strong>Tier-1 tech cities</strong> face a paradoxical exposure: the highest AI adoption velocity creates the highest near-term displacement risk for the mid-level IT and BPO workforce that built India\'s services economy, while state retraining provision remains fragmented and unevenly accessible.' },
+
+  cn:  { name: 'China', score: 60, level: 'med', badge: 'badge-apac', bars: [
+    { label: 'Pearl River Delta',   pct: 30, note: 'Manufacturing, electronics, export logistics' },
+    { label: 'Yangtze River Delta', pct: 28, note: 'Finance, manufacturing, tech — Shanghai anchor' },
+    { label: 'Beijing / Hebei',     pct: 20, note: 'Tech, public sector, professional services' },
+    { label: 'Inland provinces',    pct: 22, note: 'Manufacturing migration, agriculture, retail' },
+  ], hotspot: '<strong>Inland and lower-tier city workers</strong> face a compounding risk: manufacturing automation is reducing demand for migrant factory labour, while the social safety net for internal migrants (hukou system) limits access to urban retraining programmes in the cities where AI adoption is highest.' },
+};
+
+/* ─── State ─── */
+let currentView = 'country';
+let activeRegion = 'all';
+let highlighted = null;
+let bubbleMode = false;
+let chart = null;
+
+/* ─── Helpers ─── */
+function getDims() { return currentView === 'sector' ? SECTOR_DIMS : COUNTRY_DIMS; }
+function getSource() { return currentView === 'sector' ? SECTORS : COUNTRIES; }
+
+function regionColor(region) {
+  return { uk:'#2DD4BF', eu:'#818CF8', na:'#FB923C', apac:'#34D399' }[region] || '#94a3b8';
+}
+
+function getDatasets() {
+  const dims = getDims();
+  const src = getSource();
+  return Object.entries(src)
+    .filter(([k,v]) => currentView === 'sector' || activeRegion === 'all' || v.region === activeRegion)
+    .map(([k,v]) => {
+      const vals = dims.map(d => v.data[d.key] || 0);
+      const pw = bubbleMode ? Math.max(3, Math.sqrt(v.workers) * 1.4) : 3;
+      return {
+        label: v.label,
+        data: vals,
+        borderColor: v.color + 'bf', // neutral 75% opacity
+        backgroundColor: v.color + '1e',
+        borderWidth: 1.2,
+        pointBackgroundColor: v.color,
+        pointBorderColor: 'transparent',
+        pointRadius: pw,
+        pointHoverRadius: pw + 2,
+        _key: k,
+        _region: v.region || '',
+        _workers: v.workers,
+        _raw: vals,
+        _color: v.color,
+        _regionLabel: v.regionLabel || '',
+      };
+    });
+}
+
+function avgScore(entry) {
+  const vals = Object.values(entry.data);
+  return Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+}
+
+/* ─── Build axis explainer ─── */
+function buildAxisList() {
+  const dims = getDims();
+  const el = document.getElementById('axis-list');
+  el.innerHTML = dims.map(d => `
+    <div class="axis-item">
+      <div class="axis-item-name">
+        <span class="axis-dot" style="background:${d.color}"></span>
+        ${d.label}
+      </div>
+      <div class="axis-item-desc">${d.desc}</div>
+    </div>
+  `).join('');
+}
+
+/* ─── Build insights ─── */
+function buildInsights() {
+  const el = document.getElementById('insight-list');
+  if (currentView === 'country') {
+    el.innerHTML = `
+      <div class="insight-item warn">
+        <div class="insight-text"><strong>US and India diverge sharply on welfare</strong>: the US leads on adoption velocity and displacement risk; India's exposure is driven by vulnerability and income precarity rather than displacement speed.</div>
+      </div>
+      <div class="insight-item neutral">
+        <div class="insight-text"><strong>Northern European nations show a consistent pattern</strong>: moderate disruption scores paired with high policy readiness and reskilling access &mdash; a fundamentally different risk profile to Anglo-American markets.</div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-text"><strong>Singapore is the outlier</strong>: high adoption velocity and high policy readiness coexist &mdash; the only market where rapid AI deployment is paired with strong institutional support for affected workers.</div>
+      </div>
+    `;
+  } else {
+    el.innerHTML = `
+      <div class="insight-item warn">
+        <div class="insight-text"><strong>Retail & Logistics presents the most concerning welfare profile</strong>: highest displacement risk, highest income precarity, lowest augmentation potential &mdash; with a workforce that has fewest resources to adapt.</div>
+      </div>
+      <div class="insight-item neutral">
+        <div class="insight-text"><strong>Technology sector exposure is misread</strong>: high adoption velocity creates an assumption of resilience, but mid-level software and QA roles face significant displacement risk within the sector itself.</div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-text"><strong>Healthcare and Public Sector show low displacement but rising augmentation</strong>: the workforce challenge here is transition quality and pace, not volume of jobs lost.</div>
+      </div>
+    `;
+  }
+}
+
+/* ─── Manual hit detection ───────────────────────────────────────────────────
+   Chart.js radar hit detection is unreliable for outer points.
+   We compute the actual pixel coordinates of every data point ourselves
+   and do our own proximity test on mousemove. This gives consistent response
+   anywhere on the chart, including the outermost ring points.
+────────────────────────────────────────────────────────────────────────────── */
+
+const HIT_RADIUS = 22; // px proximity for hover detection
+
+function getPointPixels() {
+  // Returns array of { dsIndex, pointIndex, x, y, ds }
+  if (!chart) return [];
+  const scale = chart.scales.r;
+  const dims = getDims();
+  const results = [];
+  chart.data.datasets.forEach((ds, dsIndex) => {
+    ds.data.forEach((val, pointIndex) => {
+      const angle = scale.getIndexAngle(pointIndex) - Math.PI / 2;
+      const distance = scale.getDistanceFromCenterForValue(val);
+      const cx = scale.xCenter + Math.cos(angle) * distance;
+      const cy = scale.yCenter + Math.sin(angle) * distance;
+      results.push({ dsIndex, pointIndex, x: cx, y: cy, ds });
+    });
+  });
+  return results;
+}
+
+function findHitPoint(mouseX, mouseY) {
+  // Returns the closest { ds, pointIndex } within HIT_RADIUS, or null
+  const points = getPointPixels();
+  let best = null, bestDist = HIT_RADIUS;
+  points.forEach(p => {
+    const d = Math.sqrt((p.x - mouseX) ** 2 + (p.y - mouseY) ** 2);
+    if (d < bestDist) { bestDist = d; best = p; }
+  });
+  return best;
+}
+
+/* ─── Tooltip: point-specific ─── */
+function showPointTooltip(ds, pointIndex, canvasX, canvasY) {
+  const tt = document.getElementById('tt');
+  const dims = getDims();
+  const dim = dims[pointIndex];
+  const val = ds._raw[pointIndex];
+  const regionBadge = ds._regionLabel
+    ? `<span class="region-badge badge-${ds._region}">${ds._regionLabel}</span>` : '';
+
+  let html = `<div class="tt-head">${ds.label}</div>`;
+  if (ds._regionLabel) html += `<div class="tt-region" style="margin-bottom:6px">${regionBadge}</div>`;
+  html += `
+    <div class="tt-dim-label">${dim.label}</div>
+    <div class="tt-score-row">
+      <span class="tt-score-val" style="color:${dim.color}">${val}</span>
+      <span class="tt-score-suffix">/100</span>
+    </div>
+    <div class="tt-bar" style="margin-top:6px">
+      <div class="tt-bar-fill" style="width:${val}%;background:${dim.color}"></div>
+    </div>
+    <div class="tt-desc">${dim.desc}</div>
+  `;
+
+  tt.innerHTML = html;
+  const wrap = document.querySelector('.canvas-wrap');
+  const maxLeft = wrap.offsetWidth - 200;
+  tt.style.left = Math.min(canvasX + 16, maxLeft) + 'px';
+  tt.style.top = Math.max(canvasY - 20, 4) + 'px';
+  tt.classList.add('show');
+}
+
+function hideTooltip() {
+  document.getElementById('tt').classList.remove('show');
+}
+
+// Disable Chart.js built-in tooltip entirely
+function customTooltip() {}
+
+/* ─── Canvas mousemove handler ─── */
+let lastHitKey = null;
+
+function onCanvasMouseMove(e) {
+  if (!chart) return;
+  const rect = e.target.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const hit = findHitPoint(mx, my);
+  const hitKey = hit ? `${hit.dsIndex}-${hit.pointIndex}` : null;
+
+  if (hitKey !== lastHitKey) {
+    lastHitKey = hitKey;
+    if (hit) {
+      showPointTooltip(hit.ds, hit.pointIndex, mx, my);
+      // Temporarily highlight hovered dataset (without overriding click state)
+      const hoverKey = hit.ds._key;
+      applyVisualHighlight(highlighted || hoverKey, hoverKey);
+    } else {
+      hideTooltip();
+      applyVisualHighlight(highlighted, null);
+    }
+  }
+}
+
+function onCanvasMouseLeave() {
+  lastHitKey = null;
+  hideTooltip();
+  applyVisualHighlight(highlighted, null);
+}
+
+/* ─── Click scorecard ─── */
+function onCanvasClick(e) {
+  if (!chart) return;
+  const rect = e.target.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const hit = findHitPoint(mx, my);
+  if (hit) {
+    const key = hit.ds._key;
+    highlighted = (highlighted === key) ? null : key;
+    applyVisualHighlight(highlighted, null);
+    buildLegend(chart.data.datasets); // update legend classes
+    if (highlighted) showScorecard(hit.ds);
+    else hideScorecard();
+  } else {
+    highlighted = null;
+    applyVisualHighlight(null, null);
+    buildLegend(chart.data.datasets);
+    hideScorecard();
+  }
+}
+
+/* ─── Scorecard panel (shown on click) ─── */
+function showScorecard(ds) {
+  const dims = getDims();
+  const el = document.getElementById('scorecard');
+  const avg = Math.round(ds._raw.reduce((a,b)=>a+b,0)/ds._raw.length);
+  const regionBadge = ds._regionLabel
+    ? `<span class="region-badge badge-${ds._region}">${ds._regionLabel}</span>` : '';
+
+  let rows = dims.map((d,i) => {
+    const v = ds._raw[i];
+    const level = v >= 70 ? 'high' : v >= 45 ? 'med' : 'low';
+    return `
+      <div class="sc-row">
+        <div class="sc-row-label">
+          <span class="axis-dot" style="background:${d.color};width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px;flex-shrink:0"></span>
+          ${d.label}
+        </div>
+        <div class="sc-bar-wrap">
+          <div class="sc-bar-fill sc-${level}" style="width:${v}%"></div>
+        </div>
+        <span class="sc-val sc-${level}">${v}</span>
+      </div>
+    `;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="sc-header">
+      <div>
+        <div class="sc-name">${ds.label}</div>
+        <div style="margin-top:3px">${regionBadge}</div>
+      </div>
+      <div class="sc-avg">
+        <div class="sc-avg-val">${avg}</div>
+        <div class="sc-avg-label">avg score</div>
+      </div>
+    </div>
+    <div class="sc-rows">${rows}</div>
+    ${ds._workers ? `<div class="sc-workers">Workers represented: <strong>${ds._workers}M</strong></div>` : ''}
+    <button class="sc-close" onclick="clearScorecard()">Clear ✕</button>
+  `;
+  el.classList.add('show');
+}
+
+function hideScorecard() {
+  document.getElementById('scorecard').classList.remove('show');
+}
+
+function clearScorecard() {
+  highlighted = null;
+  applyVisualHighlight(null, null);
+  buildLegend(chart ? chart.data.datasets : []);
+  hideScorecard();
+}
+
+/* ─── Visual highlight (separates click-lock from hover preview) ─── */
+function applyVisualHighlight(clickKey, hoverKey) {
+  const activeKey = clickKey || hoverKey;
+  if (chart) {
+    chart.data.datasets.forEach(ds => {
+      const isActive = activeKey && ds._key === activeKey;
+      const dimmed = activeKey && ds._key !== activeKey;
+      const lineAlpha = dimmed ? 0.15 : isActive ? 1 : 0.75;
+      const fillAlpha = dimmed ? '0a' : isActive ? '38' : '1e';
+      ds.borderColor = ds._color + Math.round(lineAlpha * 255).toString(16).padStart(2,'0');
+      ds.backgroundColor = ds._color + fillAlpha;
+      ds.borderWidth = isActive ? 2.5 : dimmed ? 0.5 : 1.2;
+      const pw = bubbleMode ? Math.max(3, Math.sqrt(ds._workers) * 1.4) : isActive ? 6 : 3;
+      ds.pointRadius = pw;
+      ds.pointHoverRadius = pw + 2;
+    });
+    chart.update('none');
+  }
+  document.querySelectorAll('.legend-item').forEach(item => {
+    const isActive = activeKey && item.dataset.key === activeKey;
+    const dimmed = activeKey && item.dataset.key !== activeKey;
+    item.classList.toggle('highlighted', !!isActive);
+    item.classList.toggle('dimmed', !!dimmed);
+  });
+}
+
+/* ─── Legend: hover previews, click locks ─── */
+function buildLegend(datasets) {
+  const el = document.getElementById('legend');
+  el.innerHTML = datasets.map(d => {
+    const isHL = highlighted === d._key;
+    const dimmed = highlighted && !isHL;
+    const avg = Math.round(d._raw.reduce((a,b)=>a+b,0)/d._raw.length);
+    const regionTag = d._regionLabel
+      ? `<span class="region-badge badge-${d._region}" style="margin-left:4px">${d._regionLabel}</span>` : '';
+    return `
+      <div class="legend-item ${isHL?'highlighted':''} ${dimmed?'dimmed':''}" data-key="${d._key}">
+        <span class="legend-dot" style="background:${d._color}"></span>
+        <span>${d.label}${regionTag}</span>
+        <span class="legend-score">${avg}/100</span>
+      </div>
+    `;
+  }).join('');
+
+  el.querySelectorAll('.legend-item').forEach(item => {
+    const key = item.dataset.key;
+    item.addEventListener('mouseenter', () => applyVisualHighlight(highlighted, key));
+    item.addEventListener('mouseleave', () => applyVisualHighlight(highlighted, null));
+    item.addEventListener('click', () => {
+      highlighted = (highlighted === key) ? null : key;
+      applyVisualHighlight(highlighted, null);
+      // Rebuild legend classes only
+      el.querySelectorAll('.legend-item').forEach(i => {
+        i.classList.toggle('highlighted', i.dataset.key === highlighted);
+        i.classList.toggle('dimmed', !!highlighted && i.dataset.key !== highlighted);
+      });
+      if (highlighted) {
+        const ds = chart.data.datasets.find(d => d._key === highlighted);
+        if (ds) showScorecard(ds);
+      } else {
+        hideScorecard();
+      }
+    });
+  });
+}
+
+/* ─── Build chart options ─── */
+function getOpts() {
+  const dims = getDims();
+  return {
+    responsive: true,
+    maintainAspectRatio: true,
+    aspectRatio: window.innerWidth < 600 ? 1.1 : 1.5,
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: false, external: customTooltip },
+    },
+    scales: {
+      r: {
+        min: 0, max: 100,
+        ticks: {
+          stepSize: 25,
+          color: 'rgba(148,163,184,0.5)',
+          font: { size: 10, family: "'DM Sans', sans-serif" },
+          backdropColor: 'transparent',
+        },
+        grid: { color: 'rgba(255,255,255,0.06)' },
+        angleLines: { color: 'rgba(255,255,255,0.08)' },
+        pointLabels: {
+          color: '#94a3b8',
+          font: { size: 11, family: "'DM Sans', sans-serif" },
+          callback: (label, i) => dims[i]?.label || label,
+        },
+      },
+    },
+    animation: { duration: 300 },
+  };
+}
+
+/* ─── Main rebuild ─── */
+function rebuild(resetHL = false) {
+  if (resetHL) { highlighted = null; hideScorecard(); }
+  const datasets = getDatasets();
+  const dims = getDims();
+
+  if (!chart) {
+    const ctx = document.getElementById('radar-canvas').getContext('2d');
+    chart = new Chart(ctx, {
+      type: 'radar',
+      data: { labels: dims.map(d => d.label), datasets },
+      options: getOpts(),
+    });
+    // Wire our manual hit detection to the canvas
+    const canvas = ctx.canvas;
+    canvas.addEventListener('mousemove', onCanvasMouseMove);
+    canvas.addEventListener('mouseleave', onCanvasMouseLeave);
+    canvas.addEventListener('click', onCanvasClick);
+    canvas.style.cursor = 'crosshair';
+  } else {
+    chart.data.labels = dims.map(d => d.label);
+    chart.data.datasets = datasets;
+    chart.options = getOpts();
+    chart.update('none');
+  }
+  buildLegend(datasets);
+  buildAxisList();
+  buildInsights();
+  updateTitles();
+  buildGeoGrid();
+}
+
+function updateTitles() {
+  const titleEl = document.getElementById('radar-title');
+  const subtitleEl = document.getElementById('radar-subtitle');
+  const sub = 'Hover any point to see that dimension\'s score. Click a point or name below to pin the full profile.';
+  if (currentView === 'sector') {
+    titleEl.textContent = 'Sector profiles — UK & global benchmarks';
+  } else {
+    const regionLabels = { all:'all regions', uk:'United Kingdom', eu:'Europe', na:'North America', apac:'APAC' };
+    titleEl.textContent = `Country comparison — ${regionLabels[activeRegion]}`;
+  }
+  subtitleEl.textContent = sub;
+}
+
+/* ─── Geographic concentration grid ─── */
+function buildGeoGrid() {
+  const el = document.getElementById('geo-grid');
+  const keys = currentView === 'sector'
+    ? [] // geo panel shows country data only
+    : Object.keys(GEO_DATA).filter(k => {
+        if (activeRegion === 'all') return true;
+        const c = COUNTRIES[k];
+        return c && c.region === activeRegion;
+      });
+
+  if (keys.length === 0) {
+    el.innerHTML = `<p style="color:var(--text-sec);font-size:0.82rem;padding:0.5rem 0;">Geographic concentration data is available for country view. Switch to "By country" to explore intra-national patterns.</p>`;
+    return;
+  }
+
+  el.innerHTML = keys.map(k => {
+    const g = GEO_DATA[k];
+    const bars = g.bars.map(b => `
+      <div class="geo-bar-row">
+        <div class="geo-bar-label">
+          <span>${b.label}</span>
+          <span>${b.pct}% of exposed workers</span>
+        </div>
+        <div class="geo-bar-track">
+          <div class="geo-bar-fill" style="width:${b.pct * 3}%;background:${regionColor(COUNTRIES[k]?.region)};opacity:0.7"></div>
+        </div>
+      </div>
+    `).join('');
+    return `
+      <div class="geo-country">
+        <div class="geo-country-header">
+          <span class="geo-country-name">${g.name}</span>
+          <span class="geo-score ${g.level}">Risk index ${g.score}</span>
+        </div>
+        <div class="geo-bars">${bars}</div>
+        <div class="geo-hotspot">${g.hotspot}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ─── View / filter controls ─── */
+function setView(v, btn) {
+  currentView = v;
+  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const regionGroup = document.getElementById('region-group');
+  regionGroup.style.display = v === 'sector' ? 'none' : 'flex';
+  document.querySelector('.divider').style.display = v === 'sector' ? 'none' : 'block';
+  if (chart) { chart.destroy(); chart = null; }
+  rebuild(true);
+}
+
+function filterRegion(r, btn) {
+  activeRegion = r;
+  document.querySelectorAll('.chip[onclick^="filterRegion"]').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  rebuild(true);
+}
+
+function toggleBubble() {
+  bubbleMode = !bubbleMode;
+  document.getElementById('bubble-toggle').classList.toggle('on', bubbleMode);
+  rebuild(false);
+}
+
+/* ─── Init ─── */
+rebuild(true);
+</script>
+</body>
+</html>

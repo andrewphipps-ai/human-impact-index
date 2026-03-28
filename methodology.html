@@ -556,6 +556,7 @@
     </div>
     <div class="topbar-nav">
       <a href="hii-news-feed.html" class="nav-link">Intelligence Feed</a>
+      <a href="hii-visualiser.html" class="nav-link">Visualiser</a>
       <a href="hii-index.html" class="nav-link">Index</a>
       <a href="methodology.html" class="nav-link active">Methodology</a>
       <a href="about.html" class="nav-link">About</a>
@@ -671,6 +672,104 @@
     </div>
   </div>
 
+  <!-- ── Visualiser ───────────────────────────────────────────────── -->
+  <div class="content-section">
+    <h2 class="section-heading">The Visualiser: Multi-Dimensional Impact Analysis</h2>
+    <p class="body-text">
+      The <a href="hii-visualiser.html">HII Visualiser</a> provides a complementary layer of analysis to the Momentum Score, displaying workforce impact across multiple dimensions simultaneously rather than as a single composite figure. Where the Momentum Score answers "how much disruption is occurring?", the Visualiser answers "what kind of disruption, and who is most exposed to its consequences?"
+    </p>
+    <p class="body-text">
+      The Visualiser uses two distinct axis models depending on the unit of analysis. Country-level views use six axes; sector-level views use five, with Policy Readiness excluded because it is a national rather than sector-specific variable.
+    </p>
+
+    <h3 class="sub-heading">Country-level axes (six dimensions)</h3>
+
+    <div class="dimensions-grid">
+      <div class="dimension-card">
+        <div class="dim-weight" style="font-size:20px;color:#f87171">Displacement Risk</div>
+        <div class="dim-name">Proportion of roles with high automation exposure</div>
+        <p class="dim-desc">The share of the national workforce employed in roles where the majority of tasks are technically automatable using currently deployed or near-term AI capabilities. Draws on OECD task-analysis frameworks and national labour force surveys. Varies significantly by country due to sectoral composition and employment structure.</p>
+      </div>
+      <div class="dimension-card">
+        <div class="dim-weight" style="font-size:20px;color:#fb923c">Adoption Velocity</div>
+        <div class="dim-name">Speed of AI deployment across the economy</div>
+        <p class="dim-desc">The pace at which AI tools are being operationally deployed in the workforce, not merely adopted at firm level. Triangulated from enterprise AI investment data, productivity survey findings, and sector-specific deployment reports. The US and Singapore score highest; Southern and Eastern Europe score lower due to structural and investment differences.</p>
+      </div>
+      <div class="dimension-card">
+        <div class="dim-weight" style="font-size:20px;color:#fbbf24">Worker Vulnerability</div>
+        <div class="dim-name">Low wages, limited retraining access, high exposure concentration</div>
+        <p class="dim-desc">A composite measure of the degree to which the workforce most exposed to displacement lacks the resources to adapt. Factors include the share of at-risk workers earning below median wages, geographic distance from retraining infrastructure, and the availability of employer-funded transition support. India scores highest; Singapore and the Netherlands lowest.</p>
+      </div>
+      <div class="dimension-card">
+        <div class="dim-weight" style="font-size:20px;color:#34d399">Policy Readiness</div>
+        <div class="dim-name">Regulatory and social protection framework</div>
+        <p class="dim-desc">The strength and coherence of the national policy response to AI-driven workforce disruption, including employment law protections, active labour market policies, retraining funding, and the pace of regulatory framework development. Singapore, the Netherlands, and Germany score highest. The US and India score lowest due to limited state provision and regulatory fragmentation respectively.</p>
+      </div>
+      <div class="dimension-card">
+        <div class="dim-weight" style="font-size:20px;color:#60a5fa">Reskilling Access</div>
+        <div class="dim-name">Availability of and participation in retraining provision</div>
+        <p class="dim-desc">Whether affected workers can practically access retraining, not merely whether programmes exist. Accounts for geographic accessibility, cost, employer incentives, and the match between available provision and the skills displacement is creating demand for. Distinguished from Policy Readiness in that it measures delivery rather than intent.</p>
+      </div>
+      <div class="dimension-card">
+        <div class="dim-weight" style="font-size:20px;color:#c084fc">Income Precarity</div>
+        <div class="dim-name">Share of workforce on low wages, zero-hours or gig contracts</div>
+        <p class="dim-desc">The proportion of the workforce in insecure employment arrangements that amplify the welfare consequences of AI-driven displacement. Workers on precarious contracts have fewer legal protections, lower savings buffers, and reduced access to employer-funded reskilling. Retail, logistics, and gig economy workers drive high scores in the UK and US; Southern and Eastern European labour market structures drive high scores in Spain and Poland.</p>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Sector-level axes (five dimensions)</h3>
+    <p class="body-text">
+      At sector level, Policy Readiness is removed because employment law and social protection frameworks operate at national level and do not vary meaningfully between sectors within the same country. Augmentation Potential replaces it, providing the essential counterbalance to Displacement Risk.
+    </p>
+
+    <div class="dimensions-grid">
+      <div class="dimension-card">
+        <div class="dim-weight" style="font-size:20px;color:#f87171">Displacement Risk</div>
+        <p class="dim-desc">As above, applied at sector level. Retail and Logistics scores highest (82); Healthcare and Education score lowest.</p>
+      </div>
+      <div class="dimension-card">
+        <div class="dim-weight" style="font-size:20px;color:#fb923c">Adoption Velocity</div>
+        <p class="dim-desc">Sector-specific pace of AI deployment. Technology and Financial Services lead; Public Sector and Construction lag significantly.</p>
+      </div>
+      <div class="dimension-card">
+        <div class="dim-weight" style="font-size:20px;color:#fbbf24">Worker Vulnerability</div>
+        <p class="dim-desc">Sector-level measure of worker adaptive capacity. Retail and Logistics score highest; Technology and Legal Services score lowest.</p>
+      </div>
+      <div class="dimension-card">
+        <div class="dim-weight" style="font-size:20px;color:#34d399">Augmentation Potential</div>
+        <div class="dim-name">Share of roles where AI assists rather than replaces</div>
+        <p class="dim-desc">The degree to which AI functions as a capability multiplier for existing workers rather than a direct substitute. Technology, Healthcare, and Professional Services score highest; Retail and Logistics score lowest. High augmentation potential does not eliminate displacement risk but materially changes the welfare profile of transformation.</p>
+      </div>
+      <div class="dimension-card">
+        <div class="dim-weight" style="font-size:20px;color:#c084fc">Income Precarity</div>
+        <p class="dim-desc">As above, applied at sector level. The contrast between Retail and Logistics (score 78) and Technology (score 22) illustrates the welfare inequality of AI disruption more starkly than any other single dimension.</p>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Workforce scale modifier</h3>
+    <p class="body-text">
+      The Visualiser includes a "Scale by workforce size" toggle that adjusts the visual weight of each country's data points in proportion to the number of workers represented. This modifier is important for welfare interpretation: a country scoring 70 on Displacement Risk with 470 million workers (India) represents a categorically larger welfare challenge than one scoring 80 with 4 million workers (Singapore), even if the per-worker intensity of disruption differs. Workforce figures are drawn from ILO 2024 employment estimates.
+    </p>
+
+    <h3 class="sub-heading">Geographic concentration of impact</h3>
+    <p class="body-text">
+      A distinctive feature of the Visualiser is the geographic concentration panel, which maps where within each country the exposed workforce is clustered. This dimension is absent from most AI impact tools, which report national aggregates that obscure the localised nature of displacement. The welfare consequences of AI disruption are not evenly distributed within countries: they fall disproportionately on specific cities, regions, and communities that have fewer resources to absorb the shock.
+    </p>
+    <p class="body-text">
+      Geographic concentration data is presented as the estimated distribution of exposed workers across major sub-national regions, accompanied by a hotspot analysis identifying the specific communities where compounding risk factors create the most acute welfare challenge. Examples include post-industrial towns in the UK Midlands and North, the Ruhr valley in Germany, Andalusia in Spain, Prairie cities in Canada, and inland provinces in China. Each analysis draws on regional employment data and economic geography rather than national averages.
+    </p>
+
+    <div class="callout-warning">
+      <div class="callout-warning-title">Important caveats for Visualiser data</div>
+      <ul>
+        <li><strong>Visualiser scores are independent of Momentum Scores.</strong> They use different dimensions and are not directly comparable. A country with a high Momentum Score in a given sector may score differently on Visualiser dimensions because the frameworks measure different things.</li>
+        <li><strong>Intra-national concentration figures are informed estimates.</strong> Sub-national distribution of AI-exposed workers is not published systematically by any statistical agency. The geographic concentration data is triangulated from ILO regional employment data, national statistical bureau regional breakdowns (ONS, INSEE, Destatis, ABS, Statistics Canada, and equivalents), and OECD Regional Outlook reports. Figures should be read as indicative of concentration patterns rather than precise measurements.</li>
+        <li><strong>Sector-level data reflects UK and global benchmark patterns.</strong> The sector view in the Visualiser is calibrated primarily from UK and OECD cross-national data. Sector scores may differ materially in specific countries depending on national employment structure, regulatory environment, and adoption pace.</li>
+        <li><strong>Augmentation Potential scores involve judgement.</strong> The distinction between augmentation and displacement for a given role type is contested in the research literature. The scores reflect the balance of current evidence and are reviewed quarterly.</li>
+      </ul>
+    </div>
+  </div>
+
   <!-- ── Data Sources ──────────────────────────────────────────────── -->
   <div class="content-section">
     <h2 class="section-heading">Data Sources &amp; Research Standards</h2>
@@ -698,7 +797,7 @@
     </div>
     <div class="source-item">
       <span class="source-region">Cross-regional</span>
-      <span class="source-list">OECD AI Policy Observatory, ILO World Employment and Social Outlook, World Economic Forum Future of Jobs reports, CBRE and JLL global market research, McKinsey Global Institute automation studies.</span>
+      <span class="source-list">OECD AI Policy Observatory, OECD Regional Outlook (for sub-national concentration data), ILO World Employment and Social Outlook, ILO regional employment estimates (workforce scale data), World Economic Forum Future of Jobs reports, CBRE and JLL global market research, McKinsey Global Institute automation studies.</span>
     </div>
   </div>
 
@@ -735,8 +834,8 @@
       </div>
       <div class="timeline-item future">
         <div class="phase-label">Phase 2 — Q3 2026</div>
-        <div class="phase-title">Expanded Country Coverage</div>
-        <p class="phase-desc">Planned addition of further APAC markets (South Korea, potentially Hong Kong), Nordic countries within Europe, and a more detailed Canada-specific analysis within the North America region.</p>
+        <div class="phase-title">Expanded Country Coverage &amp; Visualiser Development</div>
+        <p class="phase-desc">South Korea is now included in the Visualiser and geographic concentration analysis. Planned additions for this phase include Nordic countries within Europe, a more detailed Canada-specific sector analysis, and potential expansion to further APAC markets including Hong Kong and Taiwan. The Visualiser axis model will be reviewed and recalibrated as coverage expands.</p>
       </div>
       <div class="timeline-item future">
         <div class="phase-label">Phase 3 — 2027</div>
@@ -754,6 +853,7 @@
       <li><strong>AI-specific displacement data is not consistently published.</strong> National statistics offices categorise employment by sector and occupation, not by whether jobs have been displaced by AI specifically. The index triangulates from multiple sources, but some figures involve estimation.</li>
       <li><strong>The tool covers formal employment.</strong> In markets with large informal workforces (notably India and China), the index understates the true scale of AI impact on workers, since informal workers are largely invisible in official data and have the fewest protections.</li>
       <li><strong>Momentum scores involve judgement.</strong> The weighting of the five dimensions, and the calibration of scores within regional ranges, reflects informed analytical decisions rather than purely mechanical calculation. Reasonable analysts might weight these dimensions differently.</li>
+      <li><strong>Visualiser and Momentum Score frameworks are complementary, not identical.</strong> The six Visualiser dimensions (displacement risk, adoption velocity, worker vulnerability, policy readiness, reskilling access, income precarity) are analytically distinct from the five Momentum Score dimensions. Apparent discrepancies between the two reflect differences in what each framework is designed to measure.</li>
       <li><strong>The index is not a forecast.</strong> High momentum scores indicate that transformation pressure is intense, not that a specific number of jobs will be lost. Actual employment outcomes depend on many factors beyond the scope of this tool.</li>
       <li><strong>Data currency varies by market.</strong> Some national statistics are published with a significant lag. Where the most recent available data is more than 18 months old, this is noted in the relevant source documentation.</li>
     </ul>
